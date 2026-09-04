@@ -15,10 +15,11 @@ Además, permite gestionar justificaciones de inasistencias mediante la carga di
 # Objetivos
 
 - Centralizar la información relacionada con la asistencia escolar.
-- Reducir el uso de registros en papel y planillas manuales.
+- Reducir el uso de registros en papel y planillas de cálculo.
 - Facilitar el registro y consulta de asistencias.
 - Contemplar cursos divididos en diferentes comisiones.
-- Permitir la asignación de uno o más docentes a una comisión.
+- Permitir la asignación de uno o más docentes a una misma comisión.
+- Gestionar la nómina de estudiantes de cada curso o comisión.
 - Relacionar las asistencias de los estudiantes con las clases efectivamente dictadas.
 - Digitalizar la gestión de justificaciones de inasistencias.
 - Generar alertas ante situaciones que requieran atención.
@@ -26,175 +27,262 @@ Además, permite gestionar justificaciones de inasistencias mediante la carga di
 
 ---
 
-# Funcionalidades
+# Planilla de supervisión y seguimiento de avance del proyecto
 
-## Gestión de usuarios
+La planificación y seguimiento del desarrollo del proyecto se realiza mediante la planilla de cálculo estandarizada proporcionada por la cátedra.
 
-El sistema permite administrar los usuarios que interactúan con la plataforma.
+En ella se detallan los requerimientos funcionales, responsables, plazos tentativos, prioridades y estados de avance.
 
-- Registrar usuarios.
-- Listar y consultar usuarios.
-- Modificar datos de usuarios.
-- Deshabilitar usuarios.
-- Asignar y modificar roles.
+[Ver planilla de supervisión y seguimiento](PEGAR_AQUI_EL_LINK_DE_LA_PLANILLA)
 
-### Roles
+---
 
-El sistema contempla los siguientes roles:
+# Requerimientos funcionales
+
+## RF1. Gestión de usuarios
+
+El sistema deberá permitir gestionar los usuarios que interactúan con la plataforma.
+
+### 1.1. Registro de usuarios
+
+El sistema deberá permitir registrar nuevos usuarios.
+
+### 1.2. Consulta de usuarios
+
+El sistema deberá permitir listar y consultar los usuarios registrados.
+
+### 1.3. Modificación de usuarios
+
+El sistema deberá permitir modificar los datos de los usuarios.
+
+### 1.4. Deshabilitación de usuarios
+
+El sistema deberá permitir deshabilitar usuarios.
+
+### 1.5. Gestión de roles
+
+El sistema deberá permitir asignar y modificar los roles de los usuarios.
+
+Los roles contemplados son:
 
 - Profesor.
 - Preceptor.
 - Secretario.
 - Inspector.
 
-Cada rol contará con permisos determinados de acuerdo con las funcionalidades que le correspondan.
+---
+
+## RF2. Gestión de entidades educativas
+
+El sistema deberá permitir gestionar las entidades educativas.
+
+### 2.1. Registro de entidades educativas
+
+El sistema deberá permitir registrar entidades educativas.
+
+### 2.2. Consulta de entidades educativas
+
+El sistema deberá permitir listar y consultar entidades educativas.
+
+### 2.3. Modificación de entidades educativas
+
+El sistema deberá permitir modificar los datos de las entidades educativas.
+
+### 2.4. Deshabilitación de entidades educativas
+
+El sistema deberá permitir deshabilitar entidades educativas.
 
 ---
 
-## Gestión de entidades educativas
+## RF3. Gestión de cursos
 
-El sistema permite administrar las instituciones educativas.
+El sistema deberá permitir gestionar los cursos y su estructura.
 
-- Registrar entidades educativas.
-- Consultar entidades educativas.
-- Modificar información de las entidades educativas.
-- Deshabilitar entidades educativas.
+### 3.1. Registro de cursos
 
----
+El sistema deberá permitir registrar cursos.
 
-## Gestión de cursos
+### 3.2. Consulta de cursos
 
-El sistema permite administrar los cursos y su composición.
+El sistema deberá permitir listar y consultar cursos.
 
-- Registrar cursos.
-- Consultar cursos.
-- Modificar cursos.
-- Crear y gestionar subgrupos o comisiones.
-- Asociar docentes a cursos y comisiones.
-- Gestionar la nómina de estudiantes de cada curso o comisión.
+### 3.3. Modificación de cursos
 
-Una misma nómina de estudiantes podrá organizarse en diferentes comisiones cuando la cantidad de estudiantes requiera su distribución entre varios docentes.
+El sistema deberá permitir modificar los datos de los cursos.
 
----
+### 3.4. Gestión de comisiones
 
-## Gestión de asignaturas
+El sistema deberá permitir crear y gestionar subgrupos o comisiones de un curso.
 
-El sistema permite administrar las asignaturas correspondientes a los cursos.
+### 3.5. Asociación de docentes
 
-- Registrar asignaturas.
-- Consultar asignaturas.
-- Modificar asignaturas.
-- Asociar asignaturas con cursos y comisiones.
+El sistema deberá permitir asociar uno o más docentes a cursos y comisiones.
+
+### 3.6. Gestión de nóminas
+
+El sistema deberá permitir gestionar la nómina de estudiantes correspondiente a cada curso o comisión.
 
 ---
 
-## Calendario académico
+## RF4. Gestión de asignaturas
 
-El sistema permite configurar el calendario correspondiente al ciclo lectivo.
+El sistema deberá permitir gestionar las asignaturas de las entidades educativas.
 
-- Establecer el ciclo lectivo.
-- Definir las fechas válidas para el dictado de clases.
-- Registrar las clases dictadas.
-- Asociar las clases con una asignatura y comisión.
-- Consultar las clases programadas y dictadas.
+### 4.1. Registro de asignaturas
 
-La información de las clases efectivamente dictadas será utilizada para calcular los porcentajes reales de asistencia.
+El sistema deberá permitir registrar asignaturas.
 
----
+### 4.2. Consulta de asignaturas
 
-## Control de asistencias
+El sistema deberá permitir listar y consultar asignaturas.
 
-El sistema permite realizar un control integral de la asistencia de los estudiantes.
+### 4.3. Modificación de asignaturas
 
-- Registrar asistencia.
-- Registrar inasistencias.
-- Registrar retiros anticipados.
-- Asociar la asistencia con las clases efectivamente dictadas.
-- Modificar registros según los permisos correspondientes.
-- Calcular automáticamente el porcentaje de asistencia de cada estudiante.
+El sistema deberá permitir modificar los datos de las asignaturas.
 
-El porcentaje de asistencia se calculará tomando como referencia la cantidad real de clases dictadas y no solamente el período calendario.
+### 4.4. Asociación de asignaturas
+
+El sistema deberá permitir asociar asignaturas con cursos y comisiones.
 
 ---
 
-## Justificaciones de inasistencias
+## RF5. Gestión del calendario académico
 
-El sistema permite digitalizar la gestión de certificados y justificantes.
+El sistema deberá permitir gestionar el calendario académico correspondiente al ciclo lectivo.
 
-- Cargar certificados y justificantes.
-- Asociar los justificantes con el estudiante correspondiente.
-- Consultar las justificaciones registradas.
-- Gestionar el estado de las justificaciones.
+### 5.1. Configuración del ciclo lectivo
 
-De esta manera, la documentación queda vinculada directamente con la información del estudiante y no depende de una carpeta general en formato papel.
+El sistema deberá permitir establecer el ciclo lectivo.
 
----
+### 5.2. Definición de fechas
 
-## Alertas
+El sistema deberá permitir definir las fechas válidas para el dictado de clases.
 
-El sistema permite generar alertas relacionadas con la asistencia de los estudiantes.
+### 5.3. Registro de clases
 
-- Generar alertas por acumulación de inasistencias.
-- Generar alertas ante situaciones de riesgo pedagógico.
-- Asociar las alertas con los estudiantes correspondientes.
-- Consultar las alertas generadas.
+El sistema deberá permitir registrar las clases dictadas por asignatura y comisión.
+
+### 5.4. Consulta de clases
+
+El sistema deberá permitir consultar las clases programadas y efectivamente dictadas.
 
 ---
 
-## Reportes
+## RF6. Gestión de estados
 
-El sistema permite consultar información centralizada sobre las asistencias.
+El sistema deberá permitir gestionar los estados correspondientes a las asistencias y justificaciones.
 
-- Consultar el estado de asistencia de un estudiante.
-- Consultar las asistencias de un curso.
-- Consultar las asistencias de una comisión.
-- Visualizar porcentajes de asistencia.
-- Consultar alertas asociadas a los estudiantes.
-- Generar reportes de asistencia según estudiante, curso, comisión y período.
+### 6.1. Estados de asistencia
+
+El sistema deberá permitir gestionar los estados correspondientes a los registros de asistencia.
+
+### 6.2. Estados de justificación
+
+El sistema deberá permitir gestionar los estados correspondientes a las justificaciones de inasistencias.
+
+### 6.3. Consulta de estados
+
+El sistema deberá permitir consultar el estado actual de una asistencia o justificación.
 
 ---
 
-# Requerimientos funcionales
+## RF7. Gestión de asistencias
 
-### RF1. Gestión de usuarios
+El sistema deberá permitir gestionar el control de asistencia de los estudiantes.
 
-El sistema deberá permitir registrar, consultar, modificar y deshabilitar usuarios, así como asignar y modificar sus roles.
+### 7.1. Registro de asistencia
 
-### RF2. Gestión de entidades educativas
+El sistema deberá permitir registrar la asistencia de los estudiantes.
 
-El sistema deberá permitir registrar, consultar, modificar y deshabilitar entidades educativas.
+### 7.2. Registro de inasistencias
 
-### RF3. Gestión de cursos
+El sistema deberá permitir registrar las inasistencias de los estudiantes.
 
-El sistema deberá permitir administrar cursos, comisiones, docentes y nóminas de estudiantes.
+### 7.3. Registro de retiros anticipados
 
-### RF4. Gestión de asignaturas
+El sistema deberá permitir registrar retiros anticipados de los estudiantes.
 
-El sistema deberá permitir registrar y administrar asignaturas y asociarlas con cursos y comisiones.
+### 7.4. Vinculación con clases
 
-### RF5. Gestión del calendario académico
+El sistema deberá vincular los registros de asistencia con las clases efectivamente dictadas.
 
-El sistema deberá permitir establecer el ciclo lectivo, definir las fechas válidas y registrar las clases dictadas.
+### 7.5. Modificación de asistencias
 
-### RF6. Gestión de asistencias
+El sistema deberá permitir modificar los registros de asistencia según los permisos correspondientes.
 
-El sistema deberá permitir registrar asistencias, inasistencias y retiros anticipados, vinculándolos con las clases efectivamente dictadas.
+### 7.6. Cálculo de porcentaje
 
-### RF7. Gestión de justificaciones
+El sistema deberá calcular automáticamente el porcentaje de asistencia de cada estudiante sobre el total real de clases dictadas.
 
-El sistema deberá permitir cargar, asociar y consultar certificados y justificantes correspondientes a las inasistencias.
+---
 
-### RF8. Generación de alertas
+## RF8. Gestión de justificaciones de inasistencias
 
-El sistema deberá generar alertas ante acumulación de inasistencias y situaciones de riesgo pedagógico.
+El sistema deberá permitir gestionar las justificaciones correspondientes a las inasistencias de los estudiantes.
 
-### RF9. Gestión de reportes de asistencia
+### 8.1. Carga de certificados
 
-El sistema deberá permitir consultar y generar reportes relacionados con la asistencia de estudiantes, cursos y comisiones.
+El sistema deberá permitir cargar certificados y justificantes digitales.
 
-### RF10. Gestión de estados
+### 8.2. Asociación con estudiantes
 
-El sistema deberá gestionar los estados correspondientes a las asistencias y justificaciones.
+El sistema deberá asociar los justificantes con el estudiante correspondiente.
+
+### 8.3. Consulta de justificaciones
+
+El sistema deberá permitir consultar las justificaciones registradas.
+
+### 8.4. Gestión del estado
+
+El sistema deberá permitir gestionar el estado de las justificaciones.
+
+---
+
+## RF9. Generación de alertas
+
+El sistema deberá generar alertas relacionadas con la asistencia y situaciones de riesgo pedagógico.
+
+### 9.1. Alertas por inasistencias
+
+El sistema deberá generar alertas ante la acumulación de inasistencias.
+
+### 9.2. Alertas por riesgo pedagógico
+
+El sistema deberá generar alertas ante situaciones de riesgo pedagógico.
+
+### 9.3. Asociación de alertas
+
+El sistema deberá asociar las alertas con los estudiantes correspondientes.
+
+### 9.4. Consulta de alertas
+
+El sistema deberá permitir consultar las alertas generadas.
+
+---
+
+## RF10. Gestión de reportes de asistencia
+
+El sistema deberá permitir consultar y generar reportes relacionados con la asistencia.
+
+### 10.1. Reporte por estudiante
+
+El sistema deberá permitir consultar el estado de asistencia de un estudiante.
+
+### 10.2. Reporte por curso
+
+El sistema deberá permitir consultar las asistencias de un curso o comisión.
+
+### 10.3. Porcentajes de asistencia
+
+El sistema deberá permitir visualizar los porcentajes de asistencia de los estudiantes.
+
+### 10.4. Consulta de alertas
+
+El sistema deberá permitir consultar las alertas asociadas a los estudiantes.
+
+### 10.5. Generación de reportes
+
+El sistema deberá permitir generar reportes de asistencia según estudiante, curso, comisión y período.
 
 ---
 
@@ -211,6 +299,13 @@ El sistema deberá gestionar los estados correspondientes a las asistencias y ju
 - El sistema deberá garantizar el **almacenamiento persistente** de la información.
 
 ---
+
+# Documentación de la API
+
+La especificación inicial de la API se encuentra dentro del directorio:
+
+```text
+api/
 
 # Change Log
 
