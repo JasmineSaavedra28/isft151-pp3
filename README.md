@@ -304,8 +304,7 @@ El sistema deberá permitir generar reportes de asistencia según estudiante, cu
 
 La especificación inicial de la API se encuentra dentro del directorio:
 
-```text
-api/
+`api/`
 
 ---
 
