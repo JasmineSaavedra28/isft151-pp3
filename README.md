@@ -33,7 +33,7 @@ La planificación y seguimiento del desarrollo del proyecto se realiza mediante 
 
 En ella se detallan los requerimientos funcionales, responsables, plazos tentativos, prioridades y estados de avance.
 
-[Ver planilla de supervisión y seguimiento](PEGAR_AQUI_EL_LINK_DE_LA_PLANILLA)
+[Ver planilla de supervisión y seguimiento](https://docs.google.com/spreadsheets/d/1_nh5zMnrUbhaEw9PTOLw36pfdZt3iTiIUrgg5JzhuA0/edit?gid=0#gid=0)
 
 ---
 
@@ -307,125 +307,213 @@ La especificación inicial de la API se encuentra dentro del directorio:
 ```text
 api/
 
+---
+
+La especificación de la API funcionará como contrato entre el desarrollo del backend y frontend.
+
+La documentación deberá ser acordada grupalmente y presentada para su revisión por parte del docente antes de avanzar con la implementación.
+
+La API podrá modificarse durante el desarrollo del proyecto. Todo cambio realizado deberá quedar reflejado y actualizado en la documentación correspondiente.
+
+---
+
+# Especificación de requerimientos
+
+La documentación detallada de los requerimientos funcionales y no funcionales se encontrará dentro del directorio `srs/`.
+
+En esta carpeta se documentará la especificación de requerimientos del sistema.
+
+---
+
+# Testing
+
+Todo el material relacionado con pruebas y testing se almacenará dentro del directorio `testing/`.
+
+La carpeta podrá contener:
+
+- Casos de prueba.
+- Pruebas unitarias.
+- Datos de prueba.
+- Scripts para generar condiciones de prueba.
+- Evidencias de testing.
+
+Las pruebas deberán permitir verificar el correcto funcionamiento de los requerimientos implementados.
+
+---
+
+# Release
+
+La carpeta `release/` contendrá los scripts necesarios para preparar el entorno y realizar el despliegue del proyecto en producción.
+
+---
+
+# Media
+
+La carpeta `media/` contendrá el material destinado a la difusión institucional del proyecto.
+
+---
+
+# Reglas de desarrollo
+
+El proyecto seguirá las siguientes reglas de desarrollo establecidas por la cátedra:
+
+- No se utilizarán ramas de trabajo salvo que sean gestionadas correctamente.
+- No se incorporarán archivos de configuración específicos de cada integrante.
+- Se utilizará `.gitignore` para excluir archivos propios del entorno de desarrollo.
+- No se incorporarán archivos binarios ni dependencias específicas del entorno de ejecución.
+- El código del repositorio no deberá contener comentarios.
+- Se utilizará un único idioma de forma consistente en todo el proyecto.
+- Se utilizará una indentación uniforme de 4 espacios.
+- Se respetará una única convención de nombres en todo el proyecto.
+- Los cambios deberán registrarse mediante commits periódicos.
+- Cada integrante será responsable de mantener sus configuraciones propias fuera del repositorio.
+
+---
+
+# Convención de nombres
+
+## Clases
+
+Se utilizará la convención `UpperCamelCase`.
+
+Ejemplos:
+
+`Usuario`  
+`Estudiante`  
+`Docente`  
+`Curso`  
+`Comision`  
+`Asignatura`  
+`Asistencia`  
+`Justificacion`
+
+## Funciones y variables
+
+Se utilizará la convención `lowerCamelCase`.
+
+Ejemplos:
+
+`registrarUsuario()`  
+`listarCursos()`  
+`registrarAsistencia()`  
+`calcularPorcentaje()`
+
+`porcentajeAsistencia`  
+`fechaAsistencia`  
+`nombreEstudiante`
+
+---
+
+# Estructura del repositorio
+
+    isft151-pp3/
+    │
+    ├── README.md
+    ├── LICENSE
+    ├── .gitignore
+    │
+    ├── api/
+    │   └── README.md
+    │
+    ├── srs/
+    │   └── README.md
+    │
+    ├── media/
+    │   └── README.md
+    │
+    ├── testing/
+    │   └── README.md
+    │
+    ├── release/
+    │   └── README.md
+    │
+    ├── backend/
+    │   └── README.md
+    │
+    └── frontend/
+        └── README.md
+
+A medida que avance el desarrollo, cada directorio incorporará los archivos correspondientes a su función.
+
+No se mantendrán directorios vacíos en el repositorio.
+
+---
+
+# Tecnologías
+
+Las tecnologías definitivas serán establecidas durante la etapa de diseño e implementación del proyecto.
+
+Actualmente se encuentran en definición.
+
+---
+
+# Instalación
+
+Las instrucciones de instalación y configuración serán incorporadas una vez definidas las tecnologías utilizadas para el desarrollo.
+
+## Requisitos
+
+Los requisitos necesarios para ejecutar el proyecto serán documentados durante la etapa de implementación.
+
+---
+
+# Despliegue
+
+Las instrucciones de despliegue serán documentadas dentro del directorio `release/`.
+
+Allí se incluirán los scripts necesarios para preparar el entorno y realizar el despliegue del sistema en producción.
+
+---
+
+# Ejecución de pruebas
+
+Las instrucciones para ejecutar las pruebas serán documentadas dentro del directorio `testing/`.
+
+---
+
 # Change Log
 
 ## [0.1.0] - Inicio del proyecto
 
-### Agregado
-
 - Creación del repositorio.
-- Creación de la estructura inicial del proyecto.
-- Definición del objetivo general del sistema.
-- Identificación de la problemática.
-- Definición del alcance inicial.
-- Identificación de los usuarios y roles principales.
-- Definición inicial de los requerimientos funcionales.
-- Definición inicial de los requerimientos no funcionales.
+- Definición inicial del proyecto.
+- Definición de requerimientos funcionales.
+- Definición de requerimientos no funcionales.
+- Definición inicial de la estructura del repositorio.
+- Incorporación de la planilla de supervisión y seguimiento.
+
+## [0.2.0] - Documentación inicial
+
+- Incorporación de la especificación de requerimientos.
+- Incorporación de la documentación inicial de la API.
+- Definición de las convenciones de desarrollo.
+
+## [0.3.0] - Implementación inicial
+
+- Incorporación de las primeras funcionalidades del backend.
+- Incorporación de las primeras funcionalidades del frontend.
+
+## [1.0.0] - Versión inicial
+
+- Implementación de las funcionalidades principales.
+- Incorporación de pruebas.
+- Preparación del despliegue.
+- Versión inicial del sistema.
 
 ---
 
-## [0.2.0] - Gestión de estructura académica
+# Integrantes
 
-### Agregado
+- Jazmín Saavedra
+- Pablo Curtti
+- Carlos Guariglia
 
-- Gestión de entidades educativas.
-- Gestión de cursos.
-- Gestión de asignaturas.
-- Gestión de comisiones y subgrupos.
-- Asociación de docentes a cursos y comisiones.
-- Gestión de nóminas de estudiantes.
+## Gestor del proyecto
 
----
-
-## [0.3.0] - Calendario académico
-
-### Agregado
-
-- Configuración del ciclo lectivo.
-- Definición de fechas válidas para el dictado de clases.
-- Registro de clases dictadas.
-- Asociación de clases con asignaturas y comisiones.
+El rol de Gestor de proyecto será definido por el grupo.
 
 ---
 
-## [0.4.0] - Control de asistencias
+# Estado del proyecto
 
-### Agregado
-
-- Registro de asistencia de estudiantes.
-- Registro de inasistencias.
-- Registro de retiros anticipados.
-- Asociación entre estudiantes y clases dictadas.
-- Cálculo automático del porcentaje de asistencia.
-
----
-
-## [0.5.0] - Justificaciones
-
-### Agregado
-
-- Carga digital de certificados.
-- Carga de justificantes.
-- Asociación de justificantes con estudiantes.
-- Consulta de justificaciones.
-- Gestión de estados de las justificaciones.
-
----
-
-## [0.6.0] - Alertas y reportes
-
-### Agregado
-
-- Generación de alertas por acumulación de inasistencias.
-- Generación de alertas por riesgo pedagógico.
-- Consulta del estado de asistencia por estudiante.
-- Consulta de asistencia por curso.
-- Consulta de asistencia por comisión.
-- Visualización de porcentajes de asistencia.
-- Generación de reportes.
-
----
-
-## [1.0.0] - Versión inicial completa
-
-### Agregado
-
-- Integración de las funcionalidades principales.
-- Gestión de usuarios y roles.
-- Gestión de entidades educativas.
-- Gestión de cursos y comisiones.
-- Gestión de asignaturas.
-- Gestión del calendario académico.
-- Control integral de asistencias.
-- Gestión de justificaciones.
-- Generación de alertas.
-- Consulta y generación de reportes.
-- Gestión de estados.
-
----
-
-# Tecnologías utilizadas
-
-> Esta sección deberá actualizarse cuando se defina el stack tecnológico definitivo.
-
-- **Frontend:** Por definir.
-- **Backend:** Por definir.
-- **Base de datos:** Por definir.
-- **Control de versiones:** Git / GitHub.
-- **Metodología:** TDD (Test Driven Development).
-
----
-
-# Requisitos para el despliegue
-
-Para ejecutar el proyecto será necesario contar con:
-
-- Git.
-- El entorno de ejecución correspondiente al lenguaje utilizado.
-- El gestor de dependencias correspondiente.
-- El motor de base de datos utilizado por el proyecto.
-- Un navegador web actualizado.
-
-Los requisitos específicos se actualizarán a medida que avance el desarrollo.
-
----
+**En desarrollo**
