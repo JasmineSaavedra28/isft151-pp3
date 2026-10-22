@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SGA - Control de Asistencias</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f4f6f9; color: #333; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h1, h2, h3 { margin-top: 0; color: #2c3e50; }
+        button { margin: 5px; padding: 10px 16px; cursor: pointer; border: none; border-radius: 6px; background: #3498db; color: white; font-weight: bold; transition: background 0.2s; }
+        button:hover { background: #2980b9; }
+        button.danger { background: #e74c3c; }
+        button.danger:hover { background: #c0392b; }
+        pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 6px; overflow-x: auto; }
+        
+        /* Modal Styles */
+        dialog { border: none; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); padding: 25px; width: 400px; max-width: 90%; }
+        dialog.attendance-modal { width: 760px; max-height: 85vh; }
+        dialog::backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); }
+        .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
+        .form-group label { margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        .form-group input, .form-group select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .dialog-actions button.cancel { background: #95a5a6; }
+        .attendance-table-wrap { max-height: 60vh; overflow: auto; }
+        .attendance-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .attendance-table th, .attendance-table td { padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+        .attendance-table th { position: sticky; top: 0; background: white; }
+        .attendance-table select { padding: 6px; }
+        .attendance-table input[type="checkbox"] { width: 18px; height: 18px; }
+        .report-table-wrap { overflow-x: auto; }
+        .report-table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
+        .report-table th, .report-table td { padding: 8px 10px; border: 1px solid #dfe6e9; text-align: center; }
+        .report-table th { background: #ecf0f1; color: #2c3e50; }
+        .report-table th:first-child, .report-table td:first-child { text-align: left; position: sticky; left: 0; background: white; }
+        .report-table th:first-child { background: #ecf0f1; }
+        .report-table .report-empty { color: #7f8c8d; }
+    </style>
+</head>
+<body></body>
+    <script>
+        const host = 'http://localhost:3000';
+        let currentUserId = null;
+        let authSessionToken = null;
+
+        class RPCWebAPIException extends Error {
+            constructor(type, detail) {
+                super(detail);
+                this.name = 'RPCWebAPIException';
+                this.type = type;
+                this.detail = detail;
+            }
+        }
+
+        async function computeSHA256(plainText) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(plainText);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(hashBuffer))
+                .map(function (byte) { return byte.toString(16).padStart(2, '0'); })
+                .join('');
+        }
+
+        function getHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'x-user-id': currentUserId,
+                'Authorization': `Bearer ${authSessionToken}`,
+                'x-api-version': '1.0'
+            };
+        }
+        async function rpcFetch(path, body = {}) {
+            const response = await fetch(host + path, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify(body)
+            });
+
+            if (response.status === 200) return response.json();
+                if (response.status === 400) throw new RPCWebAPIException('BadRequest', 'Error en los datos enviados');
+                if (response.status === 401 || response.status === 403) {
+                authSessionToken = null;
+                throw new RPCWebAPIException('AuthError', 'No autorizado o sesión expirada');
+            }
+            if (response.status === 422) {
+                const err = await response.json().catch(function () { return {}; });
+                throw new RPCWebAPIException('DomainError', err.detail ? err.detail[0] : 'Error de validación');
+            }
+            throw new RPCWebAPIException('ServerError', 'Error interno del servidor');
+        }
+
+        // MOTOR DE FORMULARIOS DINÁMICOS
+        function showFormModal(title, fields) {
+            return new Promise(function (resolve) {
+                const modal = document.getElementById('formModal');
+                document.getElementById('modalTitle').textContent = title;
+                const modalBody = document.getElementById('modalBody');
+                while (modalBody.firstChild) {
+                    modalBody.removeChild(modalBody.firstChild);
+                }
+
+                const inputs = {};
+
+                fields.forEach(function (f) {
+                    const group = document.createElement('div');
+                    group.className = 'form-group';
+                    
+                    const label = document.createElement('label');
+                    label.textContent = f.label;
+                    group.appendChild(label);
+
+                    let input;
+                    if (f.type === 'select') {
+                        input = document.createElement('select');
+                        f.options.forEach(function (opt) {
+                            const option = document.createElement('option');
+                            option.value = opt.value;
+                            option.textContent = opt.text;
+                            input.appendChild(option);
+                        });
+                    } else {
+                        input = document.createElement('input');
+                        input.type = f.type || 'text';
+                        if (f.placeholder) input.placeholder = f.placeholder;
+                    }
+                    if (f.value !== undefined) input.value = f.value;
+                    
+                    inputs[f.name] = input;
+                    group.appendChild(input);
+                    modalBody.appendChild(group);
+                });
+
+                const btnSubmit = document.getElementById('btnSubmitModal');
+                const btnCancel = document.getElementById('btnCancelModal');
+
+                const cleanup = function () {
+                    btnSubmit.onclick = null;
+                    btnCancel.onclick = null;
+                    modal.close();
+                };
+
+                btnSubmit.onclick = function () {
+                    const result = {};
+                    fields.forEach(function (f) {
+                        result[f.name] = f.type === 'checkbox' ? inputs[f.name].checked : inputs[f.name].value;
+                    });
+                    cleanup();
+                    resolve(result);
+                };
+
+                btnCancel.onclick = function () {
+                    cleanup();
+                    resolve(null);
+                };
+
+                modal.showModal();
+            });
+        }
+
+        function showAttendanceModal(title, students) {
+            return new Promise(function (resolve) {
+                const modal = document.getElementById('formModal');
+                const modalBody = document.getElementById('modalBody');
+                document.getElementById('modalTitle').textContent = title;
+                modal.classList.add('attendance-modal');
+                while (modalBody.firstChild) {
+                    modalBody.removeChild(modalBody.firstChild);
+                }
+                const tableWrap = document.createElement('div');
+                tableWrap.className = 'attendance-table-wrap';
+                const table = document.createElement('table');
+                table.className = 'attendance-table';
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                ['Estudiante', 'Estado', 'Retiro'].forEach(function (label) {
+                    const cell = document.createElement('th');
+                    cell.textContent = label;
+                    headerRow.appendChild(cell);
+                });
+                thead.appendChild(headerRow);
+                const tbody = document.createElement('tbody');
+                table.append(thead, tbody);
+                tableWrap.appendChild(table);
+                modalBody.appendChild(tableWrap);
+                const rows = new Map();
+                students.forEach(function (student) {
+                    const row = document.createElement('tr');
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = `${student.surname}, ${student.name}`;
+                    const statusCell = document.createElement('td');
+                    const status = document.createElement('select');
+                    [['present', 'Presente'], ['absent', 'Ausente'], ['late', 'Tarde']].forEach(function (statusOption) {
+                        const value = statusOption[0];
+                        const label = statusOption[1];
+                        const option = document.createElement('option');
+                        option.value = value;
+                        option.textContent = label;
+                        status.appendChild(option);
+                    });
+                    status.value = student.attendanceStatus || 'absent';
+                    statusCell.appendChild(status);
+                    const earlyCell = document.createElement('td');
+                    const early = document.createElement('input');
+                    early.type = 'checkbox';
+                    early.checked = Boolean(student.earlyDeparture);
+                    earlyCell.appendChild(early);
+                    row.append(nameCell, statusCell, earlyCell);
+                    tbody.appendChild(row);
+                    rows.set(student.studentId, { status, early });
+                });
+
+                const btnSubmit = document.getElementById('btnSubmitModal');
+                const btnCancel = document.getElementById('btnCancelModal');
+                const cleanup = function () {
+                    btnSubmit.onclick = null;
+                    btnCancel.onclick = null;
+                    modal.classList.remove('attendance-modal');
+                    modal.close();
+                };
+                btnSubmit.onclick = function () {
+                    const records = students.map(function (student) {
+                        return {
+                            studentId: student.studentId,
+                            status: rows.get(student.studentId).status.value,
+                            earlyDeparture: rows.get(student.studentId).early.checked
+                        };
+                    });
+                    cleanup();
+                    resolve(records);
+                };
+                btnCancel.onclick = function () {
+                    cleanup();
+                    resolve(null);
+                };
+                modal.showModal();
+            });
+        }
+
+        function createElement(tagName, options = {}) {
+            const element = document.createElement(tagName);
+            if (options.id) element.id = options.id;
+            if (options.className) element.className = options.className;
+            if (options.textContent) element.textContent = options.textContent;
+            if (options.style) element.style.cssText = options.style;
+            return element;
+        }
+
+        function createButton(id, text, isDanger = false) {
+            return createElement('button', {
+                id,
+                className: isDanger ? 'danger' : '',
+                textContent: text
+            });
+        }
+
+        function createCard(id, title, buttonDefinitions, style = '') {
+            const card = createElement('div', { id, className: 'card', style });
+            card.appendChild(createElement('h3', { textContent: title }));
+            buttonDefinitions.forEach(function (definition) {
+                card.appendChild(createButton(definition[0], definition[1], definition[2]));
+            });
+            return card;
+        }
+
+        class Menu extends HTMLElement {
+            constructor() {
+                super();
+
+                const formModal = createElement('dialog', { id: 'formModal' });
+                formModal.appendChild(createElement('h3', { id: 'modalTitle', textContent: 'Título' }));
+                formModal.appendChild(createElement('div', { id: 'modalBody' }));
+                const dialogActions = createElement('div', { className: 'dialog-actions' });
+                dialogActions.appendChild(createButton('btnCancelModal', 'Cancelar'));
+                dialogActions.lastChild.classList.add('cancel');
+                dialogActions.appendChild(createButton('btnSubmitModal', 'Aceptar'));
+                formModal.appendChild(dialogActions);
+
+                const header = createElement('div', { className: 'header' });
+                header.appendChild(createElement('h1', { textContent: 'Panel de Gestión Académica' }));
+                const headerActions = createElement('div');
+                headerActions.appendChild(createElement('span', {
+                    id: 'userStatus',
+                    textContent: 'Desconectado',
+                    style: 'margin-right: 15px; font-weight: bold;'
+                }));
+                headerActions.appendChild(createButton('btnLogin', 'Iniciar Sesión'));
+                headerActions.appendChild(createButton('btnLogout', 'Cerrar Sesión', true));
+                headerActions.lastChild.style.display = 'none';
+                header.appendChild(headerActions);
+
+                const actionContainer = createElement('div', {
+                    id: 'actionContainer',
+                    style: 'display: none;'
+                });
+                actionContainer.appendChild(createCard('adminContainer', 'Administración', [
+                    ['btnNewUser', 'Agregar Usuario / Rol'],
+                    ['btnModifyUser', 'Modificar Usuario'],
+                    ['btnDisableUser', 'Deshabilitar Usuario', true],
+                    ['btnDeleteUser', 'Eliminar Usuario', true],
+                    ['btnUpdateUserRole', 'Modificar Rol'],
+                    ['btnListUsers', 'Listar Usuarios']
+                ], 'display: none;'));
+                actionContainer.appendChild(createCard('studentManagementContainer', 'Gestión de Estudiantes', [
+                    ['btnNewStudent', 'Registrar Estudiante'],
+                    ['btnModifyStudent', 'Modificar Estudiante'],
+                    ['btnDeleteStudent', 'Eliminar Estudiante', true],
+                    ['btnListStudents', 'Listar Estudiantes']
+                ]));
+                actionContainer.appendChild(createCard('courseManagementContainer', 'Cursos e inscripciones', [
+                    ['btnNewCourse', 'Crear Curso'],
+                    ['btnModifyCourse', 'Modificar Curso'],
+                    ['btnListCourses', 'Listar Cursos'],
+                    ['btnEnrollStudent', 'Inscribir Estudiante'],
+                    ['btnRemoveEnrollment', 'Desinscribir Estudiante', true],
+                    ['btnListCourseStudents', 'Ver Alumnos del Curso'],
+                    ['btnAttendanceReport', 'Ver Asistencias']
+                ]));
+                actionContainer.appendChild(createCard('calendarManagementContainer', 'Calendario académico', [
+                    ['btnNewCalendar', 'Configurar Calendario'],
+                    ['btnListCalendars', 'Listar Calendarios']
+                ]));
+                actionContainer.appendChild(createCard('teacherAttendanceContainer', 'Mis cursos y asistencia', [
+                    ['btnTeacherListCourses', 'Ver Mis Cursos'],
+                    ['btnTakeAttendance', 'Tomar Asistencia'],
+                    ['btnTeacherAttendanceReport', 'Ver Asistencias']
+                ], 'display: none;'));
+                const reportCard = createElement('div', { id: 'attendanceReportCard', className: 'card', style: 'display: none;' });
+                reportCard.appendChild(createElement('h3', { id: 'attendanceReportTitle', textContent: 'Reporte de asistencia' }));
+                reportCard.appendChild(createElement('div', { id: 'attendanceReportTable', className: 'report-table-wrap' }));
+                actionContainer.appendChild(reportCard);
+                const outputCard = createElement('div', { className: 'card' });
+                outputCard.appendChild(createElement('h3', { textContent: 'Salida del Sistema' }));
+                outputCard.appendChild(createElement('pre', {
+                    id: 'consoleOutput',
+                    textContent: 'Esperando acciones...'
+                }));
+                actionContainer.appendChild(outputCard);
+
+                this.append(formModal, header, actionContainer);
+            }
+
+            printResult(data) {
+                document.getElementById('consoleOutput').textContent = JSON.stringify(data, null, 4);
+            }
+
+            clearAttendanceReport() {
+                const reportCard = document.getElementById('attendanceReportCard');
+                const tableContainer = document.getElementById('attendanceReportTable');
+                const reportTitle = document.getElementById('attendanceReportTitle');
+                while (tableContainer.firstChild) {
+                    tableContainer.removeChild(tableContainer.firstChild);
+                }
+                reportTitle.textContent = 'Reporte de asistencia';
+                reportCard.style.display = 'none';
+            }
+
+            printAttendanceReport(report) {
+                const reportCard = document.getElementById('attendanceReportCard');
+                const tableContainer = document.getElementById('attendanceReportTable');
+                const reportTitle = document.getElementById('attendanceReportTitle');
+                while (tableContainer.firstChild) {
+                    tableContainer.removeChild(tableContainer.firstChild);
+                }
+                reportTitle.textContent = `Reporte de asistencia - ${report.course.name}`;
+                const table = document.createElement('table');
+                table.className = 'report-table';
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                const reportHeaders = ['Estudiante'].concat(
+                    report.sessions.map(function (session) {
+                        return session.date.split('-').reverse().join('/');
+                    }),
+                    ['Presentes', 'Tardes', 'Ausentes', 'Retiros', 'Asistencia']
+                );
+                reportHeaders.forEach(function (header) {
+                    const cell = document.createElement('th');
+                    cell.textContent = header;
+                    headerRow.appendChild(cell);
+                });
+                thead.appendChild(headerRow);
+                const tbody = document.createElement('tbody');
+                report.students.forEach(function (student) {
+                    const row = document.createElement('tr');
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = `${student.surname}, ${student.name}`;
+                    row.appendChild(nameCell);
+                    report.sessions.forEach(function (session) {
+                        const cell = document.createElement('td');
+                        const record = student.attendanceByDate[session.date];
+                        if (!record) {
+                            cell.textContent = '-';
+                            cell.className = 'report-empty';
+                        } else {
+                            const status = { present: 'P', late: 'T', absent: 'A' }[record.status] || '-';
+                            cell.textContent = record.earlyDeparture ? `${status}*` : status;
+                        }
+                        row.appendChild(cell);
+                    });
+                    [
+                        student.present,
+                        student.late,
+                        student.absent,
+                        student.earlyDepartures,
+                        `${student.attendancePercentage}%`
+                    ].forEach(function (value) {
+                        const cell = document.createElement('td');
+                        cell.textContent = value;
+                        row.appendChild(cell);
+                    });
+                    tbody.appendChild(row);
+                });
+                table.append(thead, tbody);
+                tableContainer.appendChild(table);
+                reportCard.style.display = 'block';
+
+                const dates = report.sessions.map(function (session) {
+                    return session.date.split('-').reverse().join('/');
+                });
+                const headers = ['Estudiante'].concat(dates, ['Presentes', 'Tardes', 'Ausentes', 'Retiros', 'Asistencia']);
+                const lines = [
+                    `Curso: ${report.course.name}`,
+                    `Clases registradas: ${report.sessions.length}`,
+                    '',
+                    headers.join(' | ')
+                ];
+                report.students.forEach(function (student) {
+                    const attendance = report.sessions.map(function (session) {
+                        const record = student.attendanceByDate[session.date];
+                        if (!record) return '-';
+                        const status = { present: 'P', late: 'T', absent: 'A' }[record.status] || '-';
+                        return record.earlyDeparture ? `${status}*` : status;
+                    });
+                    lines.push([
+                        `${student.surname}, ${student.name}`,
+                        ...attendance,
+                        student.present,
+                        student.late,
+                        student.absent,
+                        student.earlyDepartures,
+                        `${student.attendancePercentage}%`
+                    ].join(' | '));
+                });
+                document.getElementById('consoleOutput').textContent = lines.join('\n');
+            }
+
+            connectedCallback() {
+                const menu = this;
+                // LOGIN
+                document.getElementById('btnLogin').onclick = async function () {
+                    const data = await showFormModal('Iniciar Sesión', [
+                        { name: 'user', label: 'Usuario', type: 'text' },
+                        { name: 'pass', label: 'Contraseña', type: 'password' }
+                    ]);
+                    
+                    if (!data || !data.user || !data.pass) return;
+
+                    currentUserId = data.user;
+                    authSessionToken = await computeSHA256(data.pass);
+
+                    try {
+                        const res = await rpcFetch('/login');
+                        document.getElementById('userStatus').textContent = `Usuario: ${currentUserId} (${res.role})`;
+                        document.getElementById('btnLogin').style.display = 'none';
+                        document.getElementById('btnLogout').style.display = 'inline-block';
+                        document.getElementById('actionContainer').style.display = 'block';
+                        document.getElementById('adminContainer').style.display = res.role === 'Administrador' ? 'block' : 'none';
+                        document.getElementById('studentManagementContainer').style.display = res.role === 'Administrador' ? 'block' : 'none';
+                        document.getElementById('courseManagementContainer').style.display = res.role === 'Administrador' ? 'block' : 'none';
+                        document.getElementById('calendarManagementContainer').style.display = res.role === 'Administrador' ? 'block' : 'none';
+                        document.getElementById('teacherAttendanceContainer').style.display = res.role === 'Docente' ? 'block' : 'none';
+                        menu.clearAttendanceReport();
+                        menu.printResult({ success: true, message: 'Ingreso exitoso', role: res.role });
+                    } catch (e) {
+                        alert(`Error: ${e.detail}`);
+                        currentUserId = null;
+                        authSessionToken = null;
+                    }
+                };
+
+                // LOGOUT
+                document.getElementById('btnLogout').onclick = async function () {
+                    try { await rpcFetch('/logout'); } catch(e){}
+                    currentUserId = null;
+                    authSessionToken = null;
+                    document.getElementById('userStatus').textContent = 'Desconectado';
+                    document.getElementById('btnLogin').style.display = 'inline-block';
+                    document.getElementById('btnLogout').style.display = 'none';
+                    document.getElementById('actionContainer').style.display = 'none';
+                    document.getElementById('adminContainer').style.display = 'none';
+                    document.getElementById('studentManagementContainer').style.display = 'none';
+                    document.getElementById('courseManagementContainer').style.display = 'none';
+                    document.getElementById('calendarManagementContainer').style.display = 'none';
+                    document.getElementById('teacherAttendanceContainer').style.display = 'none';
+                    menu.clearAttendanceReport();
+                    menu.printResult({ message: 'Sesión cerrada' });
+                };
+
+                // ADMINISTRAR USUARIOS Y ROLES
+                document.getElementById('btnNewUser').onclick = async function () {
+                    const data = await showFormModal('Agregar Usuario / Rol', [
+                        { name: 'username', label: 'Usuario' },
+                        { name: 'password', label: 'Contraseña', type: 'password' },
+                        { name: 'role', label: 'Rol', type: 'select', options: [
+                            { value: 'Administrador', text: 'Administrador' },
+                            { value: 'Preceptor', text: 'Preceptor' },
+                            { value: 'Docente', text: 'Docente' }
+                        ] }
+                    ]);
+                    if (!data) return;
+                    data.password = await computeSHA256(data.password);
+                    try {
+                        const res = await rpcFetch('/registerUser', data);
+                        menu.printResult({ message: 'Usuario creado correctamente', ...res });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnModifyUser').onclick = async function () {
+                    try {
+                        const users = await rpcFetch('/listUsers');
+                        const options = users.map(function (user) { return { value: user.userId, text: `${user.username} (${user.role})` }; });
+                        if (options.length === 0) {
+                            alert('No hay usuarios registrados.');
+                            return;
+                        }
+                        const selected = await showFormModal('Seleccionar Usuario', [
+                            { name: 'userId', label: 'Usuario', type: 'select', options }
+                        ]);
+                        if (!selected) return;
+                        const user = users.find(function (item) { return item.userId === selected.userId; });
+                        const data = await showFormModal('Modificar Nombre de Usuario', [
+                            { name: 'userId', label: 'Usuario', type: 'select', options: [{ value: user.userId, text: user.username }], value: user.userId },
+                            { name: 'username', label: 'Nuevo nombre de usuario', value: user.username }
+                        ]);
+                        if (!data) return;
+                        const res = await rpcFetch('/modifyUser', data);
+                        menu.printResult({ message: 'Usuario modificado correctamente', ...res });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnDisableUser').onclick = async function () {
+                    try {
+                        const users = await rpcFetch('/listUsers');
+                        const options = users.filter(function (user) { return user.status === 'enabled'; })
+                            .map(function (user) { return { value: user.userId, text: `${user.username} (${user.role})` }; });
+                        if (options.length === 0) {
+                            alert('No hay usuarios habilitados para modificar.');
+                            return;
+                        }
+                        const data = await showFormModal('Modificar Usuario', [
+                            { name: 'userId', label: 'Usuario', type: 'select', options }
+                        ]);
+                        if (!data) return;
+                        const res = await rpcFetch('/disableUser', data);
+                        menu.printResult({ message: 'Usuario deshabilitado correctamente', ...res });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnDeleteUser').onclick = async function () {
+                    try {
+                        const users = await rpcFetch('/listUsers');
+                        const options = users.map(function (user) { return { value: user.userId, text: `${user.username} (${user.role})` }; });
+                        if (options.length === 0) {
+                            alert('No hay usuarios registrados.');
+                            return;
+                        }
+                        const data = await showFormModal('Eliminar Usuario', [
+                            { name: 'userId', label: 'Usuario', type: 'select', options }
+                        ]);
+                        if (!data || !confirm('La eliminación será permanente. ¿Continuar?')) return;
+                        const res = await rpcFetch('/deleteUser', data);
+                        menu.printResult({ message: 'Usuario eliminado correctamente', ...res });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnUpdateUserRole').onclick = async function () {
+                    try {
+                        const users = await rpcFetch('/listUsers');
+                        const options = users.map(function (user) { return { value: user.userId, text: `${user.username} (${user.role})` }; });
+                        const data = await showFormModal('Modificar Rol', [
+                            { name: 'userId', label: 'Usuario', type: 'select', options },
+                            { name: 'newRole', label: 'Nuevo rol', type: 'select', options: [
+                                { value: 'Administrador', text: 'Administrador' },
+                                { value: 'Preceptor', text: 'Preceptor' },
+                                { value: 'Docente', text: 'Docente' }
+                            ] }
+                        ]);
+                        if (!data) return;
+                        const res = await rpcFetch('/updateUserRole', data);
+                        menu.printResult({ message: 'Rol actualizado correctamente', ...res });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnListUsers').onclick = async function () {
+                    try {
+                        const users = await rpcFetch('/listUsers');
+                        menu.printResult({ usuarios: users });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnListStudents').onclick = async function () {
+                    try {
+                        const students = await rpcFetch('/listStudents');
+                        menu.printResult({ estudiantes: students });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnModifyStudent').onclick = async function () {
+                    try {
+                        const students = await rpcFetch('/listStudents');
+                        if (students.length === 0) {
+                            alert('No hay estudiantes registrados.');
+                            return;
+                        }
+                        const data = await showFormModal('Modificar Estudiante', [
+                            { name: 'studentId', label: 'Estudiante', type: 'select', options: students.map(function (student) { return { value: student.studentId, text: `${student.dni} - ${student.surname}, ${student.name}` }; }) },
+                            { name: 'name', label: 'Nuevo nombre' },
+                            { name: 'surname', label: 'Nuevo apellido' },
+                            { name: 'dni', label: 'Nuevo DNI', type: 'number' }
+                        ]);
+                        if (!data) return;
+                        const res = await rpcFetch('/modifyStudent', data);
+                        menu.printResult({ message: 'Estudiante modificado correctamente', ...res });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnDeleteStudent').onclick = async function () {
+                    try {
+                        const students = await rpcFetch('/listStudents');
+                        if (students.length === 0) {
+                            alert('No hay estudiantes registrados.');
+                            return;
+                        }
+                        const data = await showFormModal('Eliminar Estudiante', [
+                            { name: 'studentId', label: 'Estudiante', type: 'select', options: students.map(function (student) { return { value: student.studentId, text: `${student.dni} - ${student.surname}, ${student.name}` }; }) }
+                        ]);
+                        if (!data || !confirm('El estudiante dejará de aparecer en los listados. ¿Continuar?')) return;
+                        const res = await rpcFetch('/deleteStudent', data);
+                        menu.printResult({ message: 'Estudiante eliminado correctamente', ...res });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnListCourses').onclick = async function () {
+                    try {
+                        const courses = await rpcFetch('/listCourses');
+                        menu.printResult({ cursos: courses });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnNewCourse').onclick = async function () {
+                    try {
+                        const users = await rpcFetch('/listUsers');
+                        const professors = users.filter(function (user) { return user.role === 'Docente' && user.status === 'enabled'; });
+                        if (professors.length === 0) {
+                            alert('Debe existir al menos un docente habilitado.');
+                            return;
+                        }
+                        const data = await showFormModal('Crear Curso o Comisión', [
+                            { name: 'name', label: 'Nombre (Ej: Matemática 2 - Comisión A)' },
+                            { name: 'professorId', label: 'Docente', type: 'select', options: professors.map(function (user) { return { value: user.userId, text: user.username }; }) },
+                            { name: 'startDate', label: 'Fecha de inicio', type: 'date' },
+                            { name: 'endDate', label: 'Fecha de fin', type: 'date' }
+                        ]);
+                        if (!data) return;
+                        const res = await rpcFetch('/newCourse', data);
+                        menu.printResult({ message: 'Curso creado correctamente', ...res });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnModifyCourse').onclick = async function () {
+                    try {
+                        const [courses, users] = await Promise.all([
+                            rpcFetch('/listCourses'),
+                            rpcFetch('/listUsers')
+                        ]);
+                        const professors = users.filter(function (user) { return user.role === 'Docente' && user.status === 'enabled'; });
+                        if (courses.length === 0 || professors.length === 0) {
+                            alert('Debe existir al menos un curso y un docente habilitado.');
+                            return;
+                        }
+                        const selected = await showFormModal('Seleccionar Curso', [
+                            { name: 'courseId', label: 'Curso', type: 'select', options: courses.map(function (course) { return { value: course.courseId, text: course.name }; }) }
+                        ]);
+                        if (!selected) return;
+                        const course = courses.find(function (item) { return item.courseId === selected.courseId; });
+                        const data = await showFormModal('Modificar Curso', [
+                            { name: 'courseId', label: 'Curso', type: 'select', options: [{ value: course.courseId, text: course.name }], value: course.courseId },
+                            { name: 'name', label: 'Nombre del curso', value: course.name },
+                            { name: 'professorId', label: 'Docente', type: 'select', options: professors.map(function (user) { return { value: user.userId, text: user.username }; }), value: course.professorId },
+                            { name: 'startDate', label: 'Fecha de inicio', type: 'date', value: course.startDate },
+                            { name: 'endDate', label: 'Fecha de fin', type: 'date', value: course.endDate }
+                        ]);
+                        if (!data) return;
+                        const res = await rpcFetch('/modifyCourse', data);
+                        menu.printResult({ message: 'Curso modificado correctamente', ...res });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                async function getCourseAndStudentOptions() {
+                    const [courses, students] = await Promise.all([
+                        rpcFetch('/listCourses'),
+                        rpcFetch('/listStudents')
+                    ]);
+                    return {
+                        courses,
+                        students,
+                        courseOptions: courses.map(function (course) { return { value: course.courseId, text: `${course.name} (${course.startDate} a ${course.endDate})` }; }),
+                        studentOptions: students.map(function (student) { return { value: student.studentId, text: `${student.dni} - ${student.surname}, ${student.name}` }; })
+                    };
+                }
+
+                document.getElementById('btnEnrollStudent').onclick = async function () {
+                    try {
+                        const { courseOptions, studentOptions } = await getCourseAndStudentOptions();
+                        if (courseOptions.length === 0 || studentOptions.length === 0) {
+                            alert('Debe existir al menos un curso y un estudiante.');
+                            return;
+                        }
+                        const data = await showFormModal('Inscribir Estudiante en Curso', [
+                            { name: 'courseId', label: 'Curso', type: 'select', options: courseOptions },
+                            { name: 'studentId', label: 'Estudiante', type: 'select', options: studentOptions }
+                        ]);
+                        if (!data) return;
+                        const res = await rpcFetch('/enrollStudent', data);
+                        menu.printResult({ message: 'Estudiante inscrito correctamente', ...res });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnRemoveEnrollment').onclick = async function () {
+                    try {
+                        const { courseOptions, studentOptions } = await getCourseAndStudentOptions();
+                        const data = await showFormModal('Desinscribir Estudiante', [
+                            { name: 'courseId', label: 'Curso', type: 'select', options: courseOptions },
+                            { name: 'studentId', label: 'Estudiante', type: 'select', options: studentOptions }
+                        ]);
+                        if (!data) return;
+                        const res = await rpcFetch('/removeStudentFromCourse', data);
+                        menu.printResult({ message: 'Estudiante desinscrito correctamente', ...res });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnListCourseStudents').onclick = async function () {
+                    try {
+                        const { courseOptions } = await getCourseAndStudentOptions();
+                        const data = await showFormModal('Consultar Alumnos del Curso', [
+                            { name: 'courseId', label: 'Curso', type: 'select', options: courseOptions }
+                        ]);
+                        if (!data) return;
+                        const result = await rpcFetch('/getStudentsFromCourse', data);
+                        menu.printResult({ alumnos: result.students });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnNewCalendar').onclick = async function () {
+                    const data = await showFormModal('Configurar Calendario Académico', [
+                        { name: 'academicYear', label: 'Ciclo lectivo', type: 'number' },
+                        { name: 'startDate', label: 'Fecha de inicio', type: 'date' },
+                        { name: 'endDate', label: 'Fecha de fin', type: 'date' },
+                        { name: 'holidays', label: 'Feriados (AAAA-MM-DD separados por coma)', placeholder: '2026-05-25, 2026-07-09' }
+                    ]);
+                    if (!data) return;
+                    data.academicYear = Number(data.academicYear);
+                    data.holidays = data.holidays.split(',').map(function (date) { return date.trim(); }).filter(Boolean);
+                    try {
+                        const res = await rpcFetch('/newAcademicCalendar', data);
+                        menu.printResult({ message: 'Calendario configurado correctamente', calendario: res });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnListCalendars').onclick = async function () {
+                    try {
+                        const calendars = await rpcFetch('/listAcademicCalendars');
+                        menu.printResult({ calendarios: calendars });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnTeacherListCourses').onclick = async function () {
+                    try {
+                        const courses = await rpcFetch('/listCourses');
+                        menu.printResult({ misCursos: courses });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnTakeAttendance').onclick = async function () {
+                    try {
+                        const courses = await rpcFetch('/listCourses');
+                        if (courses.length === 0) {
+                            alert('No tiene cursos asignados.');
+                            return;
+                        }
+                        const selection = await showFormModal('Seleccionar Clase', [
+                            { name: 'courseId', label: 'Curso', type: 'select', options: courses.map(function (course) { return { value: course.courseId, text: course.name }; }) },
+                            { name: 'date', label: 'Fecha de la clase', type: 'date' }
+                        ]);
+                        if (!selection) return;
+
+                        const roster = await rpcFetch('/getAttendanceRoster', selection);
+                        if (roster.students.length === 0) {
+                            alert('El curso no tiene estudiantes inscriptos.');
+                            return;
+                        }
+                        const records = await showAttendanceModal(`Asistencia del ${selection.date}`, roster.students);
+                        if (!records) return;
+                        const result = await rpcFetch('/saveAttendance', {
+                            ...selection,
+                            records
+                        });
+                        menu.printResult({ message: 'Asistencia guardada correctamente', ...result });
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                const showAttendanceReport = async function () {
+                    try {
+                        const courses = await rpcFetch('/listCourses');
+                        if (courses.length === 0) {
+                            alert('No hay cursos disponibles.');
+                            return;
+                        }
+                        const selection = await showFormModal('Consultar Asistencias', [
+                            { name: 'courseId', label: 'Curso', type: 'select', options: courses.map(function (course) { return { value: course.courseId, text: course.name }; }) }
+                        ]);
+                        if (!selection) return;
+                        const report = await rpcFetch('/getAttendanceReport', selection);
+                        menu.printAttendanceReport(report);
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+                document.getElementById('btnAttendanceReport').onclick = showAttendanceReport;
+                document.getElementById('btnTeacherAttendanceReport').onclick = showAttendanceReport;
+
+                // CREAR ESTUDIANTE
+                document.getElementById('btnNewStudent').onclick = async function () {
+                    const data = await showFormModal('Nuevo Estudiante', [
+                        { name: 'name', label: 'Nombre' },
+                        { name: 'surname', label: 'Apellido' },
+                        { name: 'dni', label: 'DNI', type: 'number' }
+                    ]);
+                    if (!data) return;
+                    try {
+                        const res = await rpcFetch('/newStudent', data);
+                        menu.printResult(res);
+                        alert('Estudiante registrado con éxito.');
+                    } catch (e) { alert(`Error: ${e.detail}`); }
+                };
+
+            }
+        }
+
+        customElements.define('main-menu', Menu);
+
+        function main() {
+            document.body.appendChild(new Menu());
+        }
+
+        window.onload = main;
+    </script>
+</html>
