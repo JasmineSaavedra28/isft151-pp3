@@ -1,5 +1,3 @@
-holaaaaaaaaa jazminnnnnnnnnnnnnnnnn
-
 # Sistema de Control de Asistencias Escolares
 
 ## Resumen
