@@ -6,9 +6,81 @@ El Sistema de Control de Asistencias Escolares es una plataforma web orientada a
 
 El sistema busca reemplazar el uso de registros en papel y planillas de cálculo realizadas de forma manual, permitiendo administrar de manera centralizada la información académica y la asistencia de los estudiantes.
 
-La plataforma contempla la gestión de entidades educativas, cursos, asignaturas, comisiones, docentes y estudiantes. También permite definir el calendario académico, registrar las clases dictadas y asociar las asistencias de los estudiantes con las clases efectivamente realizadas.
+El alcance previsto contempla la gestión de entidades educativas, cursos, asignaturas, comisiones, docentes y estudiantes. También define el calendario académico, el registro de clases y la asociación de las asistencias con las clases dictadas.
 
-Además, permite gestionar justificaciones de inasistencias mediante la carga digital de certificados y justificantes, generar alertas ante acumulación de faltas o situaciones de riesgo pedagógico y consultar reportes de asistencia por estudiante, curso o comisión.
+La carga digital de justificantes, las alertas ante acumulación de faltas o situaciones de riesgo pedagógico y los reportes forman parte de los objetivos del sistema; el avance implementado se detalla en la sección de estado actual.
+
+## Estado actual
+
+El repositorio contiene una aplicación web en desarrollo con una interfaz HTML y un backend HTTP en Node.js. Actualmente la interfaz permite iniciar sesión, administrar usuarios, estudiantes y cursos, inscribir estudiantes, configurar calendarios académicos, registrar asistencias y consultar reportes.
+
+Los requerimientos funcionales incluidos más abajo describen el alcance previsto; no todas esas funcionalidades están implementadas todavía en la interfaz.
+
+## Inicio rápido en Windows
+
+### Requisitos
+
+- Node.js 22 o superior.
+- Python 3, disponible como `py` o `python`.
+- Windows PowerShell.
+
+Desde la carpeta raíz del repositorio, ejecutá:
+
+```powershell
+.\levantar_servidores.ps1
+```
+
+El script abre una terminal para el backend en `http://localhost:3000` y otra para el frontend en `http://localhost:8081`. Cuando ambos servidores estén activos, abrí `http://localhost:8081` en el navegador. Si faltan las dependencias del backend, el script ejecuta `npm install` automáticamente.
+
+Si PowerShell bloquea la ejecución del script, podés iniciarlo con:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\levantar_servidores.ps1
+```
+
+### Preparación inicial de la base de datos
+
+La base está en `backend/db.sqlite3`. Para crear el usuario administrador inicial y configurar los permisos, ejecutá una vez desde la raíz:
+
+```powershell
+Set-Location .\backend
+node .\seed.mjs
+Set-Location ..
+```
+
+El usuario inicial es `admin` y su contraseña es `1234`. Cambiá esa contraseña y no uses estas credenciales en un entorno publicado. El script de inicio levanta los dos servidores, pero no ejecuta la carga inicial.
+
+Para detener los servidores, cerrá las ventanas de PowerShell abiertas por el script o presioná `Ctrl+C` en cada una.
+
+### Inicio manual
+
+Si preferís iniciar cada servicio por separado, usá dos terminales desde la raíz del repositorio:
+
+```powershell
+Set-Location .\backend
+npm install
+node .\main.mjs
+```
+
+```powershell
+Set-Location .\frontend
+py -m http.server 8081
+```
+
+Si el comando `py` no está disponible, reemplazalo por `python`.
+
+## Funcionalidades disponibles
+
+- Inicio y cierre de sesión con permisos según el rol.
+- Administración de usuarios: alta, modificación, baja, eliminación y cambio de rol.
+- Gestión de estudiantes: alta, modificación, baja y listado.
+- Gestión de cursos e inscripciones de estudiantes.
+- Calendarios académicos.
+- Registro de asistencia por curso y fecha, con estados y retiros anticipados.
+- Reportes de asistencia por curso, con totales y porcentaje por estudiante.
+- Acceso docente a sus cursos, toma de asistencia y reportes.
+
+Las justificaciones digitales y las alertas pedagógicas forman parte del alcance planteado, pero no están disponibles todavía en la interfaz actual.
 
 ---
 
@@ -302,53 +374,31 @@ El sistema deberá permitir generar reportes de asistencia según estudiante, cu
 
 # Documentación de la API
 
-La especificación inicial de la API se encuentra dentro del directorio:
-
-`api/`
-
----
-
-La especificación de la API funcionará como contrato entre el desarrollo del backend y frontend.
-
-La documentación deberá ser acordada grupalmente y presentada para su revisión por parte del docente antes de avanzar con la implementación.
-
-La API podrá modificarse durante el desarrollo del proyecto. Todo cambio realizado deberá quedar reflejado y actualizado en la documentación correspondiente.
+El backend expone una API HTTP en `http://localhost:3000` y recibe solicitudes `POST`. Las rutas están registradas en `backend/main.mjs`; sus controladores y lógica se encuentran en `backend/handlers.js` y `backend/model.js`.
 
 ---
 
 # Especificación de requerimientos
 
-La documentación detallada de los requerimientos funcionales y no funcionales se encontrará dentro del directorio `srs/`.
-
-En esta carpeta se documentará la especificación de requerimientos del sistema.
+Los requerimientos funcionales y no funcionales de este README describen el alcance definido para el proyecto y pueden incluir funcionalidades pendientes de implementación.
 
 ---
 
 # Testing
 
-Todo el material relacionado con pruebas y testing se almacenará dentro del directorio `testing/`.
-
-La carpeta podrá contener:
-
-- Casos de prueba.
-- Pruebas unitarias.
-- Datos de prueba.
-- Scripts para generar condiciones de prueba.
-- Evidencias de testing.
-
-Las pruebas deberán permitir verificar el correcto funcionamiento de los requerimientos implementados.
+Actualmente no hay una suite de pruebas ejecutable documentada. Aunque `backend/package.json` declara `npm test`, el comando falla porque intenta cargar `backend/run`, que no existe.
 
 ---
 
 # Release
 
-La carpeta `release/` contendrá los scripts necesarios para preparar el entorno y realizar el despliegue del proyecto en producción.
+`levantar_servidores.ps1` inicia el entorno de desarrollo local; no configura un despliegue de producción.
 
 ---
 
 # Media
 
-La carpeta `media/` contendrá el material destinado a la difusión institucional del proyecto.
+No hay actualmente una carpeta `media/` en el repositorio.
 
 ---
 
@@ -409,95 +459,54 @@ Ejemplos:
     │
     ├── README.md
     ├── LICENSE
-    ├── .gitignore
-    │
-    ├── api/
-    │   └── README.md
-    │
-    ├── srs/
-    │   └── README.md
-    │
-    ├── media/
-    │   └── README.md
-    │
-    ├── testing/
-    │   └── README.md
-    │
-    ├── release/
-    │   └── README.md
-    │
+    ├── levantar_servidores.ps1
+    ├── levantar_servidores.sh
+    ├── levantar_apache.sh
+    ├── levantar_node.sh
     ├── backend/
-    │   └── README.md
-    │
+    │   ├── main.mjs
+    │   ├── handlers.js
+    │   ├── model.js
+    │   ├── database.js
+    │   ├── config.json
+    │   ├── seed.mjs
+    │   └── db.sqlite3
     └── frontend/
-        └── README.md
-
-A medida que avance el desarrollo, cada directorio incorporará los archivos correspondientes a su función.
-
-No se mantendrán directorios vacíos en el repositorio.
+        ├── index.html
+        └── WebComponentes(LoginyForms)/
 
 ---
 
 # Tecnologías
 
-Las tecnologías definitivas serán establecidas durante la etapa de diseño e implementación del proyecto.
-
-Actualmente se encuentran en definición.
+- Backend: Node.js con módulos ES y servidor HTTP nativo.
+- Persistencia: SQLite mediante `node:sqlite`.
+- Frontend: HTML, CSS y JavaScript; servidor estático de desarrollo de Python.
+- Dependencia del backend: `sqlite3`.
 
 ---
 
 # Instalación
 
-Las instrucciones de instalación y configuración serán incorporadas una vez definidas las tecnologías utilizadas para el desarrollo.
-
-## Requisitos
-
-Los requisitos necesarios para ejecutar el proyecto serán documentados durante la etapa de implementación.
+Para requisitos e instrucciones de inicio, consultá [Inicio rápido en Windows](#inicio-rápido-en-windows). El script de Windows instala las dependencias de Node cuando no existe `backend/node_modules`.
 
 ---
 
 # Despliegue
 
-Las instrucciones de despliegue serán documentadas dentro del directorio `release/`.
-
-Allí se incluirán los scripts necesarios para preparar el entorno y realizar el despliegue del sistema en producción.
+El repositorio contiene scripts para levantar servicios localmente. No incluye configuración de despliegue a producción.
 
 ---
 
 # Ejecución de pruebas
 
-Las instrucciones para ejecutar las pruebas serán documentadas dentro del directorio `testing/`.
+La ejecución de pruebas queda pendiente hasta incorporar la suite y corregir el comando `test` de `backend/package.json`.
 
 ---
 
 # Change Log
 
-## [0.1.0] - Inicio del proyecto
-
-- Creación del repositorio.
-- Definición inicial del proyecto.
-- Definición de requerimientos funcionales.
-- Definición de requerimientos no funcionales.
-- Definición inicial de la estructura del repositorio.
-- Incorporación de la planilla de supervisión y seguimiento.
-
-## [0.2.0] - Documentación inicial
-
-- Incorporación de la especificación de requerimientos.
-- Incorporación de la documentación inicial de la API.
-- Definición de las convenciones de desarrollo.
-
-## [0.3.0] - Implementación inicial
-
-- Incorporación de las primeras funcionalidades del backend.
-- Incorporación de las primeras funcionalidades del frontend.
-
-## [1.0.0] - Versión inicial
-
-- Implementación de las funcionalidades principales.
-- Incorporación de pruebas.
-- Preparación del despliegue.
-- Versión inicial del sistema.
+El sistema continúa en desarrollo. Consultá la sección [Estado actual](#estado-actual) para ver las funcionalidades disponibles.
 
 ---
 
