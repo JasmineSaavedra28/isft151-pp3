@@ -111,250 +111,280 @@ En ella se detallan los requerimientos funcionales, responsables, plazos tentati
 
 # Requerimientos funcionales
 
+Los siguientes requerimientos se alinean con el borrador de contratos de API documentado en la sección posterior. Los nombres entre paréntesis son las rutas propuestas; no significan que ya estén implementadas. El estado actual del backend se aclara en cada requisito cuando corresponde.
+
 ## RF1. Gestión de usuarios
 
-El sistema deberá permitir gestionar los usuarios que interactúan con la plataforma.
+El sistema deberá gestionar las cuentas y roles de profesores/docentes y preceptores. La lista definitiva de roles debe acordarse con el contrato de API.
 
 ### 1.1. Registro de usuarios
 
-El sistema deberá permitir registrar nuevos usuarios.
+El sistema deberá permitir registrar usuarios (`/registerUser`). La propuesta recibe `name`, `email`, `password` y `role`. El backend actual implementa `/registerUser`, pero recibe `username`, `password` y `role`.
 
-### 1.2. Consulta de usuarios
+### 1.2. Deshabilitación de usuarios
 
-El sistema deberá permitir listar y consultar los usuarios registrados.
+El sistema deberá permitir deshabilitar usuarios por identificador (`/disableUser`). Esta ruta está implementada.
 
-### 1.3. Modificación de usuarios
+### 1.3. Asignación de roles
 
-El sistema deberá permitir modificar los datos de los usuarios.
+El sistema deberá permitir asignar un rol a un usuario (`/assignUserRole`). El contrato propuesto usa un único campo `role`; la ruta no está implementada. Debe confirmarse si se necesitan roles múltiples, como sugiere la tabla funcional.
 
-### 1.4. Deshabilitación de usuarios
+### 1.4. Modificación de roles
 
-El sistema deberá permitir deshabilitar usuarios.
+El sistema deberá permitir modificar el rol de un usuario (`/updateUserRole`), con el campo `newRole`. Esta ruta está implementada para un rol individual.
 
-### 1.5. Gestión de roles
+## RF2. Gestión de estudiantes y nóminas
 
-El sistema deberá permitir asignar y modificar los roles de los usuarios.
+El sistema deberá gestionar estudiantes y las nóminas que los agrupan para su asignación académica.
 
-Los roles contemplados son:
+### 2.1. Creación de nóminas vacías
 
-- Profesor.
-- Preceptor.
-- Secretario.
-- Inspector.
+El sistema deberá permitir crear una nómina vacía (`/newStudentList`). La ruta está propuesta en la API, pero todavía no está implementada.
 
----
+### 2.2. Registro de estudiantes en nóminas
 
-## RF2. Gestión de entidades educativas
+El sistema deberá permitir registrar estudiantes (`/newStudent`) y agregar estudiantes existentes a una nómina (`/addStudentToList`). `/newStudent` está implementada; las rutas de nóminas no.
 
-El sistema deberá permitir gestionar las entidades educativas.
+### 2.3. Traslado de estudiantes
 
-### 2.1. Registro de entidades educativas
+El sistema deberá permitir trasladar un estudiante entre nóminas (`/moveStudentFromList`). Si el traslado se entiende entre cursos, debe acordarse cómo se relaciona con `/assignCourse` y con la inscripción individual actual (`/enrollStudent`).
 
-El sistema deberá permitir registrar entidades educativas.
+### 2.4. Baja de estudiantes
 
-### 2.2. Consulta de entidades educativas
-
-El sistema deberá permitir listar y consultar entidades educativas.
-
-### 2.3. Modificación de entidades educativas
-
-El sistema deberá permitir modificar los datos de las entidades educativas.
-
-### 2.4. Deshabilitación de entidades educativas
-
-El sistema deberá permitir deshabilitar entidades educativas.
-
----
+El sistema deberá permitir dar de baja un estudiante (`/deleteStudent`). La ruta está implementada y realiza una baja lógica, no un borrado físico.
 
 ## RF3. Gestión de cursos
 
-El sistema deberá permitir gestionar los cursos y su estructura.
+El sistema deberá gestionar cursos y su composición.
 
 ### 3.1. Registro de cursos
 
-El sistema deberá permitir registrar cursos.
+El sistema deberá permitir registrar cursos (`/newCourse`). La ruta está implementada, aunque el backend actual recibe `name`, `professorId`, `startDate` y `endDate`, distintos de `year`, `division` y `shift` propuestos.
 
-### 3.2. Consulta de cursos
+### 3.2. Asignación de nóminas a cursos
 
-El sistema deberá permitir listar y consultar cursos.
-
-### 3.3. Modificación de cursos
-
-El sistema deberá permitir modificar los datos de los cursos.
-
-### 3.4. Gestión de comisiones
-
-El sistema deberá permitir crear y gestionar subgrupos o comisiones de un curso.
-
-### 3.5. Asociación de docentes
-
-El sistema deberá permitir asociar uno o más docentes a cursos y comisiones.
-
-### 3.6. Gestión de nóminas
-
-El sistema deberá permitir gestionar la nómina de estudiantes correspondiente a cada curso o comisión.
-
----
+El sistema deberá permitir asignar una nómina a un curso (`/assignCourse`). La ruta está propuesta; el backend actual inscribe estudiantes individualmente mediante `/enrollStudent`.
 
 ## RF4. Gestión de asignaturas
 
-El sistema deberá permitir gestionar las asignaturas de las entidades educativas.
+El sistema deberá gestionar asignaturas y sus relaciones académicas.
 
-### 4.1. Registro de asignaturas
+### 4.1. Creación de asignaturas
 
-El sistema deberá permitir registrar asignaturas.
+El sistema deberá permitir crear asignaturas (`/newSubject`).
 
-### 4.2. Consulta de asignaturas
+### 4.2. Asociación de asignaturas y docentes
 
-El sistema deberá permitir listar y consultar asignaturas.
+El sistema deberá permitir asignar docentes a asignaturas (`/assignSubjectProfessor`).
 
-### 4.3. Modificación de asignaturas
+### 4.3. Asociación de asignaturas y cursos
 
-El sistema deberá permitir modificar los datos de las asignaturas.
+El sistema deberá permitir asociar asignaturas a cursos (`/assignSubjectCourse`).
 
-### 4.4. Asociación de asignaturas
+Las tres rutas de este RF están propuestas, pero no están registradas en el backend actual.
 
-El sistema deberá permitir asociar asignaturas con cursos y comisiones.
+## RF5. Gestión del calendario académico y horarios
 
----
+El sistema deberá definir el período lectivo y los horarios de dictado.
 
-## RF5. Gestión del calendario académico
+### 5.1. Fechas válidas de cursada
 
-El sistema deberá permitir gestionar el calendario académico correspondiente al ciclo lectivo.
+El sistema deberá permitir definir el período académico, las fechas de inicio y fin y los feriados (`/setValidClassDates`). La ruta actual equivalente es `/newAcademicCalendar`, que recibe `academicYear`, `startDate`, `endDate` y `holidays`.
 
-### 5.1. Configuración del ciclo lectivo
+### 5.2. Horarios de cursos
 
-El sistema deberá permitir establecer el ciclo lectivo.
+El sistema deberá permitir asignar horarios a cursos (`/assignCourseSchedule`).
 
-### 5.2. Definición de fechas
+### 5.3. Horarios de asignaturas
 
-El sistema deberá permitir definir las fechas válidas para el dictado de clases.
+El sistema deberá permitir asignar horarios de una asignatura dentro de un curso (`/assignSubjectSchedule`).
 
-### 5.3. Registro de clases
+Las rutas de horarios están propuestas, pero todavía no están implementadas.
 
-El sistema deberá permitir registrar las clases dictadas por asignatura y comisión.
+## RF6. Gestión de asistencias
 
-### 5.4. Consulta de clases
+El sistema deberá registrar asistencia y vincularla con el dictado efectivo de clases.
 
-El sistema deberá permitir consultar las clases programadas y efectivamente dictadas.
+### 6.1. Validación del dictado por asistencia docente
 
----
+El sistema deberá validar el dictado efectivo de una clase mediante la asistencia docente (`/registerProfessorAttendance`). Esta ruta todavía no está implementada.
 
-## RF6. Gestión de estados
+### 6.2. Registro de asistencia de estudiantes
 
-El sistema deberá permitir gestionar los estados correspondientes a las asistencias y justificaciones.
+El sistema deberá permitir registrar la asistencia de estudiantes (`/registerStudentAttendance`). El backend actual usa `/getAttendanceRoster` para obtener la nómina del día y `/saveAttendance` para guardar registros; la ruta propuesta aún no está implementada.
 
-### 6.1. Estados de asistencia
+### 6.3. Vinculación de asistencias con clases
 
-El sistema deberá permitir gestionar los estados correspondientes a los registros de asistencia.
+El sistema deberá vincular los registros con una clase dictada (`/linkAttendanceToClass`). Esta operación no tiene una ruta implementada en el backend actual.
 
-### 6.2. Estados de justificación
+### 6.4. Corrección de asistencias
 
-El sistema deberá permitir gestionar los estados correspondientes a las justificaciones de inasistencias.
+El sistema deberá permitir corregir registros con los permisos correspondientes (`/modifyAttendance`). La ruta propuesta no está implementada.
 
-### 6.3. Consulta de estados
+### 6.5. Cálculo del porcentaje de asistencia
 
-El sistema deberá permitir consultar el estado actual de una asistencia o justificación.
+El sistema deberá calcular el porcentaje de asistencia de cada estudiante (`/calculateAttendancePercentage`). Actualmente el porcentaje se incluye en el reporte de curso `/getAttendanceReport`; no existe una ruta independiente de cálculo.
 
----
+## RF7. Gestión de inasistencias y justificaciones
 
-## RF7. Gestión de asistencias
+El sistema deberá registrar inasistencias y administrar la presentación y resolución de sus justificaciones.
 
-El sistema deberá permitir gestionar el control de asistencia de los estudiantes.
+### 7.1. Registro de inasistencias
 
-### 7.1. Registro de asistencia
+El sistema deberá registrar inasistencias (`/registerAbsence`).
 
-El sistema deberá permitir registrar la asistencia de los estudiantes.
+### 7.2. Gestión de justificaciones
 
-### 7.2. Registro de inasistencias
+El sistema deberá actualizar el estado administrativo de una justificación (`/manageJustification`).
 
-El sistema deberá permitir registrar las inasistencias de los estudiantes.
+### 7.3. Carga de certificados
 
-### 7.3. Registro de retiros anticipados
+El sistema deberá permitir cargar certificados (`/uploadCertificate`). El mecanismo de carga de archivos debe definirse; el borrador solo incluye `fileUrl`.
 
-El sistema deberá permitir registrar retiros anticipados de los estudiantes.
+### 7.4. Asociación de justificaciones
 
-### 7.4. Vinculación con clases
+El sistema deberá asociar una justificación con el estudiante y la inasistencia correspondientes (`/assignJustification`).
 
-El sistema deberá vincular los registros de asistencia con las clases efectivamente dictadas.
+### 7.5. Consulta de justificaciones
 
-### 7.5. Modificación de asistencias
+El sistema deberá permitir consultar las justificaciones de un estudiante (`/listJustifications`).
 
-El sistema deberá permitir modificar los registros de asistencia según los permisos correspondientes.
+### 7.6. Resolución de inasistencias
 
-### 7.6. Cálculo de porcentaje
+El sistema deberá permitir justificar una inasistencia según corresponda (`/justifyAbsence`).
 
-El sistema deberá calcular automáticamente el porcentaje de asistencia de cada estudiante sobre el total real de clases dictadas.
+Las rutas de este RF están propuestas, pero no están implementadas en el backend actual.
 
----
+## RF8. Configuración de alertas
 
-## RF8. Gestión de justificaciones de inasistencias
+El sistema deberá permitir configurar los umbrales que determinan cuándo se generan alertas (`/configAlert`). La ruta no está implementada.
 
-El sistema deberá permitir gestionar las justificaciones correspondientes a las inasistencias de los estudiantes.
+## RF9. Generación y asociación de alertas
 
-### 8.1. Carga de certificados
+El sistema deberá detectar situaciones de inasistencia o riesgo pedagógico y vincularlas con los estudiantes.
 
-El sistema deberá permitir cargar certificados y justificantes digitales.
+### 9.1. Alertas por porcentaje de asistencia
 
-### 8.2. Asociación con estudiantes
+El sistema deberá evaluar umbrales de asistencia y generar alertas (`/generateAlert`).
 
-El sistema deberá asociar los justificantes con el estudiante correspondiente.
+### 9.2. Alertas por acumulación de inasistencias
 
-### 8.3. Consulta de justificaciones
+El sistema deberá generar alertas por acumulación de inasistencias (`/generateAlertAccumulation`).
 
-El sistema deberá permitir consultar las justificaciones registradas.
+### 9.3. Alertas por riesgo pedagógico
 
-### 8.4. Gestión del estado
+El sistema deberá registrar alertas por situaciones de riesgo pedagógico (`/generateAlertPedagogical`).
 
-El sistema deberá permitir gestionar el estado de las justificaciones.
+### 9.4. Asociación de alertas con estudiantes
 
----
+El sistema deberá asociar alertas con los estudiantes correspondientes (`/associateAlertToStudent`).
 
-## RF9. Generación de alertas
+### 9.5. Alertas por cesantía o pérdida de regularidad
 
-El sistema deberá generar alertas relacionadas con la asistencia y situaciones de riesgo pedagógico.
+El sistema deberá generar alertas por acumulación de inasistencias que pueda derivar en pérdida de regularidad (`/generateOutAlert`).
 
-### 9.1. Alertas por inasistencias
+Las rutas de este RF están propuestas, pero no están implementadas en el backend actual.
 
-El sistema deberá generar alertas ante la acumulación de inasistencias.
+## RF10. Consulta de reportes, alertas y estados
 
-### 9.2. Alertas por riesgo pedagógico
+El sistema deberá permitir consultar los reportes de asistencia, las alertas y los estados asociados.
 
-El sistema deberá generar alertas ante situaciones de riesgo pedagógico.
+### 10.1. Reportes de asistencia
 
-### 9.3. Asociación de alertas
+El sistema deberá gestionar reportes de asistencia. El backend actual implementa `/getAttendanceReport`, que recibe `courseId` y devuelve el reporte del curso.
 
-El sistema deberá asociar las alertas con los estudiantes correspondientes.
+### 10.2. Consulta por estudiante
 
-### 9.4. Consulta de alertas
+El sistema deberá permitir consultar el estado de asistencia de un estudiante. Falta definir la ruta y el contrato de consulta individual.
 
-El sistema deberá permitir consultar las alertas generadas.
+### 10.3. Consulta por curso o comisión
 
----
+El sistema deberá permitir consultar asistencias por curso o comisión. Actualmente se cubre el reporte por curso mediante `/getAttendanceReport`; el contrato propuesto debe especificar si admite comisión.
 
-## RF10. Gestión de reportes de asistencia
+### 10.4. Porcentajes de asistencia
 
-El sistema deberá permitir consultar y generar reportes relacionados con la asistencia.
+El sistema deberá permitir visualizar porcentajes de asistencia. Actualmente se incluyen en `/getAttendanceReport`.
 
-### 10.1. Reporte por estudiante
+### 10.5. Consulta de alertas
 
-El sistema deberá permitir consultar el estado de asistencia de un estudiante.
+El sistema deberá permitir consultar alertas asociadas a estudiantes. Falta definir un endpoint de listado/consulta; las rutas propuestas actualmente generan o asocian alertas.
 
-### 10.2. Reporte por curso
+### 10.6. Filtros de reportes
 
-El sistema deberá permitir consultar las asistencias de un curso o comisión.
+El sistema deberá permitir generar reportes por estudiante, curso, comisión y período. La API actual solo define el reporte por `courseId`; faltan los filtros y contratos restantes.
 
-### 10.3. Porcentajes de asistencia
+### 10.7. Gestión de estados
 
-El sistema deberá permitir visualizar los porcentajes de asistencia de los estudiantes.
+El sistema deberá gestionar los estados de asistencias y justificaciones. Los valores permitidos y las transiciones deben definirse en el contrato.
 
-### 10.4. Consulta de alertas
+### 10.8. Consulta y actualización de estados
 
-El sistema deberá permitir consultar las alertas asociadas a los estudiantes.
+El sistema deberá permitir consultar y actualizar el estado según las acciones realizadas y los permisos del usuario. Faltan endpoints y reglas de transición en la API propuesta.
 
-### 10.5. Generación de reportes
+## RF11. Gestión de clases
 
-El sistema deberá permitir generar reportes de asistencia según estudiante, curso, comisión y período.
+El sistema deberá gestionar las clases asociadas a cursos, asignaturas, docentes y fechas. Este requerimiento está incompleto y pendiente de definición funcional.
+
+La API usa `classId` en algunos contratos, pero todavía no define operaciones para crear, consultar, modificar o cancelar clases. Antes de implementarlo hay que acordar esas operaciones y su relación con calendarios, horarios y asistencia.
+
+- `/newSubject` (Administrador): crea una asignatura. Request `{ "name": "string", "code": "string", "weeklyHours": "number" }` -> Response `{ "subjectId": "string", "name": "string", "code": "string", "weeklyHours": "number" }`.
+- `/deleteSubject` (Administrador): elimina una asignatura. Request `{ "subjectId": "string" }` -> Response `{ "success": "boolean" }`.
+- `/modifySubject` (Administrador): modifica una asignatura. Request `{ "subjectId": "string", "name": "string", "code": "string", "weeklyHours": "number" }` -> Response `{ "subjectId": "string", "name": "string", "code": "string", "weeklyHours": "number", "success": "boolean" }`.
+- `/assignSubjectProfessor` (Administrador, Preceptor): asigna un docente. Request `{ "subjectId": "string", "professorId": "string" }` -> Response `{ "subjectId": "string", "professorId": "string", "success": "boolean" }`.
+- `/assignSubjectCourse` (Administrador, Preceptor): vincula la asignatura con un curso. Request `{ "subjectId": "string", "courseId": "string" }` -> Response `{ "subjectId": "string", "courseId": "string", "success": "boolean" }`.
+
+### Calendario y horarios
+
+- `/setValidClassDates` (Administrador): define fechas lectivas y feriados. Request `{ "academicTerm": "string", "startDate": "string", "endDate": "string", "holidays": ["string"] }` -> Response `{ "calendarId": "string", "academicTerm": "string", "totalValidDays": "number", "success": "boolean" }`.
+- `/assignCourseSchedule` (Preceptor, Administrador): asigna horarios generales a un curso. Request `{ "courseId": "string", "schedule": [{ "dayOfWeek": "string", "startTime": "string", "endTime": "string" }] }` -> Response `{ "courseId": "string", "scheduleAssigned": "boolean" }`.
+- `/assignSubjectSchedule` (Preceptor, Administrador): asigna horarios de una asignatura en un curso. Request `{ "courseId": "string", "subjectId": "string", "schedule": [{ "dayOfWeek": "string", "startTime": "string", "endTime": "string", "classroom": "string" }] }` -> Response `{ "courseId": "string", "subjectId": "string", "scheduleAssigned": "boolean" }`.
+
+### Asistencias
+
+- `/registerProfessorAttendance` (Preceptor, Administrador, Docente): registra asistencia docente y valida el dictado. Request `{ "professorId": "string", "classId": "string", "date": "string", "status": "string" }` -> Response `{ "professorAttendanceId": "string", "classId": "string", "classConducted": "boolean" }`.
+- `/registerStudentAttendance` (Docente, Preceptor): registra la asistencia de un estudiante. Request `{ "studentId": "string", "classId": "string", "status": "string" }` -> Response `{ "attendanceId": "string", "studentId": "string", "status": "string" }`.
+- `/linkAttendanceToClass` (Preceptor, Docente): vincula registros con una clase. Request `{ "classId": "string", "attendanceIds": ["string"] }` -> Response `{ "classId": "string", "linkedCount": "number", "success": "boolean" }`.
+- `/modifyAttendance` (Preceptor, Administrador): corrige un registro conservando auditoría. Request `{ "attendanceId": "string", "userId": "string", "newStatus": "string", "reason": "string" }` -> Response `{ "attendanceId": "string", "updatedStatus": "string", "modifiedBy": "string", "success": "boolean" }`.
+- `/calculateAttendancePercentage` (Docente, Preceptor, Estudiante): calcula el porcentaje de asistencia. Request `{ "studentId": "string", "subjectId": "string" }` -> Response `{ "studentId": "string", "subjectId": "string", "totalClasses": "number", "attendedClasses": "number", "percentage": "number" }`.
+
+### Inasistencias y justificaciones
+
+- `/registerAbsence` (Preceptor, Docente): registra una inasistencia. Request `{ "studentId": "string", "date": "string", "type": "string", "subjectId": "string" }` -> Response `{ "absenceId": "string", "studentId": "string", "date": "string", "justified": "boolean" }`.
+- `/manageJustification` (Preceptor, Administrador): actualiza el estado de una justificación. Request `{ "absenceId": "string", "status": "string", "reason": "string" }` -> Response `{ "justificationId": "string", "absenceId": "string", "status": "string" }`.
+- `/uploadCertificate` (Preceptor, Estudiante): carga el certificado asociado a una falta. Request `{ "absenceId": "string", "fileUrl": "string", "documentType": "string", "notes": "string" }` -> Response `{ "certificateId": "string", "absenceId": "string", "uploadedAt": "string" }`.
+- `/assignJustification` (Preceptor): vincula la justificación con el estudiante y la inasistencia. Request `{ "studentId": "string", "absenceId": "string", "justificationId": "string" }` -> Response `{ "studentId": "string", "absenceId": "string", "justificationId": "string", "success": "boolean" }`.
+- `/listJustifications` (Preceptor, Docente, Administrador): consulta justificaciones de un estudiante. Request `{ "studentId": "string" }` -> Response `{ "studentId": "string", "justifications": [{ "justificationId": "string", "absenceId": "string", "date": "string", "status": "string", "reason": "string", "certificateUrl": "string" }] }`.
+- `/justifyAbsence` (Preceptor, Administrador): resuelve una inasistencia como justificada. Request `{ "absenceId": "string", "justificationId": "string" }` -> Response `{ "absenceId": "string", "isJustified": "boolean", "success": "boolean" }`.
+
+### Configuración de alertas
+
+- `/configAlert` (Administrador): define umbrales institucionales. Request `{ "minAttendancePercentage": "number", "maxConsecutiveAbsences": "number", "maxTotalAbsencesAllowed": "number", "pedagogicalRiskThreshold": "number" }` -> Response `{ "configId": "string", "minAttendancePercentage": "number", "maxConsecutiveAbsences": "number", "maxTotalAbsencesAllowed": "number", "pedagogicalRiskThreshold": "number", "success": "boolean" }`.
+
+### Alertas
+
+- `/generateAlert` (Sistema, Preceptor): evalúa alertas por porcentaje de asistencia. Request `{ "studentId": "string", "subjectId": "string" }` -> Response `{ "alertId": "string", "studentId": "string", "alertType": "string", "currentPercentage": "number", "threshold": "number", "triggered": "boolean" }`.
+- `/generateAlertAccumulation` (Sistema, Preceptor): evalúa acumulación de inasistencias. Request `{ "courseId": "string", "studentId": "string" }` -> Response `{ "alertId": "string", "studentId": "string", "courseId": "string", "totalAbsences": "number", "alertType": "string", "triggered": "boolean" }`.
+- `/generateAlertPedagogical` (Docente, Preceptor, Sistema): registra una alerta de riesgo pedagógico. Request `{ "studentId": "string", "totalAbsences": "number", "reason": "string" }` -> Response `{ "alertId": "string", "studentId": "string", "alertType": "string", "severity": "string", "triggered": "boolean" }`.
+- `/associateAlertToStudent` (Sistema, Preceptor): asocia una alerta con un estudiante. Request `{ "studentId": "string", "alertId": "string" }` -> Response `{ "studentId": "string", "alertId": "string", "assigned": "boolean" }`.
+- `/generateOutAlert` (Sistema, Preceptor): genera una alerta por posible pérdida de regularidad. Request `{ "studentId": "string" }` -> Response `{ "alertId": "string", "studentId": "string", "alertType": "string", "totalAbsences": "number", "status": "string", "triggered": "boolean" }`.
+
+### Pendientes de revisión del contrato
+
+- `/assignUserRole` y `/updateUserRole` se superponen; definir si son operaciones distintas o si se conserva una sola.
+- Resolver los endpoints de consulta de estudiantes en una nómina y usar el término **nómina** consistentemente. Si se conserva el inglés en rutas, evaluar `Roster` en lugar de `List`.
+- Definir método HTTP, autenticación, errores y códigos de respuesta para cada contrato. El backend actual solo acepta `POST` para sus rutas de API.
+- Unificar los campos de usuario: esta propuesta usa `name` y `email`, mientras que el backend actual recibe `username`.
+- Unificar el nombre de listado de cursos: el borrador propone `/listCourse`; el backend actual expone `/listCourses`.
+- Confirmar si `/registerProfessorAttendance` registra asistencia del docente o si la asistencia a registrar es la del curso/clase.
+- Unificar los roles: los requerimientos originales mencionan Profesor, Preceptor, Secretario e Inspector; el borrador usa Docente, Preceptor, Administrador y Estudiante; la interfaz actual ofrece Administrador, Preceptor y Docente.
+- El borrador no define rutas para entidades educativas, listado de usuarios ni modificación de datos de usuario, aunque aparecen en otros requerimientos o en la aplicación.
+- Las rutas actuales de asistencia son `/getAttendanceRoster`, `/saveAttendance` y `/getAttendanceReport`; deben mapearse con las operaciones propuestas para registrar, vincular y modificar asistencias.
+- Definir el formato y las restricciones de fechas, horarios, estados y roles, además de la forma de carga de archivos de certificados.
+- Revisar si los atributos de tipo `number` y `boolean` se escriben como tipos JSON (`number`, `true`/`false`) y no como strings en los ejemplos de contrato.
+
+### Diferencia con el backend actual
+
+Las rutas propuestas arriba no implican que estén implementadas. El backend actual registra autenticación, gestión básica de usuarios y estudiantes, cursos, inscripciones, calendarios y asistencias/reportes. Aún no registra las rutas de nóminas, asignaturas, horarios, justificaciones ni alertas descritas en este borrador. Las rutas efectivamente disponibles se pueden verificar en `backend/main.mjs`.
 
 ---
 
