@@ -40,6 +40,40 @@
         .notification.warning { border-left-color: var(--warning); }
         .notification strong { display: block; margin-bottom: 2px; }
         .empty-state { padding: 24px; border: 1px dashed #bcc7d0; border-radius: 8px; color: var(--muted); text-align: center; }
+        dialog.attendance-modal { width: min(980px, 94vw); }
+        .attendance-toolbar { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px; margin-bottom: 16px; }
+        .attendance-context { min-width: 0; }
+        .attendance-context strong { display: block; font-size: 1.05rem; }
+        .attendance-context span { color: var(--muted); font-size: 13px; }
+        .attendance-summary { display: grid; grid-template-columns: repeat(4, minmax(72px, 1fr)); gap: 8px; }
+        .summary-item { border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; background: #f8fafb; }
+        .summary-item span { display: block; color: var(--muted); font-size: 12px; }
+        .summary-item strong { display: block; margin-top: 2px; font-size: 1.25rem; }
+        .attendance-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .attendance-actions button { min-height: 36px; background: #eaf3f6; color: var(--primary); border-color: #bad8e2; }
+        .attendance-row { display: grid; grid-template-columns: minmax(180px, 1fr) repeat(4, 92px); align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+        .attendance-row.header-row { position: sticky; top: 0; z-index: 1; border-bottom: 2px solid #b8c4cc; background: #f5f7f8; font-size: 12px; font-weight: 700; }
+        .attendance-student strong { display: block; }
+        .attendance-student span { color: var(--muted); font-size: 12px; }
+        .status-options { display: grid; grid-template-columns: repeat(4, 92px); gap: 8px; }
+        .status-option input { position: absolute; opacity: 0; pointer-events: none; }
+        .status-option span { display: grid; min-height: 36px; place-items: center; border: 1px solid var(--line); border-radius: 6px; background: white; color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 700; }
+        .status-option input:checked + span { border-color: var(--primary); background: var(--primary); color: white; }
+        .status-option input[value="absent"]:checked + span { border-color: var(--danger); background: var(--danger); }
+        .status-option input[value="late"]:checked + span { border-color: var(--warning); background: var(--warning); }
+        .early-option input:checked + span { border-color: #7a5af8; background: #7a5af8; color: white; }
+        .attendance-dirty { color: var(--warning); }
+
+        @media (max-width: 800px) {
+            #attendanceReportTable.report-table-wrap {
+                width: 100%;
+                max-width: 100%;
+                overflow-x: hidden;
+            }
+            #attendanceReportTable .report-desktop { display: none; }
+            #attendanceReportTable .report-mobile { display: grid; gap: 10px; }
+            #attendanceReportCard { padding: 14px; }
+        }
 
         @media (max-width: 640px) {
             main-menu { padding: 14px; }
@@ -51,6 +85,13 @@
             .card-actions { display: grid; grid-template-columns: 1fr; }
             .card-actions button { width: 100%; margin: 0; }
             .dialog-actions { display: grid; grid-template-columns: 1fr 1fr; }
+            .attendance-toolbar { grid-template-columns: 1fr; }
+            .attendance-summary { grid-template-columns: repeat(2, 1fr); }
+            .attendance-row { grid-template-columns: 1fr auto; padding: 12px 8px; }
+            .attendance-row.header-row { display: none; }
+            .status-options { grid-column: 1 / -1; grid-template-columns: repeat(4, 1fr); }
+            .status-option span { min-height: 42px; }
+            .attendance-actions button { flex: 1 1 130px; }
         }
 
         dialog { border: none; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); padding: 25px; width: 440px; max-width: 90%; }
@@ -74,6 +115,32 @@
         .report-table th:first-child, .report-table td:first-child { text-align: left; position: sticky; left: 0; background: white; }
         .report-table th:first-child { background: #ecf0f1; }
         .report-table .report-empty { color: #7f8c8d; }
+        .attendance-date-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+        .attendance-mobile-item { width: 100%; min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+        .attendance-mobile-item header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+        .attendance-mobile-item h4 { margin: 0; font-size: 15px; }
+        .attendance-mobile-item .percentage { color: var(--primary); font-size: 18px; font-weight: 800; }
+        .mobile-attendance-statuses { min-width: 0; width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-bottom: 10px; }
+        .mobile-status { border-radius: 6px; padding: 7px 4px; background: #f5f7f8; text-align: center; }
+        .mobile-status span { display: block; color: var(--muted); font-size: 11px; }
+        .mobile-status strong { font-size: 16px; }
+        .mobile-session-list { min-width: 0; width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+        .mobile-session { border: 1px solid var(--line); border-radius: 6px; padding: 7px 5px; text-align: center; }
+        .mobile-session span { display: block; color: var(--muted); font-size: 10px; }
+        .mobile-session strong { display: block; margin-top: 3px; }
+        .report-mobile-legend { color: var(--muted); font-size: 12px; }
+
+        #attendanceReportTable .report-desktop { display: table; }
+        #attendanceReportTable .report-mobile { display: none; }
+        @media (max-width: 800px) {
+            #attendanceReportTable.report-table-wrap {
+                width: 100%;
+                max-width: 100%;
+                overflow-x: hidden;
+            }
+            #attendanceReportTable .report-desktop { display: none; }
+            #attendanceReportTable .report-mobile { display: grid; gap: 10px; }
+        }
     </style>
 </head>
 <body></body>
@@ -213,57 +280,112 @@
             });
         }
 
-        function showAttendanceModal(title, students) {
+        function showAttendanceModal(courseName, date, students) {
             return new Promise(function (resolve) {
                 const modal = document.getElementById('formModal');
                 const modalBody = document.getElementById('modalBody');
-                document.getElementById('modalTitle').textContent = title;
+                document.getElementById('modalTitle').textContent = 'Tomar asistencia';
                 modal.classList.add('attendance-modal');
-                while (modalBody.firstChild) {
-                    modalBody.removeChild(modalBody.firstChild);
-                }
-                const tableWrap = document.createElement('div');
-                tableWrap.className = 'attendance-table-wrap';
-                const table = document.createElement('table');
-                table.className = 'attendance-table';
-                const thead = document.createElement('thead');
-                const headerRow = document.createElement('tr');
-                ['Estudiante', 'Estado', 'Retiro'].forEach(function (label) {
-                    const cell = document.createElement('th');
-                    cell.textContent = label;
-                    headerRow.appendChild(cell);
+                while (modalBody.firstChild) modalBody.removeChild(modalBody.firstChild);
+
+                const toolbar = createElement('div', { className: 'attendance-toolbar' });
+                const context = createElement('div', { className: 'attendance-context' });
+                context.appendChild(createElement('strong', { textContent: courseName }));
+                context.appendChild(createElement('span', { textContent: `Clase del ${date.split('-').reverse().join('/')} · ${students.length} estudiantes` }));
+                toolbar.appendChild(context);
+
+                const summary = createElement('div', { className: 'attendance-summary' });
+                const summaryValues = {
+                    present: createElement('strong', { textContent: '0' }),
+                    absent: createElement('strong', { textContent: '0' }),
+                    late: createElement('strong', { textContent: '0' }),
+                    early: createElement('strong', { textContent: '0' })
+                };
+                [['present', 'Presentes'], ['absent', 'Ausentes'], ['late', 'Tardes'], ['early', 'Retiros']].forEach(function (item) {
+                    const summaryItem = createElement('div', { className: 'summary-item' });
+                    summaryItem.appendChild(createElement('span', { textContent: item[1] }));
+                    summaryItem.appendChild(summaryValues[item[0]]);
+                    summary.appendChild(summaryItem);
                 });
-                thead.appendChild(headerRow);
-                const tbody = document.createElement('tbody');
-                table.append(thead, tbody);
-                tableWrap.appendChild(table);
-                modalBody.appendChild(tableWrap);
+                toolbar.appendChild(summary);
+
+                const actions = createElement('div', { className: 'attendance-actions' });
+                const markPresentButton = createButton('', 'Marcar todos presentes');
+                const resetButton = createButton('', 'Restablecer estados');
+                actions.append(markPresentButton, resetButton);
+                modalBody.append(toolbar, actions);
+
                 const rows = new Map();
-                students.forEach(function (student) {
-                    const row = document.createElement('tr');
-                    const nameCell = document.createElement('td');
-                    nameCell.textContent = `${student.surname}, ${student.name}`;
-                    const statusCell = document.createElement('td');
-                    const status = document.createElement('select');
-                    [['present', 'Presente'], ['absent', 'Ausente'], ['late', 'Tarde']].forEach(function (statusOption) {
-                        const value = statusOption[0];
-                        const label = statusOption[1];
-                        const option = document.createElement('option');
-                        option.value = value;
-                        option.textContent = label;
-                        status.appendChild(option);
+                const header = createElement('div', { className: 'attendance-row header-row' });
+                ['Estudiante', 'Presente', 'Ausente', 'Tarde', 'Retiro'].forEach(function (label) {
+                    header.appendChild(createElement('div', { textContent: label }));
+                });
+                modalBody.appendChild(header);
+
+                function updateSummary() {
+                    const totals = { present: 0, absent: 0, late: 0, early: 0 };
+                    rows.forEach(function (row) {
+                        const selectedStatus = Object.keys(row.statusRadios).find(function (key) {
+                            return row.statusRadios[key].checked;
+                        });
+                        totals[selectedStatus]++;
+                        if (row.early.checked) totals.early++;
                     });
-                    status.value = student.attendanceStatus || 'absent';
-                    statusCell.appendChild(status);
-                    const earlyCell = document.createElement('td');
+                    Object.keys(totals).forEach(function (key) {
+                        summaryValues[key].textContent = totals[key];
+                    });
+                }
+
+                students.forEach(function (student) {
+                    const row = createElement('div', { className: 'attendance-row' });
+                    const identity = createElement('div', { className: 'attendance-student' });
+                    identity.appendChild(createElement('strong', { textContent: `${student.surname}, ${student.name}` }));
+                    identity.appendChild(createElement('span', { textContent: `DNI ${student.dni || '—'}` }));
+                    row.appendChild(identity);
+
+                    const statusOptions = createElement('div', { className: 'status-options' });
+                    const statusRadios = {};
+                    [['present', 'P'], ['absent', 'A'], ['late', 'T']].forEach(function (option) {
+                        const label = createElement('label', { className: 'status-option' });
+                        const input = document.createElement('input');
+                        input.type = 'radio';
+                        input.name = `attendance-${student.studentId}`;
+                        input.value = option[0];
+                        input.checked = (student.attendanceStatus || 'absent') === option[0];
+                        input.addEventListener('change', updateSummary);
+                        const marker = createElement('span', { textContent: option[1] });
+                        statusRadios[option[0]] = input;
+                        label.append(input, marker);
+                        statusOptions.appendChild(label);
+                    });
+                    row.appendChild(statusOptions);
+
+                    const earlyLabel = createElement('label', { className: 'status-option early-option' });
                     const early = document.createElement('input');
                     early.type = 'checkbox';
                     early.checked = Boolean(student.earlyDeparture);
-                    earlyCell.appendChild(early);
-                    row.append(nameCell, statusCell, earlyCell);
-                    tbody.appendChild(row);
-                    rows.set(student.studentId, { status, early });
+                    early.setAttribute('aria-label', `Retiro anticipado de ${student.name} ${student.surname}`);
+                    early.addEventListener('change', updateSummary);
+                    earlyLabel.append(early, createElement('span', { textContent: 'R' }));
+                    statusOptions.appendChild(earlyLabel);
+                    modalBody.appendChild(row);
+                    rows.set(student.studentId, { statusRadios, early });
                 });
+
+                markPresentButton.onclick = function () {
+                    rows.forEach(function (row) {
+                        row.statusRadios.present.checked = true;
+                        row.statusRadios.present.dispatchEvent(new Event('change', { bubbles: true }));
+                    });
+                };
+                resetButton.onclick = function () {
+                    rows.forEach(function (row) {
+                        row.statusRadios.absent.checked = true;
+                        row.early.checked = false;
+                    });
+                    updateSummary();
+                };
+                updateSummary();
 
                 const btnSubmit = document.getElementById('btnSubmitModal');
                 const btnCancel = document.getElementById('btnCancelModal');
@@ -275,11 +397,11 @@
                 };
                 btnSubmit.onclick = function () {
                     const records = students.map(function (student) {
-                        return {
-                            studentId: student.studentId,
-                            status: rows.get(student.studentId).status.value,
-                            earlyDeparture: rows.get(student.studentId).early.checked
-                        };
+                        const row = rows.get(student.studentId);
+                        const status = Object.keys(row.statusRadios).find(function (key) {
+                            return row.statusRadios[key].checked;
+                        });
+                        return { studentId: student.studentId, status, earlyDeparture: row.early.checked };
                     });
                     cleanup();
                     resolve(records);
@@ -503,7 +625,7 @@
                 }
                 reportTitle.textContent = `Reporte de asistencia - ${report.course.name}`;
                 const table = document.createElement('table');
-                table.className = 'report-table';
+                table.className = 'report-table report-desktop';
                 const thead = document.createElement('thead');
                 const headerRow = document.createElement('tr');
                 const reportHeaders = ['Estudiante'].concat(
@@ -551,6 +673,51 @@
                 });
                 table.append(thead, tbody);
                 tableContainer.appendChild(table);
+
+                const mobileReport = createElement('div', { className: 'report-mobile' });
+                mobileReport.appendChild(createElement('p', {
+                    className: 'report-mobile-legend',
+                    textContent: 'P: presente · A: ausente · T: tarde · R: retiro anticipado'
+                }));
+                report.students.forEach(function (student) {
+                    const item = createElement('article', { className: 'attendance-mobile-item' });
+                    const itemHeader = document.createElement('header');
+                    itemHeader.appendChild(createElement('h4', {
+                        textContent: `${student.surname}, ${student.name}`
+                    }));
+                    itemHeader.appendChild(createElement('span', {
+                        className: 'percentage',
+                        textContent: `${student.attendancePercentage}%`
+                    }));
+                    item.appendChild(itemHeader);
+
+                    const totals = createElement('div', { className: 'mobile-attendance-statuses' });
+                    [['Presentes', student.present], ['Tardes', student.late], ['Ausentes', student.absent], ['Retiros', student.earlyDepartures]]
+                        .forEach(function (status) {
+                            const total = createElement('div', { className: 'mobile-status' });
+                            total.appendChild(createElement('span', { textContent: status[0] }));
+                            total.appendChild(createElement('strong', { textContent: status[1] }));
+                            totals.appendChild(total);
+                        });
+                    item.appendChild(totals);
+
+                    const sessions = createElement('div', { className: 'mobile-session-list' });
+                    report.sessions.forEach(function (session) {
+                        const record = student.attendanceByDate[session.date];
+                        const sessionItem = createElement('div', { className: 'mobile-session' });
+                        sessionItem.appendChild(createElement('span', {
+                            textContent: session.date.split('-').reverse().join('/')
+                        }));
+                        const status = record ? ({ present: 'P', late: 'T', absent: 'A' }[record.status] || '-') : '-';
+                        sessionItem.appendChild(createElement('strong', {
+                            textContent: record && record.earlyDeparture ? `${status}R` : status
+                        }));
+                        sessions.appendChild(sessionItem);
+                    });
+                    item.appendChild(sessions);
+                    mobileReport.appendChild(item);
+                });
+                tableContainer.appendChild(mobileReport);
                 reportCard.style.display = 'block';
 
             }
@@ -915,7 +1082,8 @@
                             alert('El curso no tiene estudiantes inscriptos.');
                             return;
                         }
-                        const records = await showAttendanceModal(`Asistencia del ${selection.date}`, roster.students);
+                        const course = courses.find(function (item) { return item.courseId === selection.courseId; });
+                        const records = await showAttendanceModal(course.name, selection.date, roster.students);
                         if (!records) return;
                         const result = await rpcFetch('/saveAttendance', {
                             ...selection,
