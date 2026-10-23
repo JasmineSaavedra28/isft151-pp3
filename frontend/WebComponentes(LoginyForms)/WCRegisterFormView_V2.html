@@ -17,8 +17,6 @@
 </body> 
 
 <script>
-// ========== FUNCIÓN FACTORY GENÉRICA ==========
-
 function createElement(tag, props = {}) {
     const element = document.createElement(tag);
     
@@ -32,8 +30,6 @@ function createElement(tag, props = {}) {
     
     return element;
 }
-
-// ========== FUNCIONES EXTERNAS CREADORAS ==========
 
 function crearCampoNombre() {
     const input = createElement('input', {
@@ -190,13 +186,10 @@ function crearBotonRegister() {
     return rowDiv;
 }
 
-// ========== WEB COMPONENT ==========
-
 class WCRegisterFormView extends HTMLElement {
     constructor() {
         super();
 
-        // 1. Invocamos las funciones externas
         this.campoNombre = crearCampoNombre();
         this.campoEmail = crearCampoEmail();
         this.campoMobile = crearCampoMobile();
@@ -205,7 +198,6 @@ class WCRegisterFormView extends HTMLElement {
         this.espaciador = crearEspaciador();
         this.botonRegister = crearBotonRegister();
 
-        // 2. Exponemos los inputs como propiedades de la instancia
         this.nombreInput = this.campoNombre._inputRef;
         this.emailInput = this.campoEmail._inputRef;
         this.mobileInput = this.campoMobile._inputRef;
@@ -213,7 +205,6 @@ class WCRegisterFormView extends HTMLElement {
         this.confirmPasswordInput = this.campoConfirmPassword._inputRef;
         this.registerBtn = this.botonRegister._btnRef;
 
-        // 3. Creamos la estructura de contenedores
         const form = createElement('form', {});
         form.appendChild(this.campoNombre);
         form.appendChild(this.campoEmail);
@@ -246,11 +237,8 @@ class WCRegisterFormView extends HTMLElement {
 
         this.appendChild(appDiv);
 
-        // 4. Bindeo del handler
         this._onRegisterClick = this.onRegisterClick.bind(this);
     }
-
-    // ========== LÓGICA DE NEGOCIO ==========
 
     async onRegisterClick() {
         const name = this.nombreInput.value.trim();
@@ -271,8 +259,6 @@ class WCRegisterFormView extends HTMLElement {
 
         alert(`Intentando registrar:\nNombre: ${name}\nEmail: ${email}\nMobile: ${mobile}`);
     }
-
-    // ========== CICLO DE VIDA ==========
 
     connectedCallback() {
         this.registerBtn.addEventListener('click', this._onRegisterClick);

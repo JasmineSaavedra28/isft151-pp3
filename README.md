@@ -4,6 +4,8 @@
 
 El Sistema de Control de Asistencias Escolares es una plataforma web orientada a sistematizar y centralizar la gestión de asistencias en instituciones educativas.
 
+Repositorio: [github.com/JasmineSaavedra28/isft151-pp3](https://github.com/JasmineSaavedra28/isft151-pp3)
+
 El sistema busca reemplazar el uso de registros en papel y planillas de cálculo realizadas de forma manual, permitiendo administrar de manera centralizada la información académica y la asistencia de los estudiantes.
 
 El alcance previsto contempla la gestión de entidades educativas, cursos, asignaturas, comisiones, docentes y estudiantes. También define el calendario académico, el registro de clases y la asociación de las asistencias con las clases dictadas.
@@ -17,6 +19,8 @@ El repositorio contiene una aplicación web en desarrollo con una interfaz HTML 
 Los requerimientos funcionales incluidos más abajo describen el alcance previsto; no todas esas funcionalidades están implementadas todavía en la interfaz.
 
 ## Inicio rápido en Windows
+
+Hay dos lanzadores de desarrollo local, según el sistema operativo: `levantar_servidores.ps1` para Windows y `levantar_servidores.sh` para Linux. Usá solo el correspondiente a tu entorno.
 
 ### Requisitos
 
@@ -40,7 +44,7 @@ powershell -ExecutionPolicy Bypass -File .\levantar_servidores.ps1
 
 ### Preparación inicial de la base de datos
 
-La base está en `backend/db.sqlite3`. Para crear el usuario administrador inicial y configurar los permisos, ejecutá una vez desde la raíz:
+La base SQLite se crea localmente en `backend/db.sqlite3` al iniciar el backend; está excluida de Git. Para crear el usuario administrador inicial y configurar los permisos, ejecutá una vez desde la raíz:
 
 ```powershell
 Set-Location .\backend
@@ -404,31 +408,31 @@ Las rutas propuestas arriba no implican que estén implementadas. El backend act
 
 # Documentación de la API
 
-El backend expone una API HTTP en `http://localhost:3000` y recibe solicitudes `POST`. Las rutas están registradas en `backend/main.mjs`; sus controladores y lógica se encuentran en `backend/handlers.js` y `backend/model.js`.
+La API HTTP se ejecuta en `http://localhost:3000` y recibe solicitudes `POST`. La lista de rutas implementadas y el acceso al borrador de contratos se encuentran en [api/README.md](api/README.md). La lógica del servidor está en `backend/main.mjs`, `backend/handlers.js` y `backend/model.js`.
 
 ---
 
 # Especificación de requerimientos
 
-Los requerimientos funcionales y no funcionales de este README describen el alcance definido para el proyecto y pueden incluir funcionalidades pendientes de implementación.
+La especificación vigente y sus puntos pendientes están organizados en [srs/README.md](srs/README.md). Los requerimientos funcionales del README principal distinguen el alcance propuesto de las rutas que ya funcionan.
 
 ---
 
 # Testing
 
-Actualmente no hay una suite de pruebas ejecutable documentada. Aunque `backend/package.json` declara `npm test`, el comando falla porque intenta cargar `backend/run`, que no existe.
+La carpeta y el estado de las pruebas se describen en [testing/README.md](testing/README.md). Actualmente no hay una suite ejecutable: `npm test` falla porque intenta cargar `backend/run`, que no existe.
 
 ---
 
 # Release
 
-`levantar_servidores.ps1` inicia el entorno de desarrollo local; no configura un despliegue de producción.
+La carpeta [release/](release/README.md) documenta los lanzadores actuales y los datos que faltan para definir un despliegue de producción.
 
 ---
 
 # Media
 
-No hay actualmente una carpeta `media/` en el repositorio.
+La carpeta [media/](media/README.md) está preparada para incorporar material de difusión institucional aprobado.
 
 ---
 
@@ -439,9 +443,9 @@ El proyecto seguirá las siguientes reglas de desarrollo establecidas por la cá
 - No se utilizarán ramas de trabajo salvo que sean gestionadas correctamente.
 - No se incorporarán archivos de configuración específicos de cada integrante.
 - Se utilizará `.gitignore` para excluir archivos propios del entorno de desarrollo.
-- No se incorporarán archivos binarios ni dependencias específicas del entorno de ejecución.
+- No se incorporarán archivos binarios de ejecución ni dependencias instaladas localmente. `node_modules` y la base SQLite local se excluyen mediante `.gitignore`; `package-lock.json` se conserva para reproducir la instalación.
 - El código del repositorio no deberá contener comentarios.
-- Se utilizará un único idioma de forma consistente en todo el proyecto.
+- La documentación y los textos de interfaz se redactan en español. Los identificadores técnicos de la API están en inglés según el contrato actual; esta excepción debe confirmarse con la cátedra frente a la regla de idioma único.
 - Se utilizará una indentación uniforme de 4 espacios.
 - Se respetará una única convención de nombres en todo el proyecto.
 - Los cambios deberán registrarse mediante commits periódicos.
@@ -450,36 +454,7 @@ El proyecto seguirá las siguientes reglas de desarrollo establecidas por la cá
 ---
 
 # Convención de nombres
-
-## Clases
-
-Se utilizará la convención `UpperCamelCase`.
-
-Ejemplos:
-
-`Usuario`  
-`Estudiante`  
-`Docente`  
-`Curso`  
-`Comision`  
-`Asignatura`  
-`Asistencia`  
-`Justificacion`
-
-## Funciones y variables
-
-Se utilizará la convención `lowerCamelCase`.
-
-Ejemplos:
-
-`registrarUsuario()`  
-`listarCursos()`  
-`registrarAsistencia()`  
-`calcularPorcentaje()`
-
-`porcentajeAsistencia`  
-`fechaAsistencia`  
-`nombreEstudiante`
+Las clases usan `UpperCamelCase` (por ejemplo, `Menu`). Las funciones, variables y rutas de API usan `lowerCamelCase` (por ejemplo, `getAttendanceReport`, `attendancePercentage`). Se mantienen los nombres del contrato API para evitar incompatibilidades.
 
 ---
 
@@ -489,23 +464,37 @@ Ejemplos:
     │
     ├── README.md
     ├── LICENSE
+    ├── .gitignore
     ├── levantar_servidores.ps1
     ├── levantar_servidores.sh
     ├── levantar_apache.sh
     ├── levantar_node.sh
+    ├── api/
+    │   └── README.md
+    ├── srs/
+    │   └── README.md
+    ├── media/
+    │   └── README.md
+    ├── testing/
+    │   └── README.md
+    ├── release/
+    │   └── README.md
     ├── backend/
+    │   ├── README.md
     │   ├── main.mjs
     │   ├── handlers.js
     │   ├── model.js
     │   ├── database.js
     │   ├── config.json
     │   ├── seed.mjs
-    │   └── db.sqlite3
+    │   ├── package.json
+    │   └── package-lock.json
     └── frontend/
+        ├── README.md
         ├── index.html
         └── WebComponentes(LoginyForms)/
 
----
+La carpeta `backend/node_modules` y `backend/db.sqlite3` se generan localmente y no se versionan.
 
 # Tecnologías
 
@@ -524,7 +513,31 @@ Para requisitos e instrucciones de inicio, consultá [Inicio rápido en Windows]
 
 # Despliegue
 
-El repositorio contiene scripts para levantar servicios localmente. No incluye configuración de despliegue a producción.
+Los scripts disponibles levantan el sistema para desarrollo local; todavía no hay un destino ni un procedimiento de producción configurados.
+
+### Windows
+
+Desde la raíz, iniciar ambos servicios con:
+
+```powershell
+.\levantar_servidores.ps1
+```
+
+El backend queda en `http://localhost:3000` y el frontend en `http://localhost:8081`. Requiere Node.js 22 o superior y Python 3. Para más detalles, consultar [Inicio rápido en Windows](#inicio-rápido-en-windows).
+
+### Linux
+
+En un escritorio Linux compatible con el emulador de terminal configurado, iniciar con:
+
+```bash
+./levantar_servidores.sh
+```
+
+`levantar_servidores.sh` coordina las dos terminales: ejecuta `levantar_node.sh` para iniciar el backend con Node.js y `levantar_apache.sh` para servir el frontend en el puerto 8081. Requiere Node.js 22 o superior, Apache instalado y un emulador de terminal gráfico. `levantar_apache.sh` detiene el servicio `apache2` del sistema y requiere permisos `sudo`; revisar ese efecto antes de ejecutarlo.
+
+### Producción
+
+El despliegue de producción queda pendiente de definir el sistema operativo, servidor/hosting, dominio, gestión de secretos, persistencia y estrategia de copias de seguridad. No ejecutar los lanzadores de desarrollo como si fueran configuración de producción. Ver [release/README.md](release/README.md).
 
 ---
 
@@ -536,7 +549,18 @@ La ejecución de pruebas queda pendiente hasta incorporar la suite y corregir el
 
 # Change Log
 
-El sistema continúa en desarrollo. Consultá la sección [Estado actual](#estado-actual) para ver las funcionalidades disponibles.
+## Versión en desarrollo
+
+- Se incorporó inicio y cierre de sesión con control de acceso por rol.
+- Se incorporó administración básica de usuarios: registro, modificación, deshabilitación, eliminación y cambio de rol.
+- Se incorporó alta, modificación, baja y consulta de estudiantes.
+- Se incorporó creación y modificación de cursos, inscripción y baja de inscripción de estudiantes.
+- Se incorporó configuración y consulta de calendarios académicos.
+- Se incorporó toma de asistencia por curso y fecha, con estados y retiros anticipados.
+- Se incorporó consulta de reportes de asistencia por curso con totales y porcentajes.
+- Se añadieron lanzadores locales para Windows y Linux y documentación para `api`, `srs`, `media`, `testing` y `release`.
+
+Las funciones de nóminas, asignaturas, justificaciones, alertas y gestión de clases siguen en el alcance propuesto y no están implementadas en el backend actual.
 
 ---
 

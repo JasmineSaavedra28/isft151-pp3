@@ -16,8 +16,6 @@
 </body> 
 
 <script>
-// ========== FUNCIÓN FACTORY GENÉRICA ==========
-
 function createElement(tag, props = {}) {
     const element = document.createElement(tag);
     
@@ -34,8 +32,6 @@ function createElement(tag, props = {}) {
     
     return element;
 }
-
-// ========== FUNCIONES EXTERNAS CREADORAS ==========
 
 function crearEncabezado() {
     const logoImg = createElement('img', {
@@ -100,23 +96,18 @@ function crearBotonSignIn() {
     });
 }
 
-// ========== WEB COMPONENT ==========
-
 class WCLoginFormView extends HTMLElement {
     constructor() {
         super();
 
-        // 1. Invocamos las 4 funciones externas
         this.encabezado    = crearEncabezado();
         this.campoUsuario  = crearCampoUsuario();
         this.campoPassword = crearCampoPassword();
         this.botonSignIn   = crearBotonSignIn();
 
-        // 2. Exponemos los inputs como propiedades de la instancia
         this.usernameInput = this.campoUsuario._inputRef;
         this.passwordInput = this.campoPassword._inputRef;
 
-        // 3. Creamos la estructura de contenedores (usando la funcion createElement)
         const contentDiv = createElement('div', { class: 'w3-padding-large' });
         const cardDiv = createElement('div', { class: 'w3-white w3-round w3-margin-bottom w3-border'       });
         const autoDiv = createElement('div', { class: 'w3-auto', style: 'width: 380px;'         });
@@ -125,7 +116,6 @@ class WCLoginFormView extends HTMLElement {
         const mainDiv = createElement('div', { class: 'w3-main', style: 'margin-top: 54px;'        });
         const appDiv = createElement('div', { id: 'app'          });
 
-        // 4. Ensamblaje manual
         contentDiv.appendChild(this.encabezado);
         contentDiv.appendChild(this.campoUsuario);
         contentDiv.appendChild(this.campoPassword);
@@ -140,11 +130,8 @@ class WCLoginFormView extends HTMLElement {
     
         this.appendChild(appDiv);
         
-        // 5. Bindeo del handler
         this._onSignInClick = this.onSignInClick.bind(this);
     }
-
-    // ========== LÓGICA DE NEGOCIO ==========
 
     async onSignInClick() {
         const uName = this.usernameInput.value.trim();
@@ -156,8 +143,6 @@ class WCLoginFormView extends HTMLElement {
         }
         alert(`Intentando iniciar sesión con:\nUsuario: ${uName}\nContraseña: ${pWord}`);
     }
-
-    // ========== CICLO DE VIDA ==========
 
     connectedCallback() {
         this.botonSignIn.addEventListener('click', this._onSignInClick);

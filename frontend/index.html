@@ -14,7 +14,6 @@
         button.danger:hover { background: #c0392b; }
         pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 6px; overflow-x: auto; }
         
-        /* Modal Styles */
         dialog { border: none; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); padding: 25px; width: 400px; max-width: 90%; }
         dialog.attendance-modal { width: 760px; max-height: 85vh; }
         dialog::backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); }
@@ -90,7 +89,6 @@
             throw new RPCWebAPIException('ServerError', 'Error interno del servidor');
         }
 
-        // MOTOR DE FORMULARIOS DINÁMICOS
         function showFormModal(title, fields) {
             return new Promise(function (resolve) {
                 const modal = document.getElementById('formModal');
@@ -446,7 +444,6 @@
 
             connectedCallback() {
                 const menu = this;
-                // LOGIN
                 document.getElementById('btnLogin').onclick = async function () {
                     const data = await showFormModal('Iniciar Sesión', [
                         { name: 'user', label: 'Usuario', type: 'text' },
@@ -478,7 +475,6 @@
                     }
                 };
 
-                // LOGOUT
                 document.getElementById('btnLogout').onclick = async function () {
                     try { await rpcFetch('/logout'); } catch(e){}
                     currentUserId = null;
@@ -496,7 +492,6 @@
                     menu.printResult({ message: 'Sesión cerrada' });
                 };
 
-                // ADMINISTRAR USUARIOS Y ROLES
                 document.getElementById('btnNewUser').onclick = async function () {
                     const data = await showFormModal('Agregar Usuario / Rol', [
                         { name: 'username', label: 'Usuario' },
@@ -828,7 +823,6 @@
                 document.getElementById('btnAttendanceReport').onclick = showAttendanceReport;
                 document.getElementById('btnTeacherAttendanceReport').onclick = showAttendanceReport;
 
-                // CREAR ESTUDIANTE
                 document.getElementById('btnNewStudent').onclick = async function () {
                     const data = await showFormModal('Nuevo Estudiante', [
                         { name: 'name', label: 'Nombre' },
