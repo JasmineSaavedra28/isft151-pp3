@@ -22,7 +22,7 @@ Los requerimientos estan agrupados en gestion de usuarios, estudiantes y nominas
 - **RF1-RF5:** administrar usuarios, nominas, cursos, asignaturas y calendario academico.
 - **RF6:** registrar asistencias, vincularlas con clases y generar porcentajes.
 - **RF7:** registrar inasistencias y administrar justificaciones y certificados.
-- **RF8-RF9:** configurar umbrales y generar alertas por asistencia, acumulacion o riesgo pedagogico.
+- **RF8-RF9:** configurar umbrales y generar alertas por asistencia, acumulacion o riesgo pedagogico. Estos requerimientos forman parte del alcance planeado, pero quedaron fuera de esta entrega.
 - **RF10:** consultar reportes, estados y alertas con filtros definidos.
 - **RF11:** gestionar las clases asociadas a cursos, asignaturas, docentes y fechas. Permanece pendiente de definicion: faltan acordar operaciones, actores y relacion con calendarios, horarios y asistencias.
 

@@ -1,6 +1,8 @@
 # Documentacion de la API
 
-La API HTTP implementada se ejecuta por defecto en `http://localhost:3000`. Las rutas reciben solicitudes `POST` con contenido JSON y el backend acepta `OPTIONS` para CORS.
+La API HTTP implementada se ejecuta por defecto en `http://localhost:3000`. Todas las operaciones utilizan solicitudes `POST` con contenido JSON. El backend acepta `OPTIONS` para CORS.
+
+Esta convencion fue definida por la catedra y no constituye una opcion pendiente de revision.
 
 ## Autenticacion
 
@@ -17,7 +19,7 @@ La API HTTP implementada se ejecuta por defecto en `http://localhost:3000`. Las 
 
 El codigo autoritativo de las rutas disponibles esta en [backend/main.mjs](../backend/main.mjs). Las rutas siguientes son propuestas y no deben considerarse implementadas hasta que aparezcan registradas ahi.
 
-## Contratos pendientes
+## Contratos no implementados
 
 ### Asignaturas y horarios
 
@@ -35,6 +37,8 @@ El codigo autoritativo de las rutas disponibles esta en [backend/main.mjs](../ba
 - `/assignJustification`, `/listJustifications`, `/justifyAbsence`: vincular, consultar y resolver justificaciones.
 
 ### Alertas y reportes
+
+Las siguientes rutas corresponden a requerimientos planeados que quedaron fuera del alcance de esta entrega y no se consideran pendientes de implementacion inmediata:
 
 - `/configAlert`: definir umbrales institucionales.
 - `/generateAlert`, `/generateAlertAccumulation`, `/generateAlertPedagogical`: evaluar riesgos por asistencia, acumulacion o criterio pedagogico.
@@ -69,10 +73,9 @@ El codigo autoritativo de las rutas disponibles esta en [backend/main.mjs](../ba
 - `/associateAlertToStudent` (Sistema, Preceptor): request `{ "studentId": "string", "alertId": "string" }`; response `{ "studentId": "string", "alertId": "string", "assigned": "boolean" }`.
 - `/generateOutAlert` (Sistema, Preceptor): request `{ "studentId": "string" }`; response `{ "alertId": "string", "studentId": "string", "alertType": "string", "totalAbsences": "number", "status": "string", "triggered": "boolean" }`.
 
-### Pendientes de revision
+### Diferencias pendientes de documentar
 
 - Unificar `/assignUserRole` y `/updateUserRole` o definir sus responsabilidades.
-- Definir metodo HTTP, autenticacion, errores y codigos de respuesta.
 - Unificar los campos de usuario: `name`/`email` frente a `username`.
 - Unificar `listCourse` y `listCourses`.
 - Confirmar si `/registerProfessorAttendance` registra asistencia docente o asistencia de una clase.

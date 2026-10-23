@@ -90,7 +90,7 @@ Las justificaciones digitales y las alertas pedagógicas forman parte del alcanc
 
 # Objetivos y alcance
 
-Los objetivos funcionales y los requerimientos no funcionales se encuentran en [srs/README.md](srs/README.md). El alcance funcional actual sigue separando claramente las rutas implementadas de las propuestas.
+Los objetivos funcionales y los requerimientos no funcionales se encuentran en [srs/README.md](srs/README.md). La especificacion conserva el alcance planeado y diferencia lo implementado de lo no alcanzado. Las alertas forman parte de los requerimientos, pero quedaron fuera de esta entrega.
 
 ---
 
@@ -137,7 +137,7 @@ El proyecto seguirá las siguientes reglas de desarrollo establecidas por la cá
 - Se utilizará `.gitignore` para excluir archivos propios del entorno de desarrollo.
 - No se incorporarán archivos binarios de ejecución ni dependencias instaladas localmente. `node_modules` y la base SQLite local se excluyen mediante `.gitignore`; `package-lock.json` se conserva para reproducir la instalación.
 - El código del repositorio no deberá contener comentarios.
-- La documentación y los textos de interfaz se redactan en español. Los identificadores técnicos de la API están en inglés según el contrato actual; esta excepción debe confirmarse con la cátedra frente a la regla de idioma único.
+- La documentación y los textos de interfaz se redactan en español; los nombres técnicos existentes se mantienen en inglés únicamente cuando forman parte del código o del contrato de API.
 - Se utilizará una indentación uniforme de 4 espacios.
 - Se respetará una única convención de nombres en todo el proyecto.
 - Los cambios deberán registrarse mediante commits periódicos.
