@@ -4,17 +4,56 @@
     <meta charset="UTF-8">
     <title>SGA - Control de Asistencias</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f4f6f9; color: #333; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h1, h2, h3 { margin-top: 0; color: #2c3e50; }
-        button { margin: 5px; padding: 10px 16px; cursor: pointer; border: none; border-radius: 6px; background: #3498db; color: white; font-weight: bold; transition: background 0.2s; }
-        button:hover { background: #2980b9; }
-        button.danger { background: #e74c3c; }
-        button.danger:hover { background: #c0392b; }
-        pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 6px; overflow-x: auto; }
-        
-        dialog { border: none; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); padding: 25px; width: 400px; max-width: 90%; }
+        :root {
+            --ink: #1f2933;
+            --muted: #667085;
+            --surface: #ffffff;
+            --canvas: #eef2f5;
+            --line: #dfe5ea;
+            --primary: #176b87;
+            --primary-hover: #10566d;
+            --danger: #b42318;
+            --danger-hover: #912018;
+            --success: #18794e;
+            --warning: #b54708;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--canvas); color: var(--ink); }
+        main-menu { display: block; max-width: 1180px; margin: 0 auto; padding: 24px; }
+        .header { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 24px; }
+        .header h1 { margin: 0; font-size: clamp(1.35rem, 2.5vw, 2rem); }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .card { background: var(--surface); padding: 20px; margin-bottom: 16px; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 5px 18px rgba(31, 41, 51, 0.06); }
+        h1, h2, h3 { margin-top: 0; color: var(--ink); }
+        .card h3 { font-size: 1.05rem; }
+        .card-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        button { min-height: 40px; padding: 9px 14px; cursor: pointer; border: 1px solid transparent; border-radius: 6px; background: var(--primary); color: white; font-weight: 600; transition: background 0.18s, border-color 0.18s, transform 0.18s; }
+        button:hover { background: var(--primary-hover); }
+        button:active { transform: translateY(1px); }
+        button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid rgba(23, 107, 135, 0.24); outline-offset: 2px; }
+        button.danger { background: var(--danger); }
+        button.danger:hover { background: var(--danger-hover); }
+        .notification-region { position: fixed; top: 18px; right: 18px; z-index: 1000; display: grid; gap: 10px; width: min(360px, calc(100vw - 36px)); }
+        .notification { border: 1px solid var(--line); border-left: 5px solid var(--primary); border-radius: 8px; padding: 12px 14px; background: white; box-shadow: 0 12px 30px rgba(31, 41, 51, 0.16); font-size: 14px; }
+        .notification.success { border-left-color: var(--success); }
+        .notification.error { border-left-color: var(--danger); }
+        .notification.warning { border-left-color: var(--warning); }
+        .notification strong { display: block; margin-bottom: 2px; }
+        .empty-state { padding: 24px; border: 1px dashed #bcc7d0; border-radius: 8px; color: var(--muted); text-align: center; }
+
+        @media (max-width: 640px) {
+            main-menu { padding: 14px; }
+            .header { align-items: flex-start; flex-direction: column; }
+            .header h1 { font-size: 1.35rem; }
+            .header-actions { width: 100%; flex-wrap: wrap; }
+            .header-actions button { flex: 1 1 140px; }
+            .card { padding: 16px; }
+            .card-actions { display: grid; grid-template-columns: 1fr; }
+            .card-actions button { width: 100%; margin: 0; }
+            .dialog-actions { display: grid; grid-template-columns: 1fr 1fr; }
+        }
+
+        dialog { border: none; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); padding: 25px; width: 440px; max-width: 90%; }
         dialog.attendance-modal { width: 760px; max-height: 85vh; }
         dialog::backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); }
         .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
@@ -42,6 +81,24 @@
         const host = 'http://localhost:3000';
         let currentUserId = null;
         let authSessionToken = null;
+
+        function notify(message, type = 'success', title = 'Información') {
+            const region = document.getElementById('notificationRegion');
+            if (!region) return;
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            const heading = document.createElement('strong');
+            heading.textContent = title;
+            notification.append(heading, document.createTextNode(message));
+            region.appendChild(notification);
+            window.setTimeout(function () {
+                notification.remove();
+            }, 5000);
+        }
+
+        window.alert = function (message) {
+            notify(String(message).replace(/^Error:\s*/, ''), 'error', 'No se pudo completar');
+        };
 
         class RPCWebAPIException extends Error {
             constructor(type, detail) {
@@ -235,6 +292,59 @@
             });
         }
 
+        const dataLabels = {
+            userId: 'Usuario', username: 'Nombre de usuario', role: 'Rol', status: 'Estado',
+            studentId: 'Alumno', name: 'Nombre', surname: 'Apellido', dni: 'DNI',
+            courseId: 'Curso', professorId: 'Docente', startDate: 'Inicio', endDate: 'Fin',
+            academicYear: 'Ciclo lectivo', holidays: 'Feriados', academicCalendarId: 'Calendario',
+            success: 'Resultado', message: 'Mensaje', present: 'Presentes', absent: 'Ausentes', late: 'Tardes'
+        };
+
+        function formatDataValue(value) {
+            if (value === null || value === undefined || value === '') return '—';
+            if (typeof value === 'boolean') return value ? 'Sí' : 'No';
+            if (typeof value === 'object') return JSON.stringify(value);
+            if (value === 'enabled') return 'Habilitado';
+            if (value === 'disabled') return 'Deshabilitado';
+            return String(value);
+        }
+
+        function createDataTable(rows) {
+            const wrap = document.createElement('div');
+            wrap.className = 'report-table-wrap';
+            const table = document.createElement('table');
+            table.className = 'report-table';
+            const columns = Array.from(new Set(rows.flatMap(function (row) {
+                return Object.keys(row || {}).filter(function (key) {
+                    if (key.toLowerCase() === 'userid' || key.toLowerCase().includes('id')) return false;
+                    return typeof row[key] !== 'object' || row[key] === null;
+                });
+            })));
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            columns.forEach(function (column) {
+                const cell = document.createElement('th');
+                cell.textContent = dataLabels[column] || column.replace(/([A-Z])/g, ' $1').replace(/^./, function (letter) {
+                    return letter.toUpperCase();
+                });
+                headerRow.appendChild(cell);
+            });
+            thead.appendChild(headerRow);
+            const tbody = document.createElement('tbody');
+            rows.forEach(function (row) {
+                const tableRow = document.createElement('tr');
+                columns.forEach(function (column) {
+                    const cell = document.createElement('td');
+                    cell.textContent = formatDataValue(row[column]);
+                    tableRow.appendChild(cell);
+                });
+                tbody.appendChild(tableRow);
+            });
+            table.append(thead, tbody);
+            wrap.appendChild(table);
+            return wrap;
+        }
+
         function createElement(tagName, options = {}) {
             const element = document.createElement(tagName);
             if (options.id) element.id = options.id;
@@ -255,9 +365,11 @@
         function createCard(id, title, buttonDefinitions, style = '') {
             const card = createElement('div', { id, className: 'card', style });
             card.appendChild(createElement('h3', { textContent: title }));
+            const actions = createElement('div', { className: 'card-actions' });
             buttonDefinitions.forEach(function (definition) {
-                card.appendChild(createButton(definition[0], definition[1], definition[2]));
+                actions.appendChild(createButton(definition[0], definition[1], definition[2]));
             });
+            card.appendChild(actions);
             return card;
         }
 
@@ -274,6 +386,7 @@
                 dialogActions.appendChild(createButton('btnSubmitModal', 'Aceptar'));
                 formModal.appendChild(dialogActions);
 
+                const notificationRegion = createElement('div', { id: 'notificationRegion', className: 'notification-region' });
                 const header = createElement('div', { className: 'header' });
                 header.appendChild(createElement('h1', { textContent: 'Panel de Gestión Académica' }));
                 const headerActions = createElement('div');
@@ -327,19 +440,47 @@
                 reportCard.appendChild(createElement('h3', { id: 'attendanceReportTitle', textContent: 'Reporte de asistencia' }));
                 reportCard.appendChild(createElement('div', { id: 'attendanceReportTable', className: 'report-table-wrap' }));
                 actionContainer.appendChild(reportCard);
-                const outputCard = createElement('div', { className: 'card' });
-                outputCard.appendChild(createElement('h3', { textContent: 'Salida del Sistema' }));
-                outputCard.appendChild(createElement('pre', {
-                    id: 'consoleOutput',
-                    textContent: 'Esperando acciones...'
-                }));
-                actionContainer.appendChild(outputCard);
+                const resultCard = createElement('div', { id: 'resultCard', className: 'card', style: 'display: none;' });
+                resultCard.appendChild(createElement('h3', { id: 'resultTitle', textContent: 'Resultado' }));
+                resultCard.appendChild(createElement('div', { id: 'resultContent' }));
+                actionContainer.appendChild(resultCard);
 
-                this.append(formModal, header, actionContainer);
+                this.append(notificationRegion, formModal, header, actionContainer);
             }
 
             printResult(data) {
-                document.getElementById('consoleOutput').textContent = JSON.stringify(data, null, 4);
+                const resultCard = document.getElementById('resultCard');
+                const resultTitle = document.getElementById('resultTitle');
+                const resultContent = document.getElementById('resultContent');
+                while (resultContent.firstChild) resultContent.removeChild(resultContent.firstChild);
+
+                const collectionKey = Object.keys(data).find(function (key) {
+                    return Array.isArray(data[key]);
+                });
+                if (collectionKey && data[collectionKey].length > 0) {
+                    resultTitle.textContent = collectionKey.charAt(0).toUpperCase() + collectionKey.slice(1);
+                    resultContent.appendChild(createDataTable(data[collectionKey]));
+                } else if (collectionKey) {
+                    resultTitle.textContent = collectionKey.charAt(0).toUpperCase() + collectionKey.slice(1);
+                    resultContent.appendChild(createElement('div', {
+                        className: 'empty-state',
+                        textContent: 'No hay registros para mostrar.'
+                    }));
+                } else {
+                    resultTitle.textContent = data.message || 'Resultado';
+                    const fields = Object.entries(data).filter(function (entry) {
+                        return entry[0] !== 'message';
+                    });
+                    if (fields.length === 0) {
+                        resultContent.appendChild(createElement('div', {
+                            className: 'empty-state',
+                            textContent: 'Operación completada correctamente.'
+                        }));
+                    } else {
+                        resultContent.appendChild(createDataTable([Object.fromEntries(fields)]));
+                    }
+                }
+                resultCard.style.display = 'block';
             }
 
             clearAttendanceReport() {
@@ -412,34 +553,6 @@
                 tableContainer.appendChild(table);
                 reportCard.style.display = 'block';
 
-                const dates = report.sessions.map(function (session) {
-                    return session.date.split('-').reverse().join('/');
-                });
-                const headers = ['Estudiante'].concat(dates, ['Presentes', 'Tardes', 'Ausentes', 'Retiros', 'Asistencia']);
-                const lines = [
-                    `Curso: ${report.course.name}`,
-                    `Clases registradas: ${report.sessions.length}`,
-                    '',
-                    headers.join(' | ')
-                ];
-                report.students.forEach(function (student) {
-                    const attendance = report.sessions.map(function (session) {
-                        const record = student.attendanceByDate[session.date];
-                        if (!record) return '-';
-                        const status = { present: 'P', late: 'T', absent: 'A' }[record.status] || '-';
-                        return record.earlyDeparture ? `${status}*` : status;
-                    });
-                    lines.push([
-                        `${student.surname}, ${student.name}`,
-                        ...attendance,
-                        student.present,
-                        student.late,
-                        student.absent,
-                        student.earlyDepartures,
-                        `${student.attendancePercentage}%`
-                    ].join(' | '));
-                });
-                document.getElementById('consoleOutput').textContent = lines.join('\n');
             }
 
             connectedCallback() {
@@ -562,7 +675,11 @@
                         const data = await showFormModal('Eliminar Usuario', [
                             { name: 'userId', label: 'Usuario', type: 'select', options }
                         ]);
-                        if (!data || !confirm('La eliminación será permanente. ¿Continuar?')) return;
+                        if (!data) return;
+                        const confirmation = await showFormModal('Confirmar eliminación', [
+                            { name: 'confirm', label: 'Escribí ELIMINAR para confirmar', type: 'text' }
+                        ]);
+                        if (!confirmation || confirmation.confirm !== 'ELIMINAR') return;
                         const res = await rpcFetch('/deleteUser', data);
                         menu.printResult({ message: 'Usuario eliminado correctamente', ...res });
                     } catch (e) { alert(`Error: ${e.detail}`); }
@@ -629,7 +746,11 @@
                         const data = await showFormModal('Eliminar Estudiante', [
                             { name: 'studentId', label: 'Estudiante', type: 'select', options: students.map(function (student) { return { value: student.studentId, text: `${student.dni} - ${student.surname}, ${student.name}` }; }) }
                         ]);
-                        if (!data || !confirm('El estudiante dejará de aparecer en los listados. ¿Continuar?')) return;
+                        if (!data) return;
+                        const confirmation = await showFormModal('Confirmar baja', [
+                            { name: 'confirm', label: 'Escribí BAJA para confirmar', type: 'text' }
+                        ]);
+                        if (!confirmation || confirmation.confirm !== 'BAJA') return;
                         const res = await rpcFetch('/deleteStudent', data);
                         menu.printResult({ message: 'Estudiante eliminado correctamente', ...res });
                     } catch (e) { alert(`Error: ${e.detail}`); }
