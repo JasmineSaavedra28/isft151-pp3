@@ -95,6 +95,20 @@ En Windows PowerShell:
 
 Estos lanzadores usan `backend/db-test.sqlite3`. El frontend continúa iniciándose en otra terminal con el comando indicado en [Inicio manual](#inicio-manual).
 
+Para iniciar backend y frontend de prueba juntos:
+
+```bash
+./levantar_servidores_test.sh
+```
+
+En Windows PowerShell:
+
+```powershell
+.\levantar_servidores_test.ps1
+```
+
+Usá `levantar_servidores.sh` o `levantar_servidores.ps1` cuando quieras iniciar la aplicación con la base normal.
+
 Volver a ejecutar `seed-test.mjs` borra y recrea todos los datos de prueba.
 
 Para detener los servidores, cerrá las ventanas de PowerShell abiertas por el script o presioná `Ctrl+C` en cada una.
