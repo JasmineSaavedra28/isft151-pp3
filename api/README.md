@@ -13,6 +13,7 @@ Esta convencion fue definida por la catedra y no constituye una opcion pendiente
 - Sesion: `/login`, `/logout`.
 - Usuarios: `/registerUser`, `/disableUser`, `/deleteUser`, `/updateUserRole`, `/modifyUser`, `/listUsers`.
 - Estudiantes: `/newStudent`, `/deleteStudent`, `/modifyStudent`, `/getStudent`, `/listStudents`.
+- Asistencia: `/getAttendanceRoster`, `/saveAttendance`, `/deleteAttendance`, `/getAttendanceReport`.
 - Cursos e inscripciones: `/newCourse`, `/modifyCourse`, `/listCourses`, `/enrollStudent`, `/removeStudentFromCourse`, `/getStudentsFromCourse`.
 - Calendarios: `/newAcademicCalendar`, `/listAcademicCalendars`.
 - Asistencia: `/getAttendanceRoster`, `/saveAttendance`, `/getAttendanceReport`.

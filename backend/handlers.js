@@ -426,7 +426,7 @@ function attendanceErrorResponse(response, error) {
     }
     if (error.message === 'InvalidAcademicDate') {
         response.writeHead(422, { 'Content-Type': 'application/json' });
-        return response.end(JSON.stringify({ exception: 'DomainError', detail: ['The date is outside the academic calendar or is a holiday'] }));
+        return response.end(JSON.stringify({ exception: 'DomainError', detail: ['La fecha está fuera del calendario académico o corresponde a un feriado'] }));
     }
     response.writeHead(400, { 'Content-Type': 'application/json' });
     return response.end(JSON.stringify({ exception: 'BadRequest', detail: ['Invalid attendance data'] }));
@@ -461,6 +461,31 @@ async function saveAttendanceHandler(request, response) {
         return response.end(JSON.stringify(result));
     } catch (error) {
         return attendanceErrorResponse(response, error);
+    }
+}
+
+async function deleteAttendanceHandler(request, response) {
+    try {
+        const { courseId, date } = await readJsonBody(request);
+        if (!courseId || !date) {
+            response.writeHead(400, { 'Content-Type': 'application/json' });
+            return response.end(JSON.stringify({ exception: 'BadRequest', detail: ['Missing courseId or date'] }));
+        }
+        const user = model.getUserByUsername(request.headers['x-user-id']);
+        const result = model.deleteAttendance(courseId, date, user);
+        response.writeHead(200, { 'Content-Type': 'application/json' });
+        return response.end(JSON.stringify(result));
+    } catch (error) {
+        if (error.message === 'CourseAccessDenied') {
+            response.writeHead(403, { 'Content-Type': 'application/json' });
+            return response.end(JSON.stringify({ exception: 'Forbidden', detail: ['The course is not assigned to this teacher'] }));
+        }
+        if (error.message === 'AttendanceNotFound') {
+            response.writeHead(422, { 'Content-Type': 'application/json' });
+            return response.end(JSON.stringify({ exception: 'DomainError', detail: ['No attendance exists for this date'] }));
+        }
+        response.writeHead(400, { 'Content-Type': 'application/json' });
+        return response.end(JSON.stringify({ exception: 'BadRequest', detail: ['Invalid attendance data'] }));
     }
 }
 
@@ -510,5 +535,6 @@ export {
     listAcademicCalendarsHandler,
     getAttendanceRosterHandler,
     saveAttendanceHandler,
+    deleteAttendanceHandler,
     getAttendanceReportHandler
 };

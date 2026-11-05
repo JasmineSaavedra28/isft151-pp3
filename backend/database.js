@@ -15,7 +15,8 @@ function loadConfig() {
 }
 
 const config = loadConfig();
-const db = new DatabaseSync(resolve(config.database.path));
+const databasePath = process.env.DB_PATH || config.database.path;
+const db = new DatabaseSync(resolve(databasePath));
 
 db.exec('PRAGMA foreign_keys = ON;');
 

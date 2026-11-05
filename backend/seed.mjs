@@ -19,13 +19,13 @@ const endpoints = [
     'newStudent', 'deleteStudent', 'modifyStudent', 'getStudent',
     'listStudents',
     'newCourse', 'modifyCourse', 'listCourses', 'enrollStudent', 'removeStudentFromCourse', 'getStudentsFromCourse',
-    'newAcademicCalendar', 'listAcademicCalendars', 'getAttendanceRoster', 'saveAttendance', 'getAttendanceReport'
+    'newAcademicCalendar', 'listAcademicCalendars', 'getAttendanceRoster', 'saveAttendance', 'deleteAttendance', 'getAttendanceReport'
 ];
 
 const insertEndpoint = db.prepare('INSERT OR IGNORE INTO endpoints (id, path) VALUES (?, ?)');
 const insertPerm = db.prepare('INSERT OR IGNORE INTO permissions (role, endpoint_id) VALUES (?, ?)');
 db.prepare("DELETE FROM permissions WHERE role IN ('Preceptor', 'Docente')").run();
-const docenteEndpoints = new Set(['listCourses', 'getAttendanceRoster', 'saveAttendance', 'getAttendanceReport']);
+const docenteEndpoints = new Set(['listCourses', 'getAttendanceRoster', 'saveAttendance', 'deleteAttendance', 'getAttendanceReport']);
 
 for (const path of endpoints) {
     const existing = db.prepare('SELECT id FROM endpoints WHERE path = ?').get(path);

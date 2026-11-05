@@ -35,4 +35,4 @@ if [ ! -d "node_modules" ]; then
     npm install
 fi
 
-node main.mjs
+nodemon main.mjs

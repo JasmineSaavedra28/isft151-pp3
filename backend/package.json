@@ -6,7 +6,8 @@
   },
   "type": "module",
   "scripts": {
-    "test": "node run test"
+    "test": "node run test",
+    "seed:test": "node seed-test.mjs"
   },
   "dependencies": {
     "sqlite3": "^6.0.1"

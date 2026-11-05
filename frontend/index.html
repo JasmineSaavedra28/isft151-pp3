@@ -318,6 +318,17 @@
                 .join('');
         }
 
+        function normalizeHolidayDate(value) {
+            const match = value.trim().match(/^(\d{2})-(\d{2})-(\d{4})$/);
+            if (!match) {
+                throw new RPCWebAPIException(
+                    'BadRequest',
+                    `El feriado "${value}" debe tener el formato DD-MM-AAAA`
+                );
+            }
+            return `${match[3]}-${match[2]}-${match[1]}`;
+        }
+
         function getHeaders() {
             return {
                 'Content-Type': 'application/json',
@@ -444,7 +455,7 @@
             });
         }
 
-        function showAttendanceModal(courseName, date, students) {
+        function showAttendanceModal(courseId, courseName, date, students, attendanceDates) {
             return new Promise(function (resolve) {
                 const modal = document.getElementById('formModal');
                 const modalBody = document.getElementById('modalBody');
@@ -452,10 +463,33 @@
                 modal.classList.add('attendance-modal');
                 while (modalBody.firstChild) modalBody.removeChild(modalBody.firstChild);
 
+                let currentDate = date;
+                let currentStudents = students;
+                let rows = new Map();
+                let isLoadingDate = false;
+                const persistedDates = new Set(attendanceDates);
+                const availableDates = new Set(attendanceDates);
                 const toolbar = createElement('div', { className: 'attendance-toolbar' });
                 const context = createElement('div', { className: 'attendance-context' });
                 context.appendChild(createElement('strong', { textContent: courseName }));
-                context.appendChild(createElement('span', { textContent: `Clase del ${date.split('-').reverse().join('/')} · ${students.length} estudiantes` }));
+                const dateSelector = document.createElement('select');
+                dateSelector.setAttribute('aria-label', 'Fecha de la clase');
+                function refreshDateOptions() {
+                    while (dateSelector.firstChild) dateSelector.removeChild(dateSelector.firstChild);
+                    Array.from(availableDates).sort().forEach(function (availableDate) {
+                        const option = createElement('option', {
+                            textContent: availableDate.split('-').reverse().join('/'),
+                        });
+                        option.value = availableDate;
+                        dateSelector.appendChild(option);
+                    });
+                    dateSelector.value = currentDate;
+                }
+                if (!availableDates.has(currentDate)) availableDates.add(currentDate);
+                refreshDateOptions();
+                context.appendChild(dateSelector);
+                const studentCount = createElement('span');
+                context.appendChild(studentCount);
                 toolbar.appendChild(context);
 
                 const summary = createElement('div', { className: 'attendance-summary' });
@@ -476,10 +510,10 @@
                 const actions = createElement('div', { className: 'attendance-actions' });
                 const markPresentButton = createButton('', 'Marcar todos presentes');
                 const resetButton = createButton('', 'Restablecer estados');
-                actions.append(markPresentButton, resetButton);
+                const deleteButton = createButton('', 'Borrar asistencia', true);
+                actions.append(markPresentButton, resetButton, deleteButton);
                 modalBody.append(toolbar, actions);
 
-                const rows = new Map();
                 const header = createElement('div', { className: 'attendance-row header-row' });
                 ['Estudiante', 'Presente', 'Ausente', 'Tarde', 'Retiro'].forEach(function (label) {
                     header.appendChild(createElement('div', { textContent: label }));
@@ -500,7 +534,20 @@
                     });
                 }
 
-                students.forEach(function (student) {
+                function readRecords() {
+                    return currentStudents.map(function (student) {
+                        const row = rows.get(student.studentId);
+                        const status = Object.keys(row.statusRadios).find(function (key) {
+                            return row.statusRadios[key].checked;
+                        });
+                        return { studentId: student.studentId, status, earlyDeparture: row.early.checked };
+                    });
+                }
+
+                function renderStudents() {
+                    while (header.nextSibling) header.nextSibling.remove();
+                    rows = new Map();
+                    currentStudents.forEach(function (student) {
                     const row = createElement('div', { className: 'attendance-row' });
                     const identity = createElement('div', { className: 'attendance-student' });
                     identity.appendChild(createElement('strong', { textContent: `${student.surname}, ${student.name}` }));
@@ -534,7 +581,10 @@
                     statusOptions.appendChild(earlyLabel);
                     modalBody.appendChild(row);
                     rows.set(student.studentId, { statusRadios, early });
-                });
+                    });
+                    studentCount.textContent = `Clase del ${currentDate.split('-').reverse().join('/')} · ${currentStudents.length} estudiantes`;
+                    updateSummary();
+                }
 
                 markPresentButton.onclick = function () {
                     rows.forEach(function (row) {
@@ -549,31 +599,76 @@
                     });
                     updateSummary();
                 };
-                updateSummary();
 
                 const btnSubmit = document.getElementById('btnSubmitModal');
                 const btnCancel = document.getElementById('btnCancelModal');
                 const cleanup = function () {
                     btnSubmit.onclick = null;
                     btnCancel.onclick = null;
+                    dateSelector.onchange = null;
                     modal.classList.remove('attendance-modal');
                     modal.close();
                 };
-                btnSubmit.onclick = function () {
-                    const records = students.map(function (student) {
-                        const row = rows.get(student.studentId);
-                        const status = Object.keys(row.statusRadios).find(function (key) {
-                            return row.statusRadios[key].checked;
-                        });
-                        return { studentId: student.studentId, status, earlyDeparture: row.early.checked };
+                async function loadRosterDate(nextDate) {
+                    const roster = await rpcFetch('/getAttendanceRoster', { courseId, date: nextDate });
+                    currentDate = nextDate;
+                    currentStudents = roster.students;
+                    renderStudents();
+                }
+                async function loadDate(nextDate) {
+                    await rpcFetch('/saveAttendance', {
+                        courseId,
+                        date: currentDate,
+                        records: readRecords()
                     });
+                    persistedDates.add(currentDate);
+                    availableDates.add(currentDate);
+                    await loadRosterDate(nextDate);
+                }
+                btnSubmit.onclick = function () {
+                    const records = readRecords();
                     cleanup();
-                    resolve(records);
+                    resolve({ date: currentDate, records });
                 };
                 btnCancel.onclick = function () {
                     cleanup();
                     resolve(null);
                 };
+                dateSelector.onchange = async function () {
+                    if (isLoadingDate || !dateSelector.value || dateSelector.value === currentDate) return;
+                    isLoadingDate = true;
+                    const nextDate = dateSelector.value;
+                    try {
+                        await loadDate(nextDate);
+                    } catch (e) {
+                        dateSelector.value = currentDate;
+                        notify(e.detail || 'No se pudo cargar la fecha seleccionada.', 'error', 'No se pudo completar');
+                    } finally {
+                        isLoadingDate = false;
+                    }
+                };
+                deleteButton.onclick = async function () {
+                    if (!persistedDates.has(currentDate) || !window.confirm(`¿Borrar la asistencia del ${currentDate.split('-').reverse().join('/')}?`)) return;
+                    isLoadingDate = true;
+                    try {
+                        await rpcFetch('/deleteAttendance', { courseId, date: currentDate });
+                        persistedDates.delete(currentDate);
+                        availableDates.delete(currentDate);
+                        const nextDate = Array.from(availableDates).sort()[0];
+                        if (!nextDate) {
+                            cleanup();
+                            resolve(null);
+                            return;
+                        }
+                        await loadRosterDate(nextDate);
+                        refreshDateOptions();
+                    } catch (e) {
+                        notify(e.detail || 'No se pudo borrar la asistencia.', 'error', 'No se pudo completar');
+                    } finally {
+                        isLoadingDate = false;
+                    }
+                };
+                renderStudents();
                 modal.showModal();
             });
         }
@@ -1702,12 +1797,15 @@
                         { name: 'academicYear', label: 'Ciclo lectivo', type: 'number' },
                         { name: 'startDate', label: 'Fecha de inicio', type: 'date' },
                         { name: 'endDate', label: 'Fecha de fin', type: 'date' },
-                        { name: 'holidays', label: 'Feriados (AAAA-MM-DD separados por coma)', placeholder: '2026-05-25, 2026-07-09' }
+                        { name: 'holidays', label: 'Feriados (DD-MM-AAAA separados por coma)', placeholder: '25-05-2026, 09-07-2026' }
                     ]);
                     if (!data) return;
                     data.academicYear = Number(data.academicYear);
-                    data.holidays = data.holidays.split(',').map(function (date) { return date.trim(); }).filter(Boolean);
                     try {
+                        data.holidays = data.holidays.split(',')
+                            .map(function (date) { return date.trim(); })
+                            .filter(Boolean)
+                            .map(normalizeHolidayDate);
                         const res = await rpcFetch('/newAcademicCalendar', data);
                         menu.printResult({ message: 'Calendario configurado correctamente', calendario: res });
                     } catch (e) { alert(`Error: ${e.detail}`); }
@@ -1746,11 +1844,21 @@
                             return;
                         }
                         const course = courses.find(function (item) { return item.courseId === selection.courseId; });
-                        const records = await showAttendanceModal(course.name, selection.date, roster.students);
-                        if (!records) return;
+                        const attendanceReport = await rpcFetch('/getAttendanceReport', {
+                            courseId: selection.courseId
+                        });
+                        const attendance = await showAttendanceModal(
+                            selection.courseId,
+                            course.name,
+                            selection.date,
+                            roster.students,
+                            attendanceReport.sessions.map(function (session) { return session.date; })
+                        );
+                        if (!attendance) return;
                         const result = await rpcFetch('/saveAttendance', {
-                            ...selection,
-                            records
+                            courseId: selection.courseId,
+                            date: attendance.date,
+                            records: attendance.records
                         });
                         menu.printResult({ message: 'Asistencia guardada correctamente', ...result });
                     } catch (e) { alert(`Error: ${e.detail}`); }
@@ -1785,7 +1893,7 @@
                     try {
                         const res = await rpcFetch('/newStudent', data);
                         menu.printResult(res);
-                        alert('Estudiante registrado con éxito.');
+                        notify('Estudiante registrado con éxito.', 'success', 'Operación completada');
                     } catch (e) { alert(`Error: ${e.detail}`); }
                 };
 

@@ -54,6 +54,49 @@ Set-Location ..
 
 El usuario inicial es `admin` y su contraseña es `1234`. Cambiá esa contraseña y no uses estas credenciales en un entorno publicado. El script de inicio levanta los dos servidores, pero no ejecuta la carga inicial.
 
+### Base de datos de prueba
+
+Para crear una base independiente con usuarios, cursos, estudiantes y asistencias de prueba:
+
+```powershell
+Set-Location .\backend
+node .\seed-test.mjs
+```
+
+El script crea `backend/db-test.sqlite3` y no modifica `backend/db.sqlite3`. Todos los usuarios de prueba usan la contraseña `1234`: `pablo` y `jazmin` son administradores, `carlos` es preceptor, `jose` tiene el curso `Algoritmos 1`, `matias` tiene `Seminario` y `Practicas 3`, y `gabriel` no tiene cursos.
+
+También se crea el usuario `admin` con rol Administrador y contraseña `1234`.
+Para iniciar el backend usando la base de prueba, ejecutá:
+
+```powershell
+Set-Location .\backend
+$env:DB_PATH = '.\db-test.sqlite3'
+node .\main.mjs
+```
+
+En Linux, usá:
+
+```bash
+cd backend
+DB_PATH=./db-test.sqlite3 node main.mjs
+```
+
+También podés iniciar el backend de prueba directamente desde la raíz:
+
+```bash
+./usarbdtest.sh
+```
+
+En Windows PowerShell:
+
+```powershell
+.\usarbdtest.ps1
+```
+
+Estos lanzadores usan `backend/db-test.sqlite3`. El frontend continúa iniciándose en otra terminal con el comando indicado en [Inicio manual](#inicio-manual).
+
+Volver a ejecutar `seed-test.mjs` borra y recrea todos los datos de prueba.
+
 Para detener los servidores, cerrá las ventanas de PowerShell abiertas por el script o presioná `Ctrl+C` en cada una.
 
 ### Inicio manual

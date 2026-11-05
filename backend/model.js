@@ -323,6 +323,19 @@ function saveAttendance(courseId, date, records, user) {
     }
 }
 
+function deleteAttendance(courseId, date, user) {
+    const course = getCourseForUser(courseId, user);
+    if (!course) throw new Error('CourseAccessDenied');
+
+    const session = db.prepare(
+        'SELECT id FROM attendance_sessions WHERE course_id = ? AND date = ?'
+    ).get(courseId, date);
+    if (!session) throw new Error('AttendanceNotFound');
+
+    const result = db.prepare('DELETE FROM attendance_sessions WHERE id = ?').run(session.id);
+    return { courseId, date, deleted: result.changes > 0 };
+}
+
 function getAttendanceReport(courseId, user) {
     const course = getCourseForUser(courseId, user);
     if (!course) throw new Error('CourseAccessDenied');
@@ -431,5 +444,6 @@ export {
     getAcademicCalendars,
     getAttendanceRoster,
     saveAttendance,
+    deleteAttendance,
     getAttendanceReport
 };

@@ -31,6 +31,7 @@ router.set('/newAcademicCalendar', handlers.newAcademicCalendarHandler);
 router.set('/listAcademicCalendars', handlers.listAcademicCalendarsHandler);
 router.set('/getAttendanceRoster', handlers.getAttendanceRosterHandler);
 router.set('/saveAttendance', handlers.saveAttendanceHandler);
+router.set('/deleteAttendance', handlers.deleteAttendanceHandler);
 router.set('/getAttendanceReport', handlers.getAttendanceReportHandler);
 
 async function requestDispatcher(request, response) {
