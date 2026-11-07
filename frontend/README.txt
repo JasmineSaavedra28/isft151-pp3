@@ -13,7 +13,8 @@ Los archivos JavaScript se cargan como scripts clásicos y en el orden indicado 
 No cambiar ese orden ni agregar type=module sin refactorizar dependencias. 
 Se mantuvo la lógica original y se separó en límites de funciones/clase para reducir el tamaño del índice y distribuir responsabilidades.
 
-Navegación móvil: mantiene siempre las cinco opciones. Cuenta abre un panel contextual: sin sesión permite iniciar sesión; con sesión muestra el estado y permite cerrar sesión.
+Navegación móvil: mantiene siempre las cinco opciones. 
+Cuenta abre un panel contextual: sin sesión permite iniciar sesión; con sesión muestra el estado y permite cerrar sesión.
 
 Flujo de acceso (estado de esta entrega):
 - Implementado: modal de inicio de sesión con usuario, contraseña, mostrar/ocultar contraseña y aceptación requerida de Términos y Política de privacidad.
@@ -27,4 +28,5 @@ Cambios de esta revisión:
 - El inicio de sesión NO solicita aceptar términos en cada ingreso.
 - El formulario de alta de usuario incluye casilla obligatoria de aceptación y contraseña inicial.
 - Los campos de contraseña usan un icono de ojo para mostrar/ocultar.
-- Importante: el backend actual de /registerUser no registra evidencia de aceptación; el checkbox es una validación de interfaz para el proceso de alta y no sustituye un registro legal persistente. Para evidencia auditable se debe ampliar API/base de datos con versión, fecha y usuario que aceptó.
+- Importante: el backend actual de /registerUser no registra evidencia de aceptación; el checkbox es una validación de interfaz para el proceso de alta y no sustituye un registro legal persistente. 
+Para evidencia auditable se debe ampliar API/base de datos con versión, fecha y usuario que aceptó.

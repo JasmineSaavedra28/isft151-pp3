@@ -362,3 +362,24 @@
 #formModal.auth-modal .auth-register-terms input { margin-top:3px; flex:0 0 auto; }
 #formModal.auth-modal .auth-register-terms a { color:var(--primary); }
 #formModal.auth-modal .auth-back-login { margin:10px 0 4px; }
+
+/* Cuenta y menú de usuario */
+.header-actions { position:relative; }
+.header-account-menu:not([hidden]) { position:absolute; top:calc(100% + 10px); right:0; z-index:60; display:grid; gap:4px; width:min(240px, calc(100vw - 32px)); padding:8px; border:1px solid var(--line); border-radius:12px; background:var(--surface); box-shadow:0 14px 36px rgba(20,35,65,.18); }
+.header-account-menu button { width:100%; justify-content:flex-start; min-height:40px; background:transparent; color:var(--ink); text-align:left; }
+.account-page { max-width:760px; }
+.account-page-info { margin:18px 0; padding:14px 16px; border:1px solid var(--line); border-radius:12px; background:var(--canvas); }
+.account-page-info p { margin:6px 0; }
+@media(max-width:700px) {
+  .header { align-items:flex-start; flex-wrap:wrap; gap:8px; }
+  .header-heading { flex:1 1 100%; min-width:0; }
+  .header-actions { width:100%; justify-content:flex-end; }
+  .header-actions #btnLogin { max-width:100%; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+  #formModal.auth-modal { width:calc(100vw - 20px); max-width:440px; max-height:calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); margin:auto; padding:16px 15px; overflow:hidden; }
+  #formModal.auth-modal #modalBody { max-height:calc(100dvh - 190px); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; padding:0 5px 12px 0; }
+  #formModal.auth-modal .auth-dialog-actions { position:sticky; bottom:0; padding:10px 0 0; margin-top:8px; background:var(--surface); }
+  #formModal.auth-modal .auth-register-fields .form-group { margin:9px 0; }
+  #formModal.auth-modal .auth-register-fields input { min-height:42px; }
+}
+
+.user-status { display:none !important; }

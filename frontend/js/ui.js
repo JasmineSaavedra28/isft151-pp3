@@ -160,6 +160,7 @@
 
         const navigationSections = [
             'dashboardOverview',
+            'accountPage',
             'adminContainer',
             'studentManagementContainer',
             'courseManagementContainer',

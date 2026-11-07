@@ -65,12 +65,22 @@
                 const headerActions = createElement('div', { className: 'header-actions' });
                 headerActions.appendChild(createElement('span', {
                     id: 'userStatus',
-                    textContent: 'Desconectado',
+                    textContent: '',
                     className: 'user-status'
                 }));
                 headerActions.appendChild(createButton('btnLogin', 'Iniciar Sesión'));
                 headerActions.appendChild(createButton('btnLogout', 'Cerrar Sesión', true));
                 headerActions.lastChild.style.display = 'none';
+                const headerMenu = createElement('div', { className: 'header-account-menu', id: 'headerAccountMenu' });
+                headerMenu.hidden = true;
+                [['dashboardOverview','Inicio'],['adminContainer','Administración'],['studentManagementContainer','Estudiantes'],['courseManagementContainer','Cursos'],['calendarManagementContainer','Calendario']].forEach(function(item){
+                    const option = createButton('', item[1]); option.dataset.accountTarget = item[0];
+                    option.addEventListener('click', function(){ showSection(item[0]); headerMenu.hidden = true; }); headerMenu.appendChild(option);
+                });
+                const menuLogout = createButton('headerMenuLogout', 'Cerrar sesión', true);
+                menuLogout.addEventListener('click', function(){ document.getElementById('btnLogout').click(); headerMenu.hidden = true; });
+                headerMenu.appendChild(menuLogout);
+                headerActions.appendChild(headerMenu);
                 header.appendChild(headerActions);
 
                 const actionContainer = createElement('div', {
@@ -92,6 +102,16 @@
                     textContent: 'Elegí una sección del menú para administrar la información de tu institución.'
                 }));
                 actionContainer.appendChild(overviewCard);
+                const accountPage = createElement('section', { id: 'accountPage', className: 'card account-page', style: 'display:none;' });
+                accountPage.appendChild(createElement('span', { className: 'section-kicker', textContent: 'Mi cuenta' }));
+                accountPage.appendChild(createElement('h2', { id: 'accountPageTitle', textContent: 'Tu cuenta' }));
+                accountPage.appendChild(createElement('p', { id: 'accountPageDescription', textContent: 'Iniciá sesión para acceder a tu cuenta institucional.' }));
+                const accountInfo = createElement('div', { className: 'account-page-info' });
+                accountInfo.append(createElement('p', { id: 'accountPageUser', textContent: 'Estado: sin iniciar sesión' }), createElement('p', { id: 'accountPageRole', textContent: 'Rol: —' }));
+                const accountLogin = createButton('accountPageLogin', 'Iniciar sesión');
+                accountLogin.addEventListener('click', function(){ document.getElementById('btnLogin').click(); });
+                accountPage.append(accountInfo, accountLogin);
+                actionContainer.appendChild(accountPage);
                 actionContainer.appendChild(createCard('adminContainer', 'Administración', [
                     ['btnNewUser', 'Agregar Usuario / Rol'],
                     ['btnModifyUser', 'Modificar Usuario'],
@@ -171,11 +191,19 @@
                 });
                 accountPanel.append(accountStatus, accountDetails, accountAction);
                 accountButton.addEventListener('click', function () {
-                    const opening = accountPanel.hidden;
-                    accountButton.removeAttribute('aria-current');
-                    closeMobileMenu();
-                    accountPanel.hidden = !opening;
-                    accountButton.setAttribute('aria-expanded', String(opening));
+                    closeMobileMenu(); closeMobileAccountPanel();
+                    const action = document.getElementById('actionContainer');
+                    const welcome = document.getElementById('welcomeScreen');
+                    if (action) action.style.display = 'block';
+                    if (welcome) welcome.style.display = 'none';
+                    const page = document.getElementById('accountPage');
+                    if (page) {
+                        page.style.display = 'block';
+                        document.querySelectorAll('#actionContainer > section, #actionContainer > .card').forEach(function(el){ if (el.id !== 'accountPage') el.style.display = 'none'; });
+                    }
+                    document.querySelectorAll('.mobile-quick-nav button').forEach(function(btn){ btn.removeAttribute('aria-current'); });
+                    accountButton.setAttribute('aria-current','page');
+                    updateAccountPage();
                 });
                 quickNav.append(quickHome, quickStudents, quickAttendance, quickReports, accountButton);
                 shell.append(sidebar, backdrop, mainContent, quickNav, accountPanel);
@@ -572,10 +600,32 @@
                     });
             }
 
+            updateAccountPage() {
+                const signedIn = Boolean(authSessionToken);
+                const title = document.getElementById('accountPageTitle');
+                const description = document.getElementById('accountPageDescription');
+                const user = document.getElementById('accountPageUser');
+                const role = document.getElementById('accountPageRole');
+                const login = document.getElementById('accountPageLogin');
+                if (title) title.textContent = signedIn ? 'Tu cuenta institucional' : 'Bienvenido a MiRegistro';
+                if (description) description.textContent = signedIn ? 'Consultá los datos de tu sesión y administrá el acceso a tu cuenta.' : 'Desde acá podés iniciar sesión para acceder a las herramientas de tu institución.';
+                if (user) user.textContent = signedIn ? 'Usuario: ' + currentUserId : 'Estado: sin iniciar sesión';
+                const status = document.getElementById('userStatus');
+                if (role) role.textContent = signedIn ? (status ? status.textContent.split('(').pop().replace(')','') : 'Rol asignado') : 'Rol: —';
+                if (login) { login.textContent = signedIn ? 'Cerrar sesión' : 'Iniciar sesión'; login.classList.toggle('danger', signedIn); login.onclick = function(){ document.getElementById(signedIn ? 'btnLogout' : 'btnLogin').click(); }; }
+            }
+
             connectedCallback() {
                 const menu = this;
                 updateNavigation(null);
-                document.getElementById('btnLogin').onclick = async function () {
+                document.getElementById('btnLogin').onclick = async function (event) {
+                    if (authSessionToken) {
+                        if (event) event.stopPropagation();
+                        const panel = document.getElementById('headerAccountMenu');
+                        if (panel) panel.hidden = !panel.hidden;
+                        this.setAttribute('aria-expanded', String(panel && !panel.hidden));
+                        return;
+                    }
                     const data = await showAuthModal();
 
                     if (!data || !data.user || !data.pass) return;
@@ -587,11 +637,15 @@
                         const res = await rpcFetch('/login');
                         document.getElementById('userStatus').textContent = `Usuario: ${currentUserId} (${res.role})`;
                         const loginButton = document.getElementById('btnLogin');
-                        loginButton.textContent = currentUserId;
-                        loginButton.disabled = true;
+                        loginButton.textContent = res.role === 'Administrador' ? 'Admin' : currentUserId;
+                        loginButton.disabled = false;
+                        loginButton.setAttribute('aria-haspopup','true');
+                        loginButton.setAttribute('aria-expanded','false');
                         loginButton.hidden = false;
                         loginButton.style.display = 'inline-flex';
-                        document.getElementById('btnLogout').style.display = 'inline-block';
+                        const headerMenu=document.getElementById('headerAccountMenu'); if(headerMenu) headerMenu.hidden=true;
+                        document.getElementById('btnLogout').style.display = 'none';
+                        menu.updateAccountPage();
                         document.getElementById('welcomeScreen').style.display = 'none';
                         document.getElementById('actionContainer').style.display = 'block';
                         document.getElementById('adminContainer').style.display = res.role === 'Administrador' ? 'block' : 'none';
@@ -622,10 +676,27 @@
                     authSessionToken = null;
                     document.getElementById('userStatus').textContent = 'Desconectado';
                     document.getElementById('btnLogin').textContent = 'Iniciar Sesión';
+                    document.getElementById('btnLogin').onclick = async function () {
+                        const data = await showAuthModal();
+                        if (!data || !data.user || !data.pass) return;
+                        currentUserId = data.user; authSessionToken = await computeSHA256(data.pass);
+                        try {
+                            const res = await rpcFetch('/login');
+                            const loginButton = document.getElementById('btnLogin');
+                            loginButton.textContent = res.role === 'Administrador' ? 'Admin' : currentUserId;
+                            document.getElementById('userStatus').textContent = `Usuario: ${currentUserId} (${res.role})`;
+                            document.getElementById('welcomeScreen').style.display = 'none';
+                            document.getElementById('actionContainer').style.display = 'block';
+                            ['adminContainer','studentManagementContainer','courseManagementContainer','calendarManagementContainer'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display=res.role==='Administrador'?'block':'none'; });
+                            const teacher=document.getElementById('teacherAttendanceContainer'); if(teacher) teacher.style.display=res.role==='Docente'?'block':'none';
+                            updateNavigation(res.role); menu.updateAccountPage(); showSection('dashboardOverview');
+                        } catch(e) { currentUserId=null; authSessionToken=null; notify(e.detail || 'No se pudo iniciar sesión.', 'error'); document.getElementById('btnLogin').textContent='Iniciar Sesión'; }
+                    };
                     document.getElementById('btnLogin').disabled = false;
                     document.getElementById('btnLogin').hidden = false;
                     document.getElementById('btnLogin').style.display = 'inline-flex';
                     document.getElementById('btnLogout').style.display = 'none';
+                    const headerMenu=document.getElementById('headerAccountMenu'); if(headerMenu) headerMenu.hidden=true;
                     document.getElementById('actionContainer').style.display = 'none';
                     document.getElementById('welcomeScreen').style.display = 'grid';
                     document.getElementById('adminContainer').style.display = 'none';
@@ -634,6 +705,7 @@
                     document.getElementById('calendarManagementContainer').style.display = 'none';
                     document.getElementById('teacherAttendanceContainer').style.display = 'none';
                     updateNavigation(null);
+                    menu.updateAccountPage();
                     menu.clearAttendanceReport();
                     menu.printResult({ message: 'Sesión cerrada' });
                 };
