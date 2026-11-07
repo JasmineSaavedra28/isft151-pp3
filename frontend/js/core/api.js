@@ -7,6 +7,7 @@ const host = 'http://localhost:3000';
 
 let currentUserId = null;
 let authSessionToken = null;
+let currentRole = null;
 
 const notificationIcons = {
     success: 'check_circle',

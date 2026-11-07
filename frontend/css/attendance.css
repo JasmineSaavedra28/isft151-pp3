@@ -414,6 +414,59 @@
     line-height: 1.5;
 }
 
+/* Estado inicial de la sección Reportes: invita a elegir un curso
+   en lugar de mostrar una tarjeta vacía. */
+.attendance-report-empty {
+    display: grid;
+    justify-items: center;
+    gap: 7px;
+    padding: 32px 22px;
+    border: 1px dashed var(--line-strong);
+    border-radius: 16px;
+    background: var(--surface-2);
+    text-align: center;
+}
+
+.attendance-report-empty > .material-symbol {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--primary);
+    font-size: 27px;
+    box-shadow: var(--shadow-xs);
+}
+
+.attendance-report-empty-copy {
+    display: grid;
+    gap: 5px;
+    max-width: 430px;
+}
+
+.attendance-report-empty-copy strong {
+    color: var(--ink-soft);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.attendance-report-empty-copy p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.55;
+}
+
+.attendance-report-empty-action {
+    min-height: 38px;
+    margin-top: 7px;
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-size: 12.5px;
+}
+
 /* ------------------------------------------------------------
    Lista de clases accionable (solo móvil)
    Una línea por fecha con los conteos de la clase y una acción

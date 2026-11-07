@@ -27,6 +27,7 @@ frontend/
 │   ├── navigation.css  # menú lateral, menú móvil y cuenta
 │   ├── components.css  # botones, tarjetas, formularios, tablas, etc.
 │   ├── welcome.css     # pantalla de bienvenida
+│   ├── dashboard.css   # panel de resumen con datos reales
 │   ├── attendance.css  # asistencia y reportes
 │   ├── auth.css        # ingreso y alta de cuenta
 │   └── legal.css       # páginas legales
@@ -37,6 +38,7 @@ frontend/
     ├── ui/
     │   ├── navigation.js   # navegación y tarjetas
     │   ├── welcome.js      # bienvenida
+    │   ├── dashboard.js    # panel de resumen
     │   └── footer.js       # footer institucional
     ├── modals/
     │   ├── auth.js         # ingreso / alta
@@ -65,6 +67,7 @@ Los scripts son clásicos y comparten el ámbito global. **Respetar el orden de 
 | Botones, tarjetas, tablas, diálogos | `css/components.css` |
 | Menú lateral y navegación móvil | `css/navigation.css` |
 | Pantalla de inicio | `css/welcome.css` y `js/ui/welcome.js` |
+| Panel de resumen | `css/dashboard.css` y `js/ui/dashboard.js` |
 | Asistencia y reportes | `css/attendance.css` y `js/features/` |
 | Login y alta de cuenta | `css/auth.css` y `js/modals/auth.js` |
 | Textos legales | `terminos.html` y `privacidad.html` |

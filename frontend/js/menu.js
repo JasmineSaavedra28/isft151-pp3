@@ -144,20 +144,7 @@ class Menu extends HTMLElement {
             style: 'display: none;'
         });
 
-        const overviewCard = createElement('section', {
-            id: 'dashboardOverview',
-            className: 'card section-overview'
-        });
-        overviewCard.appendChild(createElement('span', {
-            className: 'section-kicker',
-            textContent: 'Panel principal'
-        }));
-        overviewCard.appendChild(createElement('h2', {
-            textContent: 'Todo listo para comenzar'
-        }));
-        overviewCard.appendChild(createElement('p', {
-            textContent: 'Elegí una sección del menú para administrar la información de tu institución.'
-        }));
+        const overviewCard = createDashboardOverview();
         actionContainer.appendChild(overviewCard);
 
         const accountPage = createElement('section', { id: 'accountPage', className: 'card account-page', style: 'display:none;' });

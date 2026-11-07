@@ -62,6 +62,16 @@ function showSection(targetId) {
         if (section) section.style.display = sectionId === targetId ? 'block' : 'none';
     });
 
+    if (targetId === 'dashboardOverview' && typeof refreshDashboard === 'function') {
+        const resultCard = document.getElementById('resultCard');
+        if (resultCard) resultCard.style.display = 'none';
+        refreshDashboard();
+    }
+
+    if (targetId === 'attendanceReportCard' && typeof ensureAttendanceReportLanding === 'function') {
+        ensureAttendanceReportLanding();
+    }
+
     document.querySelectorAll('.mobile-quick-nav button').forEach(function (button) {
         button.removeAttribute('aria-current');
     });
@@ -145,6 +155,8 @@ function createQuickNavItem(targetId, icon, text, extraClass = '') {
 }
 
 function updateNavigation(role) {
+    currentRole = role || null;
+
     // El Administrador ve todas las secciones de gestión. El Docente
     // trabaja con sus cursos, sus alumnos y las asistencias. Cualquier
     // otro rol (o una sesión sin iniciar) no ve secciones internas.

@@ -461,3 +461,52 @@ Object.assign(Menu.prototype, {
             });
     }
 });
+
+function ensureAttendanceReportLanding() {
+    const reportCard = document.getElementById('attendanceReportCard');
+    const tableContainer = document.getElementById('attendanceReportTable');
+    if (!reportCard || !tableContainer) return;
+
+    // Si ya hay un reporte o un estado vacío, no se reemplaza.
+    if (tableContainer.childElementCount > 0) return;
+
+    const isTeacher = currentRole === 'Docente';
+    const empty = createElement('div', { className: 'attendance-report-empty' });
+
+    const icon = createElement('span', {
+        className: 'material-symbol',
+        textContent: 'analytics'
+    });
+    icon.setAttribute('aria-hidden', 'true');
+
+    const copy = createElement('div', { className: 'attendance-report-empty-copy' });
+    copy.append(
+        createElement('strong', {
+            textContent: isTeacher
+                ? 'Consultá la asistencia de tus cursos'
+                : 'Consultá la asistencia de un curso'
+        }),
+        createElement('p', {
+            textContent: isTeacher
+                ? 'Elegí uno de tus cursos para ver la planilla, los conteos por fecha y el porcentaje de cada alumno.'
+                : 'Elegí un curso para ver la planilla, los conteos por fecha y el porcentaje de cada estudiante.'
+        })
+    );
+
+    const action = createElement('button', {
+        type: 'button',
+        className: 'attendance-report-empty-action',
+        textContent: 'Elegir curso'
+    });
+    action.addEventListener('click', function () {
+        const target = document.getElementById(
+            isTeacher ? 'btnTeacherAttendanceReport' : 'btnAttendanceReport'
+        );
+        if (target) target.click();
+    });
+
+    empty.append(icon, copy, action);
+    tableContainer.appendChild(empty);
+    reportCard.style.display = 'block';
+}
+
