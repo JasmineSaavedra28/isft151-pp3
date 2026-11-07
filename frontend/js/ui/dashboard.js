@@ -95,7 +95,6 @@ function createDashboardOverview() {
         'aria-busy': 'true'
     });
 
-    const side = createElement('div', { className: 'dashboard-side' });
     const kpis = createElement('section', {
         id: 'dashboardKpis',
         className: 'dashboard-kpis',
@@ -107,8 +106,7 @@ function createDashboardOverview() {
         'aria-label': 'Accesos rápidos'
     });
 
-    side.append(kpis, quickCard);
-    grid.append(attendanceCard, side);
+    grid.append(attendanceCard, kpis, quickCard);
     section.append(hero, grid);
 
     updateDashboardHero();
@@ -865,14 +863,14 @@ function renderDashboardKpis(data) {
         {
             label: 'Cursos',
             value: formatDashboardNumber(data.courses.length),
-            note: isTeacher ? 'asignados a vos' : 'en la institución',
+            note: isTeacher ? 'asignados a vos' : 'en total',
             icon: 'school',
             tone: 'blue'
         },
         {
             label: 'Alumnos',
             value: formatDashboardNumber(data.studentCount),
-            note: isTeacher ? 'en tus cursos' : 'activos',
+            note: isTeacher ? 'tus cursos' : 'activos',
             icon: 'groups',
             tone: 'violet'
         },
@@ -881,7 +879,7 @@ function renderDashboardKpis(data) {
             value: data.lifetimePercentage === null
                 ? '—'
                 : `${formatDashboardPercent(data.lifetimePercentage)}%`,
-            note: 'promedio del ciclo',
+            note: 'del ciclo',
             icon: 'insights',
             tone: 'green',
             meter: data.lifetimePercentage
