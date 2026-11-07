@@ -668,7 +668,7 @@
                     try { await rpcFetch('/logout'); } catch(e){}
                     currentUserId = null;
                     authSessionToken = null;
-                    document.getElementById('userStatus').textContent = 'Desconectado';
+                    document.getElementById('userStatus').textContent = '';
                     document.getElementById('btnLogin').textContent = 'Iniciar Sesión';
                     document.getElementById('btnLogin').onclick = async function () {
                         const data = await showAuthModal();
@@ -701,7 +701,10 @@
                     updateNavigation(null);
                     menu.updateAccountPage();
                     menu.clearAttendanceReport();
-                    menu.printResult({ message: 'Sesión cerrada' });
+                    const resultCard = document.getElementById('resultCard');
+                    const resultContent = document.getElementById('resultContent');
+                    if (resultContent) resultContent.replaceChildren();
+                    if (resultCard) resultCard.style.display = 'none';
                 };
 
                 document.getElementById('btnNewUser').onclick = async function () {

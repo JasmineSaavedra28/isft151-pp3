@@ -448,3 +448,63 @@
   pointer-events:none;
 }
 @media(max-width:640px) { .welcome-hero::after { right:8px; top:24px; transform:none; font-size:100px; } }
+
+
+/* Identidad MiRegistro: panel ilustrativo propio, sin fotos de stock. */
+.welcome-hero { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr); align-items:center; column-gap:clamp(20px,4vw,54px); }
+.welcome-hero > .welcome-eyebrow,.welcome-hero > h2,.welcome-hero > p,.welcome-hero > .welcome-actions { grid-column:1; }
+.welcome-visual { grid-column:2; grid-row:1 / span 4; width:100%; max-width:390px; justify-self:end; padding:18px; border:1px solid rgba(255,255,255,.3); border-radius:19px; background:rgba(255,255,255,.96); color:#1d3153; box-shadow:0 22px 55px rgba(5,19,48,.25); transform:rotate(1.2deg); }
+.welcome-visual-top { display:flex; align-items:center; gap:8px; font-size:12px; }
+.welcome-visual-top > .material-symbol { color:#3867d6; font-size:22px; }
+.welcome-visual-top strong { font-size:13px; }
+.welcome-visual-live { margin-left:auto; padding:4px 7px; border-radius:99px; background:#e8f6ee; color:#247448; font-size:8px; font-weight:800; letter-spacing:.06em; }
+.welcome-visual-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; margin:16px 0; }
+.welcome-visual-stat { display:grid; grid-template-columns:1fr auto; align-items:center; gap:3px 5px; padding:9px; border:1px solid #e7ebf3; border-radius:11px; background:#f8faff; }
+.welcome-visual-stat .material-symbol { grid-column:1/-1; color:#3867d6; font-size:17px; }
+.welcome-visual-stat small { color:#6b7890; font-size:9px; }
+.welcome-visual-stat b { color:#1d3153; font-size:16px; }
+.welcome-visual-rows { display:grid; gap:3px; }
+.welcome-visual-row { display:grid; grid-template-columns:48px 1fr 20px; align-items:center; gap:8px; padding:8px 4px; border-top:1px solid #edf0f5; font-size:10px; }
+.welcome-visual-row strong { color:#263b5d; }
+.welcome-visual-row span:nth-child(2) { color:#718097; }
+.welcome-visual-row .material-symbol { color:#2d9a61; font-size:17px; }
+
+/* Formularios de acceso: campos cómodos, legibles y alineados en ambas pantallas. */
+#formModal.auth-modal { width:min(540px,calc(100vw - 32px)); max-width:540px; max-height:min(92dvh,820px); padding:30px 32px 24px; box-sizing:border-box; }
+#formModal.auth-modal #modalTitle { flex:0 0 auto; margin:0 0 18px; font-size:26px; line-height:1.2; }
+#formModal.auth-modal #modalBody { width:100%; box-sizing:border-box; padding:0 2px 14px 0; }
+#formModal.auth-modal .auth-intro { margin:0 0 22px; line-height:1.55; }
+#formModal.auth-modal .form-group { display:flex; flex-direction:column; gap:8px; margin:0 0 19px; }
+#formModal.auth-modal .form-group label { color:var(--ink); font-size:13px; font-weight:700; }
+#formModal.auth-modal .form-group input { display:block; width:100%; min-width:0; height:49px; min-height:49px; box-sizing:border-box; padding:12px 14px; border:1px solid #d7deea; border-radius:11px; background:#fff; color:#1c2b42; font-size:15px; }
+#formModal.auth-modal .form-group input:focus { outline:3px solid rgba(56,103,214,.14); border-color:#3867d6; }
+#formModal.auth-modal .auth-password-wrap { width:100%; min-width:0; gap:4px; padding-right:4px; border:1px solid #d7deea; border-radius:11px; background:#fff; }
+#formModal.auth-modal .auth-password-wrap:focus-within { outline:3px solid rgba(56,103,214,.14); border-color:#3867d6; }
+#formModal.auth-modal .auth-password-wrap input { border:0; outline:0; box-shadow:none; }
+#formModal.auth-modal .auth-password-wrap .auth-eye-button { flex:0 0 42px; width:42px; height:42px; }
+#formModal.auth-modal .auth-dialog-actions { display:flex; flex:0 0 auto; gap:12px; padding-top:17px; margin-top:10px; }
+#formModal.auth-modal .auth-dialog-actions button { min-height:48px; flex:1 1 0; border-radius:11px; font-size:14px; }
+#formModal.auth-modal .auth-register-fields { gap:0; }
+#formModal.auth-modal .auth-register-terms { margin:10px 0 16px; font-size:13px; }
+#formModal.auth-modal .auth-footnote { margin-top:22px; padding-top:17px; }
+@media(max-width:700px) {
+  .welcome-hero { grid-template-columns:1fr; row-gap:22px; padding:24px 20px; }
+  .welcome-hero > .welcome-eyebrow,.welcome-hero > h2,.welcome-hero > p,.welcome-hero > .welcome-actions,.welcome-visual { grid-column:1; grid-row:auto; }
+  .welcome-visual { width:100%; max-width:none; justify-self:stretch; box-sizing:border-box; padding:14px; transform:none; }
+  .welcome-visual-stats { gap:5px; }
+  .welcome-visual-stat { padding:7px; }
+  #formModal.auth-modal { width:calc(100vw - 24px); max-width:480px; max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); padding:22px 20px 16px; border-radius:18px; }
+  #formModal.auth-modal #modalTitle { font-size:23px; margin-bottom:14px; }
+  #formModal.auth-modal #modalBody { max-height:calc(100dvh - 230px); padding:0 3px 14px 0; }
+  #formModal.auth-modal .form-group { gap:7px; margin-bottom:16px; }
+  #formModal.auth-modal .form-group input { height:48px; min-height:48px; font-size:16px; }
+  #formModal.auth-modal .auth-dialog-actions { position:sticky; bottom:0; gap:10px; padding-top:12px; margin-top:5px; background:#fff; }
+  #formModal.auth-modal .auth-dialog-actions button { min-width:0; min-height:46px; padding:10px 8px; font-size:14px; }
+}
+@media(max-width:380px) {
+  #formModal.auth-modal { padding:18px 15px 14px; }
+  #formModal.auth-modal #modalBody { max-height:calc(100dvh - 210px); }
+  #formModal.auth-modal .auth-dialog-actions { gap:7px; }
+  #formModal.auth-modal .auth-dialog-actions button { font-size:13px; }
+  .welcome-visual-row { grid-template-columns:42px 1fr 18px; font-size:9px; }
+}

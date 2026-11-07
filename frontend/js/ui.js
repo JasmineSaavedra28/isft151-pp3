@@ -90,6 +90,17 @@
             hero.appendChild(createElement('div', { className: 'welcome-eyebrow', textContent: 'MiRegistro · Gestión escolar' }));
             hero.appendChild(createElement('h2', { textContent: 'Tu escuela, más organizada.' }));
             hero.appendChild(createElement('p', { textContent: 'Un espacio simple para organizar alumnos, cursos y asistencias. Todo lo importante de la gestión escolar, en un mismo lugar.' }));
+            const visual = createElement('div', { className: 'welcome-visual', 'aria-hidden': 'true' });
+            const visualTop = createElement('div', { className: 'welcome-visual-top' });
+            visualTop.append(createElement('span', { className: 'material-symbol', textContent: 'fact_check' }), createElement('strong', { textContent: 'Asistencia de hoy' }), createElement('span', { className: 'welcome-visual-live', textContent: 'EN ORDEN' }));
+            const visualStats = createElement('div', { className: 'welcome-visual-stats' });
+            [['check_circle','Presentes','28'],['schedule','Tardanzas','2'],['cancel','Ausentes','1']].forEach(function(item){
+                const stat = createElement('div', { className: 'welcome-visual-stat' });
+                stat.append(createElement('span', { className: 'material-symbol', textContent: item[0] }), createElement('small', { textContent: item[1] }), createElement('b', { textContent: item[2] })); visualStats.appendChild(stat);
+            });
+            const visualRows = createElement('div', { className: 'welcome-visual-rows' });
+            [['3° A','31 estudiantes','check_circle'],['4° B','29 estudiantes','check_circle'],['5° A','En seguimiento','schedule']].forEach(function(item){ const line=createElement('div',{className:'welcome-visual-row'}); line.append(createElement('strong',{textContent:item[0]}),createElement('span',{textContent:item[1]}),createElement('span',{className:'material-symbol',textContent:item[2]})); visualRows.appendChild(line); });
+            visual.append(visualTop, visualStats, visualRows); hero.appendChild(visual);
             const actions = createElement('div', { className: 'welcome-actions' });
             const login = createButton('welcomeLoginButton', 'Iniciar sesión');
             login.classList.add('welcome-login');
