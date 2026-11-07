@@ -42,7 +42,7 @@
         .sidebar-nav button:hover, .sidebar-nav button:focus-visible { background: rgba(255,255,255,.1); color: white; }
         .material-symbol { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; letter-spacing: normal; text-transform: none; white-space: nowrap; direction: ltr; font-feature-settings: 'liga'; -webkit-font-feature-settings: 'liga'; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20; -webkit-font-smoothing: antialiased; }
         .nav-icon { display: grid; place-items: center; width: 28px; flex: 0 0 28px; color: #c7d2f0; font-size: 22px; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .mobile-menu-toggle, .mobile-quick-nav, .sidebar-backdrop { display: none; }
+        .mobile-menu-toggle, .mobile-quick-nav, .sidebar-backdrop, .mobile-top-menu-button { display: none; }
         .mobile-account-panel { display: none; }
         .mobile-account-panel[hidden] { display: none !important; }
         .dashboard-shell.sidebar-collapsed .brand-text,
@@ -151,6 +151,23 @@
             .sidebar-backdrop { position: fixed; inset: 0; z-index: 40; display: none; width: 100%; height: 100%; padding: 0; border: 0; border-radius: 0; background: rgba(12,18,32,.48); }
             .dashboard-shell.mobile-menu-open .sidebar-backdrop { display: block; }
             .mobile-menu-toggle { display: none !important; }
+            .header-heading { width: 100%; justify-content: space-between; align-items: flex-start; }
+            .mobile-top-menu-button {
+                display: grid;
+                place-items: center;
+                flex: 0 0 42px;
+                width: 42px;
+                min-height: 42px;
+                margin-left: 8px;
+                padding: 0;
+                border: 1px solid var(--line);
+                border-radius: 50%;
+                background: var(--surface);
+                color: var(--primary);
+                font-size: 25px;
+                box-shadow: 0 2px 8px rgba(31,41,51,.06);
+            }
+            .mobile-top-menu-button:hover { background: #eef3ff; }
             .mobile-quick-nav {
                 position: fixed;
                 right: 0;
@@ -198,7 +215,7 @@
                 box-shadow: 0 10px 28px rgba(31,41,51,.18);
             }
             .mobile-account-status { margin: 0; color: var(--muted); font-size: 13px; font-weight: 600; }
-            .mobile-account-action { width: 100%; }
+            .mobile-account-action, .mobile-account-menu { width: 100%; }
             .main-content { padding: 20px 14px 0; }
             .site-footer { align-items: flex-end; justify-content: flex-end; padding: 20px 0 24px; text-align: right; }
             .site-footer-authors { gap: 8px 12px; }
@@ -812,11 +829,9 @@
             shell.classList.remove('mobile-menu-open');
             document.body.classList.remove('mobile-menu-open');
             toggle.setAttribute('aria-expanded', 'false');
-            const moreButton = document.querySelector('.mobile-more-button');
-            if (moreButton) {
-                moreButton.setAttribute('aria-expanded', 'false');
-                moreButton.querySelector('.quick-nav-icon').textContent = 'grid_view';
-            }
+            document.querySelectorAll('.mobile-top-menu-button, .mobile-account-menu').forEach(function (button) {
+                button.setAttribute('aria-expanded', 'false');
+            });
         }
 
         function closeMobileAccountPanel() {
@@ -971,7 +986,15 @@
                 const headingText = createElement('div');
                 headingText.appendChild(createElement('h1', { textContent: 'Panel de gestión' }));
                 headingText.appendChild(createElement('p', { textContent: 'Administrá estudiantes, cursos y asistencias de forma simple.' }));
-                heading.append(menuToggle, headingText);
+                const topMenuButton = createElement('button', {
+                    className: 'mobile-top-menu-button material-symbol',
+                    textContent: 'add'
+                });
+                topMenuButton.type = 'button';
+                topMenuButton.setAttribute('aria-label', 'Abrir menú de secciones');
+                topMenuButton.setAttribute('aria-expanded', 'false');
+                topMenuButton.title = 'Abrir menú';
+                heading.append(menuToggle, headingText, topMenuButton);
                 header.appendChild(heading);
                 const headerActions = createElement('div', { className: 'header-actions' });
                 headerActions.appendChild(createElement('span', {
@@ -1059,18 +1082,8 @@
                     createQuickNavItem('studentManagementContainer', 'groups', 'Alumnos'),
                     quickAttendance,
                     quickReports,
-                    createElement('button', { className: 'mobile-more-button' }),
                     createElement('button', { className: 'mobile-account-button' })
                 );
-                const moreButton = quickNav.querySelector('.mobile-more-button');
-                moreButton.setAttribute('aria-label', 'Abrir menú');
-                moreButton.setAttribute('aria-expanded', 'false');
-                moreButton.title = 'Menú';
-                moreButton.append(
-                    createElement('span', { className: 'material-symbol quick-nav-icon', textContent: 'grid_view' }),
-                    createElement('span', { className: 'quick-nav-label', textContent: 'Menú' })
-                );
-                moreButton.firstChild.setAttribute('aria-hidden', 'true');
                 const accountButton = quickNav.lastChild;
                 accountButton.setAttribute('aria-label', 'Cuenta');
                 accountButton.setAttribute('aria-expanded', 'false');
@@ -1081,14 +1094,15 @@
                     createElement('span', { className: 'quick-nav-label', textContent: 'Cuenta' })
                 );
                 accountButton.firstChild.setAttribute('aria-hidden', 'true');
-                moreButton.addEventListener('click', function () {
+                function toggleMobileSectionMenu() {
                     const isOpen = shell.classList.toggle('mobile-menu-open');
                     document.body.classList.toggle('mobile-menu-open', isOpen);
-                    moreButton.setAttribute('aria-expanded', String(isOpen));
-                    moreButton.setAttribute('aria-label', isOpen ? 'Cerrar menú' : 'Abrir menú');
-                    moreButton.querySelector('.quick-nav-icon').textContent = isOpen ? 'close' : 'grid_view';
+                    topMenuButton.setAttribute('aria-expanded', String(isOpen));
+                    topMenuButton.textContent = isOpen ? 'close' : 'add';
+                    topMenuButton.setAttribute('aria-label', isOpen ? 'Cerrar menú de secciones' : 'Abrir menú de secciones');
                     menuToggle.setAttribute('aria-expanded', String(isOpen));
-                });
+                }
+                topMenuButton.addEventListener('click', toggleMobileSectionMenu);
                 const accountPanel = createElement('section', {
                     id: 'mobileAccountPanel',
                     className: 'mobile-account-panel'
@@ -1096,6 +1110,13 @@
                 accountPanel.setAttribute('aria-label', 'Cuenta');
                 accountPanel.setAttribute('role', 'dialog');
                 accountPanel.hidden = true;
+                const accountMenuButton = createButton('mobileAccountMenu', 'Abrir menú de secciones');
+                accountMenuButton.classList.add('mobile-account-menu');
+                accountMenuButton.addEventListener('click', function () {
+                    closeMobileAccountPanel();
+                    if (!shell.classList.contains('mobile-menu-open')) toggleMobileSectionMenu();
+                });
+                accountPanel.appendChild(accountMenuButton);
                 accountPanel.appendChild(createElement('p', {
                     className: 'mobile-account-status',
                     textContent: 'Desconectado'
