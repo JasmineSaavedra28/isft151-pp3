@@ -383,3 +383,68 @@
 }
 
 .user-status { display:none !important; }
+
+/* Encabezado móvil: marca a la izquierda y acceso alineado a la derecha. */
+@media (max-width: 700px) {
+  .header {
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    flex-wrap:nowrap !important;
+    gap:8px !important;
+    min-width:0;
+  }
+  .header-heading {
+    display:flex !important;
+    flex:1 1 auto !important;
+    width:auto !important;
+    min-width:0 !important;
+    align-items:center !important;
+    gap:6px !important;
+  }
+  .header-brand-mark { flex:0 0 30px !important; width:30px !important; font-size:27px !important; }
+  .header-brand-text { min-width:0; }
+  .header h1 { font-size:clamp(1rem, 4.4vw, 1.2rem) !important; white-space:nowrap; }
+  .header p { font-size:clamp(9px, 2.7vw, 11px) !important; white-space:nowrap; }
+  .header-actions {
+    display:flex !important;
+    flex:0 0 auto !important;
+    width:auto !important;
+    margin:0 !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+  }
+  .header-actions #btnLogin {
+    min-height:38px !important;
+    padding:8px 11px !important;
+    font-size:12px !important;
+    border-radius:10px;
+    white-space:nowrap !important;
+  }
+  .header-account-menu:not([hidden]) { right:0; left:auto; }
+}
+@media (max-width: 360px) {
+  .header-brand-mark { flex-basis:25px !important; width:25px !important; font-size:23px !important; }
+  .header h1 { font-size:15px !important; }
+  .header p { font-size:9px !important; }
+  .header-actions #btnLogin { padding:7px 8px !important; font-size:11px !important; }
+}
+
+/* Más identidad visual sin depender de fotografías de stock. */
+.welcome-hero { isolation:isolate; }
+.welcome-hero::after {
+  content:'library_add_check';
+  position:absolute;
+  z-index:-1;
+  right:clamp(16px, 6vw, 76px);
+  top:50%;
+  transform:translateY(-50%) rotate(-8deg);
+  font-family:'Material Symbols Outlined';
+  font-size:clamp(110px, 20vw, 230px);
+  line-height:1;
+  color:rgba(255,255,255,.10);
+  font-variation-settings:'FILL' 1,'wght' 300,'GRAD' 0,'opsz' 48;
+  pointer-events:none;
+}
+@media(max-width:640px) { .welcome-hero::after { right:8px; top:24px; transform:none; font-size:100px; } }

@@ -120,13 +120,7 @@
                     ['btnUpdateUserRole', 'Modificar Rol'],
                     ['btnListUsers', 'Listar Usuarios']
                 ], 'display: none;'));
-                const adminLogoutButton = createButton('adminLogoutButton', 'Cerrar sesión', true);
-                adminLogoutButton.addEventListener('click', function () {
-                    document.getElementById('btnLogout').click();
-                });
-                document.getElementById('adminContainer');
-                const adminCard = actionContainer.querySelector('#adminContainer');
-                if (adminCard) adminCard.appendChild(adminLogoutButton);
+                // Cerrar sesión queda en el menú de cuenta, no mezclado con las acciones de Usuarios.
                 actionContainer.appendChild(createCard('studentManagementContainer', 'Gestión de Estudiantes', [
                     ['btnNewStudent', 'Registrar Estudiante'],
                     ['btnModifyStudent', 'Modificar Estudiante'],
