@@ -247,7 +247,7 @@ Object.assign(Menu.prototype, {
         if (pageCount > 1) tableContainer.appendChild(pagination);
 
         const table = document.createElement('table');
-        table.className = 'report-table report-desktop compact';
+        table.className = 'report-table compact';
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
         const reportHeaders = ['Estudiante'].concat(
@@ -311,41 +311,9 @@ Object.assign(Menu.prototype, {
         tableContainer.appendChild(tableScroll);
         tableContainer.appendChild(createElement('p', {
             className: 'attendance-report-legend',
-            textContent: 'Leyenda: P = presente · T = tarde · A = ausente · * = retiro anticipado. Encabezados de fecha en formato día/mes.'
+            textContent: 'Leyenda: P = presente · T = tarde · A = ausente · * = retiro anticipado. Encabezados de fecha en formato día/mes. Deslizá la planilla para ver todas las fechas.'
         }));
 
-        // Vista alternativa para celular: una tarjeta por estudiante con chips por clase.
-        const mobileCards = createElement('div', { className: 'attendance-mobile-cards' });
-        pageStudents.forEach(function (student) {
-            const metrics = studentMetrics.get(student.studentId);
-            const card = createElement('div', { className: 'student-card' });
-            const cardHeader = createElement('div', { className: 'student-card-header' });
-            cardHeader.append(
-                createElement('span', { className: 'student-card-name', textContent: `${student.surname}, ${student.name}` }),
-                createElement('span', { className: 'student-card-percent', textContent: `${metrics.attendancePercentage}%` })
-            );
-            card.appendChild(cardHeader);
-
-            const chips = createElement('div', { className: 'student-card-sessions' });
-            filteredSessions.forEach(function (session) {
-                const chip = createElement('span', { className: 'session-chip' });
-                const dateLabel = session.date.slice(8, 10) + '/' + session.date.slice(5, 7);
-                const record = student.attendanceByDate[session.date];
-                if (!record) {
-                    chip.classList.add('empty');
-                    chip.textContent = `${dateLabel} -`;
-                } else {
-                    const status = { present: 'P', late: 'T', absent: 'A' }[record.status] || '-';
-                    chip.textContent = `${dateLabel} ${status}${record.earlyDeparture ? '*' : ''}`;
-                    chip.classList.add({ present: 'status-present', late: 'status-late', absent: 'status-absent' }[record.status] || '');
-                }
-                chips.appendChild(chip);
-            });
-
-            card.appendChild(chips);
-            mobileCards.appendChild(card);
-        });
-        tableContainer.appendChild(mobileCards);
         reportCard.style.display = 'block';
     },
 

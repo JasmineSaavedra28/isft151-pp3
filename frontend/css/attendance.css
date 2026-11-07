@@ -383,75 +383,6 @@
     font-weight: 800;
 }
 
-.attendance-mobile-cards {
-    display: none;
-    gap: 10px;
-}
-
-.attendance-mobile-cards .student-card {
-    padding: 12px 13px;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: #fff;
-}
-
-.attendance-mobile-cards .student-card-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 8px;
-}
-
-.attendance-mobile-cards .student-card-name {
-    color: var(--ink);
-    font-size: 13.5px;
-    font-weight: 800;
-}
-
-.attendance-mobile-cards .student-card-percent {
-    color: var(--primary);
-    font-size: 12px;
-    font-weight: 800;
-}
-
-.attendance-mobile-cards .student-card-sessions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-}
-
-.attendance-mobile-cards .session-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 7px;
-    border: 1px solid var(--line);
-    border-radius: 7px;
-    background: var(--surface-2);
-    color: var(--ink-soft);
-    font-size: 11px;
-}
-
-.attendance-mobile-cards .session-chip.empty {
-    color: #98a2b3;
-}
-
-.attendance-mobile-cards .session-chip.status-present {
-    border-color: var(--success-line);
-    background: var(--success-soft);
-}
-
-.attendance-mobile-cards .session-chip.status-late {
-    border-color: var(--warning-line);
-    background: var(--warning-soft);
-}
-
-.attendance-mobile-cards .session-chip.status-absent {
-    border-color: var(--danger-line);
-    background: var(--danger-soft);
-}
-
 .attendance-report-pagination {
     display: flex;
     align-items: center;
@@ -484,26 +415,41 @@
 }
 
 @media (max-width: 800px) {
-    #attendanceReportTable.report-table-wrap {
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-
-    #attendanceReportTable .report-desktop {
-        display: none !important;
-    }
-
-    .attendance-mobile-cards {
-        display: grid;
-    }
-
     #attendanceReportCard {
         padding: 15px;
     }
 
+    #attendanceReportTable.report-table-wrap {
+        width: 100%;
+        max-width: 100%;
+        overflow: visible;
+        border: 0;
+        background: transparent;
+    }
+
+    /* En celular el reporte se mantiene como grilla tipo planilla:
+       nombre fijo a la izquierda y fechas con scroll horizontal. */
     .report-scroll {
-        display: none;
+        display: block;
+        max-height: 58vh;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+    }
+
+    .report-table.compact th,
+    .report-table.compact td {
+        padding: 6px 5px;
+        font-size: 11px;
+    }
+
+    .report-table.compact th:first-child,
+    .report-table.compact td:first-child {
+        min-width: 120px;
+        max-width: 120px;
+        padding-left: 7px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 
@@ -513,25 +459,57 @@
     }
 
     .attendance-summary {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 5px;
+    }
+
+    .summary-item {
+        padding: 7px 8px;
+    }
+
+    .summary-item span {
+        font-size: 9.5px;
+    }
+
+    .summary-item strong {
+        font-size: 1.05rem;
     }
 
     .attendance-row {
-        grid-template-columns: 1fr auto;
-        padding: 12px 8px;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        padding: 8px 4px;
     }
 
     .attendance-row.header-row {
         display: none;
     }
 
+    .attendance-student {
+        min-width: 0;
+    }
+
+    .attendance-student strong {
+        overflow: hidden;
+        font-size: 12.5px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .attendance-student span {
+        font-size: 10.5px;
+    }
+
     .status-options {
-        grid-column: 1 / -1;
-        grid-template-columns: repeat(4, 1fr);
+        grid-column: auto;
+        grid-template-columns: repeat(4, 38px);
+        gap: 4px;
     }
 
     .status-option span {
-        min-height: 44px;
+        min-height: 38px;
+        border-radius: 8px;
+        font-size: 12px;
     }
 
     .attendance-actions button {
@@ -552,7 +530,13 @@
     }
 
     .attendance-report-filter-header {
+        flex-wrap: wrap;
         align-items: flex-start;
+    }
+
+    .attendance-report-count {
+        width: 100%;
+        text-align: left;
     }
 
     .attendance-report-pagination {

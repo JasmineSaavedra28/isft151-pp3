@@ -33,7 +33,7 @@ class Menu extends HTMLElement {
         sidebar.appendChild(createElement('div', { className: 'sidebar-label', textContent: 'Navegación' }));
 
         const sidebarNav = createElement('nav', { className: 'sidebar-nav' });
-        sidebarNav.appendChild(createNavItem('actionContainer', 'home', 'Resumen'));
+        sidebarNav.appendChild(createNavItem('dashboardOverview', 'home', 'Resumen'));
         sidebarNav.appendChild(createNavItem('adminContainer', 'manage_accounts', 'Usuarios'));
         sidebarNav.appendChild(createNavItem('studentManagementContainer', 'groups', 'Estudiantes'));
         sidebarNav.appendChild(createNavItem('courseManagementContainer', 'school', 'Cursos'));

@@ -126,6 +126,13 @@ function createQuickNavItem(targetId, icon, text, extraClass = '') {
     if (targetId) {
         button.addEventListener('click', function () {
             if (button.disabled) return;
+            if (!authSessionToken) {
+                const loginButton = document.getElementById('btnLogin');
+                if (loginButton) loginButton.click();
+                closeMobileMenu();
+                closeMobileAccountPanel();
+                return;
+            }
             showSection(button.dataset.targetId);
             closeMobileMenu();
             closeMobileAccountPanel();
@@ -138,7 +145,7 @@ function updateNavigation(role) {
     const allowedSections = role === 'Administrador'
         ? null
         : role === 'Docente'
-            ? new Set(['actionContainer', 'teacherAttendanceContainer', 'attendanceReportCard'])
+            ? new Set(['dashboardOverview', 'teacherAttendanceContainer', 'attendanceReportCard'])
             : new Set();
 
     document.querySelectorAll('.sidebar-nav button[data-target-id]').forEach(function (button) {
@@ -178,10 +185,13 @@ function updateNavigation(role) {
     [quickHome, quickStudents, quickAttendance, quickReports].forEach(function (button) {
         if (!button) return;
         const targetId = button.dataset.targetId;
-        const permitted = Boolean(role) && (!allowedSections || allowedSections.has(targetId));
-        button.disabled = !permitted;
-        button.setAttribute('aria-disabled', String(!permitted));
-        button.title = permitted ? button.getAttribute('aria-label') : 'Iniciá sesión para acceder';
+        const requiresLogin = !role;
+        const permitted = !requiresLogin && (!allowedSections || allowedSections.has(targetId));
+        button.disabled = !requiresLogin && !permitted;
+        button.setAttribute('aria-disabled', String(button.disabled));
+        button.title = button.disabled
+            ? 'No disponible para tu rol'
+            : (requiresLogin ? 'Iniciá sesión para acceder' : button.getAttribute('aria-label'));
     });
 
     if (quickReports) quickReports.style.display = 'grid';
