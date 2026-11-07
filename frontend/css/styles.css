@@ -353,3 +353,12 @@
 .auth-eye-button:hover { background:var(--surface, #f2f5f9); color:var(--primary); }
 .auth-eye-button svg { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
 .auth-terms-info { margin:14px 0; color:var(--muted); font-size:12px; line-height:1.5; }
+
+/* Mensajes dentro del diálogo nativo: permanecen en su top layer y no quedan detrás. */
+#formModal.auth-modal { position:fixed; }
+#formModal.auth-modal .auth-inline-notification { position:relative; inset:auto; z-index:2; width:100%; margin:0 0 12px; box-sizing:border-box; }
+#formModal.auth-modal .auth-register-fields { display:grid; grid-template-columns:1fr; gap:2px; }
+#formModal.auth-modal .auth-register-terms { display:flex; align-items:flex-start; gap:9px; margin:14px 0; color:var(--muted); font-size:12px; line-height:1.5; }
+#formModal.auth-modal .auth-register-terms input { margin-top:3px; flex:0 0 auto; }
+#formModal.auth-modal .auth-register-terms a { color:var(--primary); }
+#formModal.auth-modal .auth-back-login { margin:10px 0 4px; }

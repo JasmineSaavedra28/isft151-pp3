@@ -5,15 +5,16 @@ const host = 'http://localhost:3000';
         function notify(message, type = 'success', title = 'Información') {
             const region = document.getElementById('notificationRegion');
             if (!region) return;
+            const activeDialog = document.getElementById('formModal');
+            const inDialog = Boolean(activeDialog && activeDialog.open);
             const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
+            notification.className = `notification ${type}${inDialog ? ' auth-inline-notification' : ''}`;
             const heading = document.createElement('strong');
             heading.textContent = title;
             notification.append(heading, document.createTextNode(message));
-            region.appendChild(notification);
-            window.setTimeout(function () {
-                notification.remove();
-            }, 5000);
+            if (inDialog) activeDialog.insertBefore(notification, activeDialog.firstChild);
+            else region.appendChild(notification);
+            window.setTimeout(function () { notification.remove(); }, 5000);
         }
 
         window.alert = function (message) {
@@ -116,7 +117,41 @@ const host = 'http://localhost:3000';
                 const foot = document.createElement('div'); foot.className = 'auth-footnote';
                 const footText = document.createElement('span'); footText.textContent = '¿No tenés cuenta?';
                 const createAccount = document.createElement('button'); createAccount.type = 'button'; createAccount.className = 'auth-create-account'; createAccount.textContent = 'Crear usuario';
-                createAccount.addEventListener('click', function(){ notify('La creación de cuentas nuevas necesita habilitar un registro público seguro en el backend. Por ahora, las cuentas se crean desde Administración.', 'info', 'Crear usuario'); });
+                createAccount.addEventListener('click', function(){
+                    title.textContent = 'Crear cuenta';
+                    body.replaceChildren();
+                    const registerIntro = document.createElement('p'); registerIntro.className = 'auth-intro'; registerIntro.textContent = 'Completá tus datos para solicitar una cuenta en MiRegistro.';
+                    const fields = document.createElement('div'); fields.className = 'auth-register-fields';
+                    function addField(labelText, id, type, placeholder, autocomplete) {
+                        const group = document.createElement('div'); group.className = 'form-group';
+                        const label = document.createElement('label'); label.htmlFor = id; label.textContent = labelText;
+                        const input = document.createElement('input'); input.id = id; input.type = type; input.placeholder = placeholder; input.autocomplete = autocomplete || 'off'; input.required = true;
+                        group.append(label, input); fields.appendChild(group); return input;
+                    }
+                    const fullName = addField('Nombre y apellido', 'registerFullName', 'text', 'Tu nombre completo', 'name');
+                    const email = addField('Correo electrónico', 'registerEmail', 'email', 'nombre@institucion.edu.ar', 'email');
+                    const newUser = addField('Nombre de usuario', 'registerUser', 'text', 'Elegí un usuario', 'username');
+                    const newPass = addField('Crear contraseña', 'registerPass', 'password', 'Mínimo 8 caracteres', 'new-password');
+                    const confirmPass = addField('Repetir contraseña', 'registerConfirmPass', 'password', 'Volvé a escribir la contraseña', 'new-password');
+                    [newPass, confirmPass].forEach(function(input){ const wrap = document.createElement('div'); wrap.className = 'auth-password-wrap'; input.parentNode.insertBefore(wrap, input); wrap.appendChild(input); const eye = document.createElement('button'); eye.type = 'button'; eye.className = 'auth-eye-button'; eye.setAttribute('aria-label', 'Mostrar contraseña'); eye.innerHTML = eyeOpen; eye.addEventListener('click', function(){ const show = input.type === 'password'; input.type = show ? 'text' : 'password'; eye.innerHTML = show ? eyeClosed : eyeOpen; eye.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña'); }); wrap.appendChild(eye); });
+                    const termsLabel = document.createElement('label'); termsLabel.className = 'auth-register-terms';
+                    const termsCheck = document.createElement('input'); termsCheck.type = 'checkbox'; termsCheck.required = true;
+                    const termsText = document.createElement('span'); termsText.append('Acepto los ');
+                    const termsA = document.createElement('a'); termsA.href = 'terminos.html'; termsA.target = '_blank'; termsA.rel = 'noopener'; termsA.textContent = 'Términos y condiciones';
+                    const privacyA = document.createElement('a'); privacyA.href = 'privacidad.html'; privacyA.target = '_blank'; privacyA.rel = 'noopener'; privacyA.textContent = 'Política de privacidad';
+                    termsText.append(termsA, ' y la ', privacyA, '.'); termsLabel.append(termsCheck, termsText);
+                    const back = document.createElement('button'); back.type = 'button'; back.className = 'auth-link auth-back-login'; back.textContent = 'Ya tengo una cuenta · Iniciar sesión';
+                    back.addEventListener('click', function(){ title.textContent = 'Ingresar a MiRegistro'; body.replaceChildren(intro, userGroup, passGroup, forgot, separator, google, foot); submit.textContent = 'Iniciar sesión'; });
+                    body.append(registerIntro, fields, termsLabel, back);
+                    submit.textContent = 'Crear cuenta';
+                    submit.onclick = function(){
+                        if (!fullName.value.trim() || !email.validity.valid || !newUser.value.trim() || !newPass.value || !confirmPass.value) { notify('Completá todos los campos con información válida.', 'error', 'Revisá el formulario'); return; }
+                        if (newPass.value.length < 8) { notify('La contraseña debe tener al menos 8 caracteres.', 'error', 'Contraseña no válida'); return; }
+                        if (newPass.value !== confirmPass.value) { notify('Las contraseñas no coinciden.', 'error', 'Revisá la contraseña'); return; }
+                        if (!termsCheck.checked) { notify('Para crear la cuenta tenés que aceptar los términos y la política de privacidad.', 'error', 'Falta aceptar los documentos'); return; }
+                        notify('El formulario está preparado, pero el registro público todavía debe conectarse a un endpoint seguro del backend. No se creó ninguna cuenta.', 'info', 'Registro pendiente de conexión');
+                    };
+                });
                 foot.append(footText, createAccount);
                 body.append(intro, userGroup, passGroup, forgot, separator, google, foot);
                 cancel.textContent = 'Volver';
