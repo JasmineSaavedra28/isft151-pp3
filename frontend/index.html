@@ -41,7 +41,7 @@
         .sidebar-nav button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 42px; padding: 10px 12px; border: 0; border-radius: 9px; background: transparent; color: var(--sidebar-muted); text-align: left; font-weight: 600; }
         .sidebar-nav button:hover, .sidebar-nav button:focus-visible { background: rgba(255,255,255,.1); color: white; }
         .material-symbol { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; letter-spacing: normal; text-transform: none; white-space: nowrap; direction: ltr; font-feature-settings: 'liga'; -webkit-font-feature-settings: 'liga'; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20; -webkit-font-smoothing: antialiased; }
-        .nav-icon { display: grid; place-items: center; width: 22px; color: #b9c8f1; font-size: 16px; }
+        .nav-icon { display: grid; place-items: center; width: 28px; flex: 0 0 28px; color: #c7d2f0; font-size: 22px; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         .mobile-menu-toggle, .mobile-quick-nav, .sidebar-backdrop { display: none; }
         .mobile-account-panel { display: none; }
         .mobile-account-panel[hidden] { display: none !important; }
@@ -52,7 +52,7 @@
         .dashboard-shell.sidebar-collapsed .brand { flex-direction: column; gap: 8px; padding: 0 0 24px; }
         .dashboard-shell.sidebar-collapsed .sidebar-collapse-toggle { margin: 0; }
         .dashboard-shell.sidebar-collapsed .sidebar-nav button { justify-content: center; padding-right: 0; padding-left: 0; font-size: 0; }
-        .dashboard-shell.sidebar-collapsed .nav-icon { width: auto; font-size: 18px; }
+        .dashboard-shell.sidebar-collapsed .nav-icon { width: auto; flex-basis: auto; font-size: 23px; }
         .sidebar-footer { margin-top: auto; padding: 18px 12px 0; color: #8193c1; font-size: 12px; line-height: 1.5; }
         .main-content { min-width: 0; padding: 28px clamp(18px, 4vw, 48px) 0; display: flex; flex-direction: column; min-height: 100vh; }
         .site-footer { width: 100%; margin-top: auto; padding: 22px 0 26px; border-top: 1px solid var(--line); background: transparent; display: flex; align-items: flex-end; justify-content: flex-end; text-align: right; }
@@ -147,7 +147,7 @@
             .dashboard-shell.sidebar-collapsed .sidebar-footer { display: block; }
             .dashboard-shell.sidebar-collapsed .sidebar-collapse-toggle { display: none; }
             .dashboard-shell.sidebar-collapsed .sidebar-nav button { justify-content: flex-start; padding: 10px 12px; font-size: 14px; }
-            .dashboard-shell.sidebar-collapsed .nav-icon { width: 22px; font-size: 16px; }
+            .dashboard-shell.sidebar-collapsed .nav-icon { width: 28px; font-size: 22px; }
             .sidebar-backdrop { position: fixed; inset: 0; z-index: 40; display: none; width: 100%; height: 100%; padding: 0; border: 0; border-radius: 0; background: rgba(12,18,32,.48); }
             .dashboard-shell.mobile-menu-open .sidebar-backdrop { display: block; }
             .mobile-menu-toggle { display: grid; place-items: center; flex: 0 0 40px; width: 40px; min-height: 40px; padding: 0; font-size: 20px; }
@@ -178,7 +178,7 @@
                 color: var(--ink);
             }
             .mobile-quick-nav button:hover { background: #eef3ff; color: var(--primary); }
-            .quick-nav-icon { color: var(--primary); font-size: 18px; line-height: 1; }
+            .quick-nav-icon { color: var(--primary); font-size: 22px; line-height: 1; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
             .quick-nav-label { max-width: 100%; overflow: hidden; font-size: 10px; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
             .mobile-account-panel:not([hidden]) {
                 position: fixed;
@@ -907,8 +907,8 @@
                 sidebar.setAttribute('aria-label', 'Navegación principal');
                 const brand = createElement('div', { className: 'brand' });
                 const brandMark = createElement('div', { className: 'brand-mark' });
-                brandMark.setAttribute('aria-label', 'Libreta de asistencia');
-                brandMark.appendChild(createElement('span', { className: 'material-symbol', textContent: 'fact_check' }));
+                brandMark.setAttribute('aria-label', 'MiRegistro');
+                brandMark.appendChild(createElement('span', { className: 'material-symbol', textContent: 'library_add_check' }));
                 brand.appendChild(brandMark);
                 const brandText = createElement('div', { className: 'brand-text' });
                 brandText.appendChild(createElement('strong', { textContent: 'MiRegistro' }));
