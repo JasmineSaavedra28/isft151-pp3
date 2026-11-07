@@ -42,6 +42,7 @@ function initSessionHandlers(menu) {
             document.getElementById('courseManagementContainer').style.display = res.role === 'Administrador' ? 'block' : 'none';
             document.getElementById('calendarManagementContainer').style.display = res.role === 'Administrador' ? 'block' : 'none';
             document.getElementById('teacherAttendanceContainer').style.display = res.role === 'Docente' ? 'block' : 'none';
+            document.getElementById('teacherStudentsContainer').style.display = res.role === 'Docente' ? 'block' : 'none';
 
             updateNavigation(res.role);
             showSection('dashboardOverview');
@@ -91,6 +92,8 @@ function initSessionHandlers(menu) {
 
                 const teacher = document.getElementById('teacherAttendanceContainer');
                 if (teacher) teacher.style.display = res.role === 'Docente' ? 'block' : 'none';
+                const teacherStudents = document.getElementById('teacherStudentsContainer');
+                if (teacherStudents) teacherStudents.style.display = res.role === 'Docente' ? 'block' : 'none';
 
                 updateNavigation(res.role);
                 menu.updateAccountPage();
@@ -118,6 +121,7 @@ function initSessionHandlers(menu) {
         document.getElementById('courseManagementContainer').style.display = 'none';
         document.getElementById('calendarManagementContainer').style.display = 'none';
         document.getElementById('teacherAttendanceContainer').style.display = 'none';
+        document.getElementById('teacherStudentsContainer').style.display = 'none';
         updateNavigation(null);
         menu.updateAccountPage();
         menu.clearAttendanceReport();

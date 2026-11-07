@@ -22,7 +22,8 @@ const dataLabels = {
     message: 'Mensaje',
     present: 'Presentes',
     absent: 'Ausentes',
-    late: 'Tardes'
+    late: 'Tardes',
+    attendancePercentage: 'Asistencia'
 };
 
 const badgeVariants = {

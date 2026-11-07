@@ -181,6 +181,13 @@
     padding: 0 clamp(18px, 4vw, 48px) 0;
 }
 
+/* Al navegar con showSection, el título de la sección no debe quedar
+   tapado por el header sticky. */
+#actionContainer > section,
+#actionContainer > .card {
+    scroll-margin-top: 96px;
+}
+
 .header {
     position: sticky;
     top: 0;
@@ -394,6 +401,11 @@
     .header {
         margin: 0 -14px 18px;
         padding: 12px 14px;
+    }
+
+    #actionContainer > section,
+    #actionContainer > .card {
+        scroll-margin-top: 78px;
     }
 
     .header-heading {

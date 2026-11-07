@@ -84,4 +84,48 @@ function initAttendanceHandlers(menu) {
 
     document.getElementById('btnAttendanceReport').onclick = showAttendanceReport;
     document.getElementById('btnTeacherAttendanceReport').onclick = showAttendanceReport;
+
+    const listMyStudentsButton = document.getElementById('btnTeacherListStudents');
+    if (listMyStudentsButton) {
+        listMyStudentsButton.onclick = async function () {
+            try {
+                const courses = await rpcFetch('/listCourses');
+                if (courses.length === 0) {
+                    alert('No tenés cursos asignados.');
+                    return;
+                }
+
+                const selection = await showFormModal('Ver alumnos de un curso', [
+                    {
+                        name: 'courseId',
+                        label: 'Curso',
+                        type: 'select',
+                        options: courses.map(function (course) {
+                            return { value: course.courseId, text: course.name };
+                        })
+                    }
+                ]);
+                if (!selection) return;
+
+                // /getAttendanceReport es un endpoint habilitado para Docente
+                // y devuelve los estudiantes inscriptos con sus totales.
+                const report = await rpcFetch('/getAttendanceReport', selection);
+                menu.printResult({
+                    alumnos: report.students.map(function (student) {
+                        return {
+                            surname: student.surname,
+                            name: student.name,
+                            dni: student.dni,
+                            attendancePercentage: `${student.attendancePercentage}%`,
+                            present: student.present,
+                            late: student.late,
+                            absent: student.absent
+                        };
+                    })
+                });
+            } catch (e) {
+                alert(`Error: ${e.detail}`);
+            }
+        };
+    }
 }

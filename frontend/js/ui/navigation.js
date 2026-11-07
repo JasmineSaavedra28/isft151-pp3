@@ -7,6 +7,7 @@ const navigationSections = [
     'accountPage',
     'adminContainer',
     'studentManagementContainer',
+    'teacherStudentsContainer',
     'courseManagementContainer',
     'calendarManagementContainer',
     'teacherAttendanceContainer',
@@ -18,6 +19,7 @@ const sectionTitles = {
     accountPage: 'Mi cuenta',
     adminContainer: 'Usuarios y roles',
     studentManagementContainer: 'Estudiantes',
+    teacherStudentsContainer: 'Mis alumnos',
     courseManagementContainer: 'Cursos e inscripciones',
     calendarManagementContainer: 'Calendario académico',
     teacherAttendanceContainer: 'Mis cursos y asistencia',
@@ -35,6 +37,7 @@ const actionIcons = {
     btnModifyStudent: 'edit',
     btnDeleteStudent: 'delete',
     btnListStudents: 'list',
+    btnTeacherListStudents: 'groups',
     btnNewCourse: 'add_box',
     btnModifyCourse: 'edit',
     btnListCourses: 'list',
@@ -142,16 +145,30 @@ function createQuickNavItem(targetId, icon, text, extraClass = '') {
 }
 
 function updateNavigation(role) {
+    // El Administrador ve todas las secciones de gestión. El Docente
+    // trabaja con sus cursos, sus alumnos y las asistencias. Cualquier
+    // otro rol (o una sesión sin iniciar) no ve secciones internas.
+    const adminSections = new Set(navigationSections.filter(function (sectionId) {
+        return sectionId !== 'teacherStudentsContainer';
+    }));
+    const teacherSections = new Set([
+        'dashboardOverview',
+        'teacherStudentsContainer',
+        'teacherAttendanceContainer',
+        'attendanceReportCard'
+    ]);
     const allowedSections = role === 'Administrador'
-        ? null
+        ? adminSections
         : role === 'Docente'
-            ? new Set(['dashboardOverview', 'teacherAttendanceContainer', 'attendanceReportCard'])
+            ? teacherSections
             : new Set();
 
     document.querySelectorAll('.sidebar-nav button[data-target-id]').forEach(function (button) {
-        button.style.display = !allowedSections || allowedSections.has(button.dataset.targetId)
-            ? 'flex'
-            : 'none';
+        button.style.display = allowedSections.has(button.dataset.targetId) ? 'flex' : 'none';
+    });
+
+    document.querySelectorAll('[data-account-target]').forEach(function (button) {
+        button.style.display = allowedSections.has(button.dataset.accountTarget) ? 'flex' : 'none';
     });
 
     const sidebarGuest = document.querySelector('.sidebar-guest');
@@ -174,6 +191,14 @@ function updateNavigation(role) {
     const quickReports = quickNav.querySelector('[data-quick-key="reports"]');
     const quickAccount = quickNav.querySelector('.mobile-account-button');
 
+    if (quickStudents) {
+        quickStudents.dataset.targetId = role === 'Docente'
+            ? 'teacherStudentsContainer'
+            : 'studentManagementContainer';
+        quickStudents.querySelector('.quick-nav-label').textContent = 'Alumnos';
+        quickStudents.setAttribute('aria-label', 'Alumnos');
+    }
+
     if (quickAttendance) {
         quickAttendance.dataset.targetId = role === 'Docente'
             ? 'teacherAttendanceContainer'
@@ -186,7 +211,7 @@ function updateNavigation(role) {
         if (!button) return;
         const targetId = button.dataset.targetId;
         const requiresLogin = !role;
-        const permitted = !requiresLogin && (!allowedSections || allowedSections.has(targetId));
+        const permitted = !requiresLogin && allowedSections.has(targetId);
         button.disabled = !requiresLogin && !permitted;
         button.setAttribute('aria-disabled', String(button.disabled));
         button.title = button.disabled

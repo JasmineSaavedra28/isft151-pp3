@@ -1,6 +1,6 @@
 # Frontend
 
-Interfaz web de MiRegistro desarrollada con HTML, CSS y JavaScript clásico. El backend no se modifica: se mantienen los mismos endpoints y contratos existentes.
+Interfaz web de MiRegistro desarrollada con HTML, CSS y JavaScript clásico.
 
 ## Ejecutar
 

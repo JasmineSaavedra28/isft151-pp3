@@ -36,6 +36,7 @@ class Menu extends HTMLElement {
         sidebarNav.appendChild(createNavItem('dashboardOverview', 'home', 'Resumen'));
         sidebarNav.appendChild(createNavItem('adminContainer', 'manage_accounts', 'Usuarios'));
         sidebarNav.appendChild(createNavItem('studentManagementContainer', 'groups', 'Estudiantes'));
+        sidebarNav.appendChild(createNavItem('teacherStudentsContainer', 'groups', 'Alumnos'));
         sidebarNav.appendChild(createNavItem('courseManagementContainer', 'school', 'Cursos'));
         sidebarNav.appendChild(createNavItem('calendarManagementContainer', 'calendar_month', 'Calendario'));
         sidebarNav.appendChild(createNavItem('teacherAttendanceContainer', 'fact_check', 'Asistencias'));
@@ -116,6 +117,7 @@ class Menu extends HTMLElement {
             ['dashboardOverview', 'Inicio'],
             ['adminContainer', 'Administración'],
             ['studentManagementContainer', 'Estudiantes'],
+            ['teacherStudentsContainer', 'Mis alumnos'],
             ['courseManagementContainer', 'Cursos'],
             ['calendarManagementContainer', 'Calendario']
         ].forEach(function (item) {
@@ -191,6 +193,10 @@ class Menu extends HTMLElement {
             ['btnDeleteStudent', 'Eliminar Estudiante', true],
             ['btnListStudents', 'Listar Estudiantes']
         ], 'display: none;', 'groups', 'Registrá y mantené actualizada la información de estudiantes.'));
+
+        actionContainer.appendChild(createCard('teacherStudentsContainer', 'Mis alumnos', [
+            ['btnTeacherListStudents', 'Ver Mis Alumnos']
+        ], 'display: none;', 'groups', 'Consultá los estudiantes inscriptos en tus cursos y su asistencia.'));
 
         actionContainer.appendChild(createCard('courseManagementContainer', 'Cursos e inscripciones', [
             ['btnNewCourse', 'Crear Curso'],
