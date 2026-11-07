@@ -285,6 +285,10 @@
             const actionButton = document.querySelector('.mobile-account-action');
             const status = document.querySelector('.mobile-account-status');
             const signedIn = Boolean(authSessionToken);
+            // Cuenta permanece siempre visible; el panel cambia según la sesión.
+            button.style.display = 'grid';
+            const quickNav = button.closest('.mobile-quick-nav');
+            if (quickNav) quickNav.classList.remove('logged-out');
             button.setAttribute('aria-label', 'Cuenta');
             button.title = 'Cuenta';
             if (actionButton) {

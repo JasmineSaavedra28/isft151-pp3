@@ -580,7 +580,11 @@
                     try {
                         const res = await rpcFetch('/login');
                         document.getElementById('userStatus').textContent = `Usuario: ${currentUserId} (${res.role})`;
-                        document.getElementById('btnLogin').style.display = 'none';
+                        const loginButton = document.getElementById('btnLogin');
+                        loginButton.textContent = currentUserId;
+                        loginButton.disabled = true;
+                        loginButton.hidden = false;
+                        loginButton.style.display = 'inline-flex';
                         document.getElementById('btnLogout').style.display = 'inline-block';
                         document.getElementById('welcomeScreen').style.display = 'none';
                         document.getElementById('actionContainer').style.display = 'block';
@@ -597,6 +601,9 @@
                         alert(`Error: ${e.detail}`);
                         currentUserId = null;
                         authSessionToken = null;
+                        document.getElementById('btnLogin').textContent = 'Iniciar Sesión';
+                        document.getElementById('btnLogin').disabled = false;
+                        document.getElementById('btnLogin').hidden = false;
                         document.getElementById('btnLogin').style.display = 'inline-flex';
                         document.getElementById('btnLogout').style.display = 'none';
                         updateNavigation(null);
@@ -608,7 +615,10 @@
                     currentUserId = null;
                     authSessionToken = null;
                     document.getElementById('userStatus').textContent = 'Desconectado';
-                    document.getElementById('btnLogin').style.display = 'inline-block';
+                    document.getElementById('btnLogin').textContent = 'Iniciar Sesión';
+                    document.getElementById('btnLogin').disabled = false;
+                    document.getElementById('btnLogin').hidden = false;
+                    document.getElementById('btnLogin').style.display = 'inline-flex';
                     document.getElementById('btnLogout').style.display = 'none';
                     document.getElementById('actionContainer').style.display = 'none';
                     document.getElementById('welcomeScreen').style.display = 'grid';
