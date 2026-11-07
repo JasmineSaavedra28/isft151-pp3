@@ -100,6 +100,13 @@
                     ['btnUpdateUserRole', 'Modificar Rol'],
                     ['btnListUsers', 'Listar Usuarios']
                 ], 'display: none;'));
+                const adminLogoutButton = createButton('adminLogoutButton', 'Cerrar sesión', true);
+                adminLogoutButton.addEventListener('click', function () {
+                    document.getElementById('btnLogout').click();
+                });
+                document.getElementById('adminContainer');
+                const adminCard = actionContainer.querySelector('#adminContainer');
+                if (adminCard) adminCard.appendChild(adminLogoutButton);
                 actionContainer.appendChild(createCard('studentManagementContainer', 'Gestión de Estudiantes', [
                     ['btnNewStudent', 'Registrar Estudiante'],
                     ['btnModifyStudent', 'Modificar Estudiante'],
@@ -153,14 +160,16 @@
                 const accountPanel = createElement('section', { className: 'mobile-account-panel' });
                 accountPanel.hidden = true;
                 const accountStatus = createElement('p', { className: 'mobile-account-status', textContent: 'Desconectado' });
+                const accountDetails = createElement('p', { className: 'mobile-account-details', textContent: 'Ingresá para acceder a las funciones de tu institución.' });
                 const accountAction = createButton('mobileAccountAction', 'Iniciar sesión');
                 accountAction.classList.add('mobile-account-action');
                 accountAction.addEventListener('click', function () {
+                    const signedIn = Boolean(authSessionToken);
                     closeMobileAccountPanel();
-                    const sessionButton = document.getElementById(authSessionToken ? 'btnLogout' : 'btnLogin');
+                    const sessionButton = document.getElementById(signedIn ? 'btnLogout' : 'btnLogin');
                     if (sessionButton) sessionButton.click();
                 });
-                accountPanel.append(accountStatus, accountAction);
+                accountPanel.append(accountStatus, accountDetails, accountAction);
                 accountButton.addEventListener('click', function () {
                     const opening = accountPanel.hidden;
                     accountButton.removeAttribute('aria-current');
@@ -567,10 +576,7 @@
                 const menu = this;
                 updateNavigation(null);
                 document.getElementById('btnLogin').onclick = async function () {
-                    const data = await showFormModal('Iniciar Sesión', [
-                        { name: 'user', label: 'Usuario', type: 'text' },
-                        { name: 'pass', label: 'Contraseña', type: 'password' }
-                    ]);
+                    const data = await showAuthModal();
 
                     if (!data || !data.user || !data.pass) return;
 
@@ -635,7 +641,9 @@
                 document.getElementById('btnNewUser').onclick = async function () {
                     const data = await showFormModal('Agregar Usuario / Rol', [
                         { name: 'username', label: 'Usuario' },
-                        { name: 'password', label: 'Contraseña', type: 'password' },
+                        { name: 'password', label: 'Contraseña inicial', type: 'password' },
+                        { name: 'confirmPassword', label: 'Repetir contraseña', type: 'password', matchWith: 'password' },
+                        { name: 'acceptedTerms', label: 'El usuario recibió y aceptó los Términos y la Política de privacidad', type: 'checkbox', required: true, legalLinks: true },
                         { name: 'role', label: 'Rol', type: 'select', options: [
                             { value: 'Administrador', text: 'Administrador' },
                             { value: 'Preceptor', text: 'Preceptor' },
@@ -643,10 +651,12 @@
                         ] }
                     ]);
                     if (!data) return;
+                    delete data.confirmPassword;
+                    delete data.acceptedTerms;
                     data.password = await computeSHA256(data.password);
                     try {
                         const res = await rpcFetch('/registerUser', data);
-                        menu.printResult({ message: 'Usuario creado correctamente', ...res });
+                        menu.printResult({ message: 'Usuario creado correctamente. Confirmá que recibió los documentos legales y conservá constancia de su aceptación.', ...res });
                     } catch (e) { alert(`Error: ${e.detail}`); }
                 };
 

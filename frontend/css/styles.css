@@ -313,3 +313,43 @@
             }
             #attendanceReportTable .report-desktop { display: table; }
         }
+
+.site-footer-legal { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:12px; margin-top:8px; font-size:12px; }
+.site-footer-legal a { color:var(--primary); text-decoration:underline; }
+.mobile-account-details { margin:0; color:var(--muted); font-size:12px; line-height:1.45; }
+.legal-page { max-width:900px; margin:0 auto; padding-top:36px; line-height:1.65; }
+.legal-page h1,.legal-page h2 { color:var(--ink); }
+.legal-page h2 { margin-top:28px; font-size:18px; }
+
+/* Acceso MiRegistro */
+#formModal.auth-modal { width:min(460px, calc(100vw - 28px)); max-height:min(90dvh, 760px); padding:26px; border:1px solid var(--line); border-radius:20px; box-shadow:0 24px 70px rgba(20,35,65,.24); overflow:hidden; }
+#formModal.auth-modal::backdrop { background:rgba(12,24,48,.58); backdrop-filter:blur(3px); }
+#formModal.auth-modal #modalTitle { margin:0 0 8px; font-size:24px; }
+#formModal.auth-modal .auth-intro { margin:0 0 18px; color:var(--muted); font-size:14px; }
+#formModal.auth-modal[open] { display:flex; flex-direction:column; gap:0; }
+#formModal.auth-modal #modalBody { min-height:0; overflow-y:auto; padding:0 3px 8px 0; }
+#formModal.auth-modal .auth-dialog-actions { flex:0 0 auto; display:flex; justify-content:stretch; gap:10px; margin-top:12px; padding-top:14px; border-top:1px solid var(--line); background:inherit; }
+#formModal.auth-modal .auth-dialog-actions button { flex:1 1 0; min-height:44px; white-space:normal; line-height:1.25; }
+#formModal.auth-modal .form-group { margin:14px 0; }
+#formModal.auth-modal .form-group input { width:100%; min-height:44px; padding:11px 12px; border:1px solid var(--line); border-radius:9px; font:inherit; }
+.auth-password-wrap { display:flex; align-items:center; gap:8px; }
+.auth-password-wrap input { flex:1; min-width:0; }
+.auth-text-button,.auth-link { border:0; background:transparent; color:var(--primary); cursor:pointer; font:inherit; font-size:13px; }
+.auth-link { display:block; width:fit-content; margin:0 0 14px auto; padding:5px 0; text-align:right; }
+.auth-terms { display:flex; align-items:flex-start; gap:9px; margin:18px 0; color:var(--muted); font-size:12px; line-height:1.5; }
+.auth-terms input { margin-top:3px; flex:0 0 auto; }
+.auth-terms a { color:var(--primary); }
+.auth-separator { display:flex; align-items:center; gap:12px; margin:16px 0; color:var(--muted); font-size:12px; }
+.auth-separator::before,.auth-separator::after { content:""; height:1px; flex:1; background:var(--line); }
+.auth-google { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; min-height:46px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink); font:inherit; }
+.auth-google:disabled { opacity:.65; cursor:not--allowed; }
+.auth-google small { color:var(--muted); font-size:10px; }
+.auth-google-g { font-weight:800; font-size:19px; color:#4285f4; }
+.auth-footnote { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px; margin:18px 0 4px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); text-align:center; font-size:13px; }
+.auth-create-account { border:0; padding:4px; background:transparent; color:var(--primary); font:inherit; font-weight:700; cursor:pointer; }
+@media(max-width:600px){ #formModal.auth-modal { padding:20px 18px; max-height:88dvh; } #formModal.auth-modal .auth-dialog-actions { gap:8px; } #formModal.auth-modal .auth-dialog-actions button { min-width:0; padding:10px 8px; font-size:14px; } }
+
+.auth-eye-button { width:38px; height:38px; flex:0 0 38px; display:grid; place-items:center; border:0; border-radius:8px; background:transparent; color:var(--muted); cursor:pointer; }
+.auth-eye-button:hover { background:var(--surface, #f2f5f9); color:var(--primary); }
+.auth-eye-button svg { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.auth-terms-info { margin:14px 0; color:var(--muted); font-size:12px; line-height:1.5; }

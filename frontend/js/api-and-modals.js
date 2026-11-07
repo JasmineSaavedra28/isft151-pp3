@@ -77,6 +77,64 @@ const host = 'http://localhost:3000';
             throw new RPCWebAPIException('ServerError', 'Error interno del servidor');
         }
 
+
+        function showAuthModal() {
+            return new Promise(function (resolve) {
+                const modal = document.getElementById('formModal');
+                const body = document.getElementById('modalBody');
+                const title = document.getElementById('modalTitle');
+                const submit = document.getElementById('btnSubmitModal');
+                const cancel = document.getElementById('btnCancelModal');
+                const oldSubmit = submit.textContent;
+                title.textContent = 'Ingresar a MiRegistro';
+                modal.classList.add('auth-modal');
+                body.replaceChildren();
+
+                const intro = document.createElement('p');
+                intro.className = 'auth-intro';
+                intro.textContent = 'Usá tus credenciales institucionales para continuar.';
+                const userGroup = document.createElement('div'); userGroup.className = 'form-group';
+                const userLabel = document.createElement('label'); userLabel.textContent = 'Usuario'; userLabel.htmlFor = 'authUser';
+                const user = document.createElement('input'); user.id = 'authUser'; user.autocomplete = 'username'; user.placeholder = 'Tu nombre de usuario'; user.required = true;
+                userGroup.append(userLabel, user);
+                const passGroup = document.createElement('div'); passGroup.className = 'form-group';
+                const passLabel = document.createElement('label'); passLabel.textContent = 'Contraseña'; passLabel.htmlFor = 'authPass';
+                const passWrap = document.createElement('div'); passWrap.className = 'auth-password-wrap';
+                const pass = document.createElement('input'); pass.id = 'authPass'; pass.type = 'password'; pass.autocomplete = 'current-password'; pass.placeholder = 'Tu contraseña'; pass.required = true;
+                const reveal = document.createElement('button'); reveal.type = 'button'; reveal.className = 'auth-eye-button'; reveal.setAttribute('aria-label','Mostrar contraseña'); reveal.title = 'Mostrar contraseña';
+                const eyeOpen = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+                const eyeClosed = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a15 15 0 0 1-3.1 3.8M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10 10 0 0 0 4-.8"/></svg>';
+                reveal.innerHTML = eyeOpen;
+                reveal.addEventListener('click', function(){ const visible = pass.type === 'password'; pass.type = visible ? 'text' : 'password'; reveal.innerHTML = visible ? eyeClosed : eyeOpen; reveal.setAttribute('aria-label', visible ? 'Ocultar contraseña' : 'Mostrar contraseña'); reveal.title = visible ? 'Ocultar contraseña' : 'Mostrar contraseña'; });
+                passWrap.append(pass, reveal); passGroup.append(passLabel, passWrap);
+                const forgot = document.createElement('button'); forgot.type = 'button'; forgot.className = 'auth-link'; forgot.textContent = '¿Olvidaste tu contraseña?';
+                forgot.addEventListener('click', function(){ notify('La recuperación automática todavía no está conectada al backend. Solicitá al administrador que restablezca tu contraseña.', 'info', 'Recuperación de contraseña'); });
+                const separator = document.createElement('div'); separator.className = 'auth-separator'; separator.textContent = 'o continuar con';
+                const google = document.createElement('button'); google.type = 'button'; google.className = 'auth-google'; google.disabled = true;
+                google.innerHTML = '<span class="auth-google-g">G</span><span>Continuar con Google</span><small>Próximamente</small>';
+                google.title = 'Requiere configurar Google OAuth en el backend';
+                const foot = document.createElement('div'); foot.className = 'auth-footnote';
+                const footText = document.createElement('span'); footText.textContent = '¿No tenés cuenta?';
+                const createAccount = document.createElement('button'); createAccount.type = 'button'; createAccount.className = 'auth-create-account'; createAccount.textContent = 'Crear usuario';
+                createAccount.addEventListener('click', function(){ notify('La creación de cuentas nuevas necesita habilitar un registro público seguro en el backend. Por ahora, las cuentas se crean desde Administración.', 'info', 'Crear usuario'); });
+                foot.append(footText, createAccount);
+                body.append(intro, userGroup, passGroup, forgot, separator, google, foot);
+                cancel.textContent = 'Volver';
+                const actions = modal.querySelector('.dialog-actions');
+                if (actions) actions.classList.add('auth-dialog-actions');
+                submit.textContent = 'Iniciar sesión';
+                const cleanup = function(){ submit.onclick = null; cancel.onclick = null; submit.textContent = oldSubmit; cancel.textContent = 'Cancelar'; modal.classList.remove('auth-modal'); const actions = modal.querySelector('.dialog-actions'); if (actions) actions.classList.remove('auth-dialog-actions'); modal.close(); };
+                submit.onclick = function(){
+                    if (!user.value.trim() || !pass.value) { notify('Completá usuario y contraseña.', 'error'); return; }
+                    const result = { user: user.value.trim(), pass: pass.value };
+                    cleanup(); resolve(result);
+                };
+                cancel.onclick = function(){ cleanup(); resolve(null); };
+                modal.addEventListener('close', function onClose(){ modal.removeEventListener('close', onClose); if (modal.classList.contains('auth-modal')) { modal.classList.remove('auth-modal'); submit.onclick=null; cancel.onclick=null; submit.textContent=oldSubmit; cancel.textContent='Cancelar'; const actions = modal.querySelector('.dialog-actions'); if (actions) actions.classList.remove('auth-dialog-actions'); resolve(null); } });
+                modal.showModal(); user.focus();
+            });
+        }
+
         function showFormModal(title, fields, submitText = 'Aceptar') {
             return new Promise(function (resolve) {
                 const modal = document.getElementById('formModal');
@@ -94,6 +152,12 @@ const host = 'http://localhost:3000';
 
                     const label = document.createElement('label');
                     label.textContent = f.label;
+                    if (f.type === 'checkbox' && f.legalLinks) {
+                        label.append(' ');
+                        const termsLink = document.createElement('a'); termsLink.href = 'terminos.html'; termsLink.target = '_blank'; termsLink.rel = 'noopener'; termsLink.textContent = 'Términos';
+                        const privacyLink = document.createElement('a'); privacyLink.href = 'privacidad.html'; privacyLink.target = '_blank'; privacyLink.rel = 'noopener'; privacyLink.textContent = 'Privacidad';
+                        label.append(termsLink, ' · ', privacyLink);
+                    }
                     group.appendChild(label);
 
                     let input;
@@ -119,8 +183,17 @@ const host = 'http://localhost:3000';
                         input = document.createElement('input');
                         input.type = f.type || 'text';
                         if (f.placeholder) input.placeholder = f.placeholder;
-                        group.appendChild(input);
+                        if (f.type === 'password') {
+                            const wrap = document.createElement('div'); wrap.className = 'auth-password-wrap';
+                            const eye = document.createElement('button'); eye.type = 'button'; eye.className = 'auth-eye-button'; eye.setAttribute('aria-label', 'Mostrar contraseña');
+                            const openSvg = '<svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+                            const closedSvg = '<svg viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a15 15 0 0 1-3.1 3.8M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10 10 0 0 0 4-.8"/></svg>';
+                            eye.innerHTML = openSvg; eye.addEventListener('click', function(){ const show = input.type === 'password'; input.type = show ? 'text' : 'password'; eye.innerHTML = show ? closedSvg : openSvg; eye.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña'); });
+                            wrap.append(input, eye); group.appendChild(wrap);
+                        } else group.appendChild(input);
                     }
+                    if (f.type === 'checkbox') input.checked = Boolean(f.value);
+                    if (f.required) input.required = true;
                     if (f.value !== undefined) input.value = f.value;
                     if (f.readOnly) input.readOnly = true;
 
@@ -158,6 +231,10 @@ const host = 'http://localhost:3000';
                 };
 
                 btnSubmit.onclick = function () {
+                    const missing = fields.find(function (f) { return f.required && (f.type === 'checkbox' ? !inputs[f.name].checked : !String(inputs[f.name].value || '').trim()); });
+                    if (missing) { notify(missing.type === 'checkbox' ? 'Debés aceptar los términos y la política de privacidad para crear el usuario.' : 'Completá el campo ' + missing.label + '.', 'error'); inputs[missing.name].focus(); return; }
+                    const mismatch = fields.find(function (f) { return f.matchWith && inputs[f.name].value !== inputs[f.matchWith].value; });
+                    if (mismatch) { notify('Las contraseñas no coinciden.', 'error'); inputs[mismatch.name].focus(); return; }
                     const result = {};
                     fields.forEach(function (f) {
                         result[f.name] = f.type === 'checkbox' ? inputs[f.name].checked : inputs[f.name].value;

@@ -72,6 +72,13 @@
                 authors.appendChild(createElement('span', { textContent: name }));
             });
             text.appendChild(authors);
+            const legalLinks = createElement('nav', { className: 'site-footer-legal' });
+            [['Términos y condiciones', 'terminos.html'], ['Política de privacidad', 'privacidad.html']].forEach(function (item) {
+                const link = createElement('a', { textContent: item[0] });
+                link.href = item[1];
+                legalLinks.appendChild(link);
+            });
+            text.appendChild(legalLinks);
             footer.appendChild(text);
             return footer;
         }
@@ -296,7 +303,15 @@
                 actionButton.classList.toggle('danger', signedIn);
             }
             if (status) {
-                status.textContent = document.getElementById('userStatus')?.textContent || 'Desconectado';
+                status.textContent = signedIn
+                    ? (document.getElementById('userStatus')?.textContent || 'Sesión iniciada')
+                    : 'No iniciaste sesión';
+            }
+            const details = document.querySelector('.mobile-account-details');
+            if (details) {
+                details.textContent = signedIn
+                    ? 'Tu cuenta está activa en este dispositivo.'
+                    : 'Iniciá sesión para acceder a las funciones de tu institución.';
             }
         }
 
