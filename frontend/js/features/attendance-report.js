@@ -314,6 +314,116 @@ Object.assign(Menu.prototype, {
             textContent: 'Leyenda: P = presente · T = tarde · A = ausente · * = retiro anticipado. Encabezados de fecha en formato día/mes. Deslizá la planilla para ver todas las fechas.'
         }));
 
+        // Lista de clases accionable para celular: una línea por fecha con
+        // los conteos de la clase y acceso al formulario de asistencia.
+        const classList = createElement('div', { className: 'attendance-class-list' });
+        classList.appendChild(createElement('p', {
+            className: 'attendance-class-hint',
+            textContent: 'Tocá una clase para tomar o editar la asistencia. P = presentes · A = ausentes · T = tardes · R = retiros.'
+        }));
+
+        const self = this;
+        const openClass = async function (session) {
+            if (!report.course.courseId) {
+                alert('No se pudo identificar el curso para editar la asistencia.');
+                return;
+            }
+            try {
+                const roster = await rpcFetch('/getAttendanceRoster', {
+                    courseId: report.course.courseId,
+                    date: session.date
+                });
+                if (!roster.students.length) {
+                    alert('El curso no tiene estudiantes inscriptos.');
+                    return;
+                }
+
+                const attendance = await showAttendanceModal(
+                    report.course.courseId,
+                    report.course.name,
+                    session.date,
+                    roster.students,
+                    report.sessions.map(function (item) { return item.date; })
+                );
+                if (!attendance) return;
+
+                await rpcFetch('/saveAttendance', {
+                    courseId: report.course.courseId,
+                    date: attendance.date,
+                    records: attendance.records
+                });
+
+                const refreshed = await rpcFetch('/getAttendanceReport', {
+                    courseId: report.course.courseId
+                });
+                self.printAttendanceReport(refreshed, {
+                    period: selectedPeriodKey,
+                    startDate: startInput.value,
+                    endDate: endInput.value,
+                    studentQuery: studentSearch.value,
+                    filtersOpen: !filters.classList.contains('collapsed'),
+                    page: 1
+                });
+            } catch (e) {
+                notify(e.detail || 'No se pudo cargar la asistencia.', 'error', 'No se pudo completar');
+            }
+        };
+
+        filteredSessions.forEach(function (session) {
+            const counts = { present: 0, absent: 0, late: 0, early: 0, unmarked: 0 };
+            filteredStudents.forEach(function (student) {
+                const record = student.attendanceByDate[session.date];
+                if (!record) {
+                    counts.unmarked++;
+                    return;
+                }
+                if (record.status === 'present') counts.present++;
+                else if (record.status === 'absent') counts.absent++;
+                else if (record.status === 'late') counts.late++;
+                if (record.earlyDeparture) counts.early++;
+            });
+
+            const dateLabel = session.date.split('-').reverse().join('/');
+            const row = document.createElement('button');
+            row.type = 'button';
+            row.className = 'attendance-class-row';
+            row.setAttribute('aria-label', `Abrir asistencia del ${dateLabel}`);
+
+            const info = createElement('span', { className: 'attendance-class-info' });
+            info.appendChild(createElement('span', {
+                className: 'attendance-class-date',
+                textContent: dateLabel
+            }));
+
+            const meta = createElement('span', { className: 'attendance-class-meta' });
+            [
+                ['present', 'P', counts.present],
+                ['absent', 'A', counts.absent],
+                ['late', 'T', counts.late],
+                ['early', 'R', counts.early],
+                ['empty', 'Sin marcar', counts.unmarked]
+            ].forEach(function (item) {
+                if (!item[2]) return;
+                meta.appendChild(createElement('span', {
+                    className: `attendance-class-count ${item[0]}`,
+                    textContent: `${item[1]} ${item[2]}`
+                }));
+            });
+            info.appendChild(meta);
+
+            const action = createElement('span', { className: 'attendance-class-action' });
+            const chevron = createElement('span', { className: 'material-symbol', textContent: 'chevron_right' });
+            chevron.setAttribute('aria-hidden', 'true');
+            action.append(createElement('span', { textContent: 'Abrir' }), chevron);
+
+            row.append(info, action);
+            row.addEventListener('click', function () {
+                openClass(session);
+            });
+            classList.appendChild(row);
+        });
+        tableContainer.appendChild(classList);
+
         reportCard.style.display = 'block';
     },
 

@@ -414,6 +414,129 @@
     line-height: 1.5;
 }
 
+/* ------------------------------------------------------------
+   Lista de clases accionable (solo móvil)
+   Una línea por fecha con los conteos de la clase y una acción
+   para abrir el formulario de asistencia, sin tablas ni scroll.
+   ------------------------------------------------------------ */
+
+.attendance-class-list {
+    display: none;
+    gap: 8px;
+}
+
+.attendance-class-hint {
+    margin: 0 0 2px;
+    color: var(--muted);
+    font-size: 11.5px;
+    line-height: 1.45;
+}
+
+.attendance-class-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 11px 13px;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+.attendance-class-row:hover {
+    border-color: #b9cdf7;
+    background: #f8faff;
+}
+
+.attendance-class-row:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, .3);
+    outline-offset: 2px;
+}
+
+.attendance-class-info {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.attendance-class-date {
+    display: block;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: -.01em;
+}
+
+.attendance-class-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 5px;
+}
+
+.attendance-class-count {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--muted-strong);
+    font-size: 10.5px;
+    font-weight: 800;
+    line-height: 1.35;
+    white-space: nowrap;
+}
+
+.attendance-class-count.present {
+    border-color: var(--success-line);
+    background: var(--success-soft);
+    color: #047857;
+}
+
+.attendance-class-count.absent {
+    border-color: var(--danger-line);
+    background: var(--danger-soft);
+    color: var(--danger-strong);
+}
+
+.attendance-class-count.late {
+    border-color: var(--warning-line);
+    background: var(--warning-soft);
+    color: #92400e;
+}
+
+.attendance-class-count.early {
+    border-color: #ddd6fe;
+    background: #f5f3ff;
+    color: #6d28d9;
+}
+
+.attendance-class-count.empty {
+    color: var(--muted);
+}
+
+.attendance-class-action {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 2px;
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.attendance-class-action .material-symbol {
+    font-size: 20px;
+}
+
 @media (max-width: 800px) {
     #attendanceReportCard {
         padding: 15px;
@@ -427,29 +550,36 @@
         background: transparent;
     }
 
-    /* En celular el reporte se mantiene como grilla tipo planilla:
-       nombre fijo a la izquierda y fechas con scroll horizontal. */
-    .report-scroll {
-        display: block;
-        max-height: 58vh;
-        overflow: auto;
+    /* En celular la planilla ancha no se usa: se reemplaza por la
+       lista de clases accionable de arriba. */
+    .report-scroll,
+    .attendance-report-pagination {
+        display: none;
+    }
+
+    .attendance-report-legend {
+        display: none;
+    }
+
+    .attendance-class-list {
+        display: grid;
+    }
+
+    .attendance-class-row {
+        padding: 10px 11px;
+    }
+
+    .attendance-class-action {
+        justify-content: center;
+        width: 30px;
+        height: 30px;
         border: 1px solid var(--line);
-        border-radius: 12px;
+        border-radius: 999px;
+        background: var(--primary-50);
     }
 
-    .report-table.compact th,
-    .report-table.compact td {
-        padding: 6px 5px;
-        font-size: 11px;
-    }
-
-    .report-table.compact th:first-child,
-    .report-table.compact td:first-child {
-        min-width: 120px;
-        max-width: 120px;
-        padding-left: 7px;
-        overflow: hidden;
-        text-overflow: ellipsis;
+    .attendance-class-action span:first-child {
+        display: none;
     }
 }
 

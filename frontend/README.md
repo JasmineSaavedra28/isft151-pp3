@@ -74,6 +74,6 @@ Los scripts son clásicos y comparten el ámbito global. **Respetar el orden de 
 - Paleta institucional azul con acentos suaves y fondo neutro.
 - Sidebar oscuro con estado activo visible.
 - Tarjetas con jerarquía de acciones: primaria, secundaria y peligrosa.
-- En celular: navegación inferior flotante, modales tipo *bottom sheet* y reportes en tarjetas en lugar de tablas anchas.
+- En celular: navegación inferior flotante, modales tipo *bottom sheet* y reporte de asistencias como **lista de clases accionable** (sin tablas anchas ni scroll horizontal): cada fecha muestra los conteos P/A/T/R y abre el formulario de esa clase.
 - Footer institucional con el logo del ISFT N.º 151 siempre abajo.
 - Se respeta `prefers-reduced-motion` para animaciones.
