@@ -1,0 +1,367 @@
+/* ============================================================
+   Autenticación · ingreso y creación de cuenta
+   ============================================================ */
+
+#formModal.auth-modal {
+    display: flex;
+    flex-direction: column;
+    width: min(540px, calc(100vw - 32px));
+    max-width: 540px;
+    max-height: min(92dvh, 820px);
+    padding: 30px 32px 24px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 26px;
+}
+
+#formModal.auth-modal[open] {
+    display: flex;
+}
+
+#formModal.auth-modal::backdrop {
+    background: rgba(6, 14, 30, .62);
+    backdrop-filter: blur(4px);
+}
+
+#formModal.auth-modal #modalTitle {
+    flex: 0 0 auto;
+    margin: 0 0 18px;
+    font-size: 26px;
+    line-height: 1.2;
+}
+
+#formModal.auth-modal #modalBody {
+    width: 100%;
+    min-height: 0;
+    padding: 0 2px 14px 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+}
+
+.auth-intro {
+    margin: 0 0 22px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+#formModal.auth-modal .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 0 19px;
+}
+
+#formModal.auth-modal .form-group label {
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+#formModal.auth-modal .form-group input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 49px;
+    min-height: 49px;
+    padding: 12px 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    background: #fff;
+    color: #1c2b42;
+    font-size: 15px;
+}
+
+#formModal.auth-modal .form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: var(--ring);
+}
+
+.auth-password-wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    min-width: 0;
+    padding-right: 4px;
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    background: #fff;
+}
+
+.auth-password-wrap:focus-within {
+    border-color: var(--primary);
+    box-shadow: var(--ring);
+}
+
+#formModal.auth-modal .auth-password-wrap input {
+    flex: 1;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+}
+
+.auth-eye-button {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.auth-eye-button:hover {
+    background: var(--surface-2);
+    color: var(--primary);
+}
+
+.auth-eye-button svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.auth-link,
+.auth-text-button {
+    width: fit-content;
+    min-height: 0;
+    padding: 4px 0;
+    border: 0;
+    background: transparent;
+    color: var(--primary);
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.auth-link {
+    display: block;
+    margin: 0 0 14px auto;
+    text-align: right;
+}
+
+.auth-link:hover,
+.auth-text-button:hover {
+    background: transparent;
+    color: var(--primary-600);
+    text-decoration: underline;
+}
+
+.auth-terms,
+.auth-register-terms,
+.auth-terms-info {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.auth-terms,
+.auth-register-terms {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin: 16px 0;
+}
+
+.auth-terms input,
+.auth-register-terms input {
+    flex: 0 0 auto;
+    margin-top: 3px;
+}
+
+.auth-terms a,
+.auth-register-terms a {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.auth-separator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.auth-separator::before,
+.auth-separator::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    background: var(--line);
+}
+
+.auth-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    font-weight: 600;
+}
+
+.auth-google:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.auth-google small {
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.auth-google-g {
+    color: #4285f4;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.auth-footnote {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 18px 0 4px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    text-align: center;
+    font-size: 13px;
+}
+
+.auth-create-account {
+    min-height: 0;
+    padding: 4px;
+    border: 0;
+    background: transparent;
+    color: var(--primary);
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.auth-create-account:hover {
+    background: transparent;
+    color: var(--primary-600);
+    text-decoration: underline;
+}
+
+.auth-register-fields {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+}
+
+.auth-back-login {
+    margin: 10px 0 4px;
+}
+
+#formModal.auth-modal .auth-inline-notification {
+    position: relative;
+    inset: auto;
+    z-index: 2;
+    width: 100%;
+    margin: 0 0 12px;
+}
+
+#formModal.auth-modal .auth-dialog-actions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 12px;
+    margin-top: 10px;
+    padding-top: 17px;
+    border-top: 1px solid var(--line);
+    background: inherit;
+}
+
+#formModal.auth-modal .auth-dialog-actions button {
+    flex: 1 1 0;
+    min-height: 48px;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+@media (max-width: 700px) {
+    #formModal.auth-modal {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100dvh - 12px - env(safe-area-inset-top));
+        padding: 22px 20px calc(16px + env(safe-area-inset-bottom));
+        border-radius: 24px 24px 0 0;
+    }
+
+    #formModal.auth-modal #modalTitle {
+        margin-bottom: 14px;
+        font-size: 23px;
+    }
+
+    #formModal.auth-modal #modalBody {
+        max-height: calc(100dvh - 210px);
+        padding: 0 3px 14px 0;
+    }
+
+    #formModal.auth-modal .form-group {
+        gap: 7px;
+        margin-bottom: 16px;
+    }
+
+    #formModal.auth-modal .form-group input {
+        height: 48px;
+        min-height: 48px;
+        font-size: 16px;
+    }
+
+    #formModal.auth-modal .auth-dialog-actions {
+        position: sticky;
+        bottom: 0;
+        gap: 10px;
+        margin-top: 5px;
+        padding-top: 12px;
+        background: var(--surface);
+    }
+
+    #formModal.auth-modal .auth-dialog-actions button {
+        min-width: 0;
+        min-height: 46px;
+        padding: 10px 8px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 380px) {
+    #formModal.auth-modal {
+        padding: 18px 15px calc(14px + env(safe-area-inset-bottom));
+    }
+
+    #formModal.auth-modal #modalBody {
+        max-height: calc(100dvh - 190px);
+    }
+
+    #formModal.auth-modal .auth-dialog-actions {
+        gap: 7px;
+    }
+
+    #formModal.auth-modal .auth-dialog-actions button {
+        font-size: 13px;
+    }
+}
