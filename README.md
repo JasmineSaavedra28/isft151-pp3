@@ -62,6 +62,24 @@ El frontend fue reorganizado en módulos de CSS y JavaScript para separar estilo
 - El despliegue de producción quedó sin definir.
 - El rol Preceptor puede registrarse, pero no tiene una vista propia.
 
+### Trazabilidad por requerimiento
+
+| Requerimiento | Estado | Resumen de la entrega |
+| --- | --- | --- |
+| 1. Usuarios | Parcial | Registro, deshabilitación y cambio de rol; falta una asignación separada de roles. |
+| 2. Estudiantes | Parcial | Alta, modificación y baja lógica individual; faltan carga masiva y movimiento entre cursos. |
+| 3. Cursos | Parcial | Alta/modificación e inscripción individual; falta asignación masiva de estudiantes. |
+| 4. Asignaturas | No implementado | Sin entidad de asignatura. |
+| 5. Calendario académico | Parcial | Fechas válidas y feriados; faltan horarios de cursos y asignaturas. |
+| 6. Asistencias | Parcial | Registro de estudiantes y porcentajes; faltan asistencia docente y vínculo con clases. |
+| 7. Inasistencias | Parcial | La ausencia se registra dentro de la asistencia; faltan justificaciones y certificados. |
+| 8. Configuración de alertas | No implementado | Sin umbrales configurables. |
+| 9. Alertas | No implementado | Sin generación ni asociación de alertas. |
+| 10. Reportes y estados | Parcial | Reportes por curso y porcentajes; faltan filtros, alertas y estados de justificaciones. |
+| 11. Clases | No implementado | No hay entidad de clase; las asistencias se agrupan por curso y fecha. |
+
+El detalle de cada subrequerimiento está en [srs/README.md](srs/README.md#trazabilidad-de-requerimientos).
+
 Los requerimientos funcionales incluidos más abajo describen el alcance previsto; la implementación efectiva es la resumida en esta sección.
 
 ## Inicio rápido en Windows
@@ -404,6 +422,7 @@ El estado y las instrucciones de pruebas están en [testing/README.md](testing/R
 - Se incorporaron páginas legales responsive y el footer institucional con el logo del ISFT N.º 151.
 - Se reorganizaron los estilos y scripts del frontend en módulos por responsabilidad.
 - Se documentó la estructura del frontend y los criterios de diseño.
+- Se agregó la trazabilidad de requerimientos con estados implementado, parcial y no implementado.
 
 ## Versión base
 

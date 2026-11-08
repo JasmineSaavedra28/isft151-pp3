@@ -4,6 +4,8 @@ La API HTTP implementada se ejecuta por defecto en `http://localhost:3000`. Toda
 
 Esta convencion fue definida por la catedra y no constituye una opcion pendiente de revision.
 
+El estado funcional de cada requerimiento (implementado, parcial o no implementado) se resume en [la trazabilidad del SRS](../srs/README.md#trazabilidad-de-requerimientos).
+
 ## Autenticacion
 
 `/login` recibe la identidad mediante `x-user-id` y una credencial Bearer. Las demas rutas requieren una sesion iniciada y autorizacion por rol. La interfaz envia `Content-Type: application/json`, `x-user-id`, `Authorization` y `x-api-version`.
@@ -16,7 +18,6 @@ Esta convencion fue definida por la catedra y no constituye una opcion pendiente
 - Asistencia: `/getAttendanceRoster`, `/saveAttendance`, `/deleteAttendance`, `/getAttendanceReport`.
 - Cursos e inscripciones: `/newCourse`, `/modifyCourse`, `/listCourses`, `/enrollStudent`, `/removeStudentFromCourse`, `/getStudentsFromCourse`.
 - Calendarios: `/newAcademicCalendar`, `/listAcademicCalendars`.
-- Asistencia: `/getAttendanceRoster`, `/saveAttendance`, `/getAttendanceReport`.
 
 El codigo autoritativo de las rutas disponibles esta en [backend/main.mjs](../backend/main.mjs). Las rutas siguientes son propuestas y no deben considerarse implementadas hasta que aparezcan registradas ahi.
 
@@ -26,7 +27,7 @@ El codigo autoritativo de las rutas disponibles esta en [backend/main.mjs](../ba
 
 - `/newSubject`, `/deleteSubject`, `/modifySubject`: crear, eliminar y modificar asignaturas.
 - `/assignSubjectProfessor`, `/assignSubjectCourse`: asignar docentes y cursos a asignaturas.
-- `/setValidClassDates`: definir periodo lectivo y feriados.
+- `/setValidClassDates`: definir periodo lectivo y feriados. La misma capacidad se cubre con las rutas implementadas `/newAcademicCalendar` y `/listAcademicCalendars`; el nombre del contrato propuesto no se utiliza.
 - `/assignCourseSchedule`, `/assignSubjectSchedule`: asignar horarios generales y por asignatura.
 
 ### Asistencias y justificaciones
