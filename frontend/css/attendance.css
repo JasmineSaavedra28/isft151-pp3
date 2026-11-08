@@ -117,6 +117,14 @@
     color: var(--danger-strong);
 }
 
+.attendance-status-legend {
+    display: none;
+    margin: 0 0 10px;
+    color: var(--muted);
+    font-size: 11.5px;
+    line-height: 1.45;
+}
+
 .attendance-row {
     display: grid;
     grid-template-columns: minmax(180px, 1fr) repeat(4, 92px);
@@ -639,6 +647,12 @@
 @media (max-width: 640px) {
     .attendance-toolbar {
         grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .attendance-context select {
+        width: 100%;
+        max-width: 100%;
     }
 
     .attendance-summary {
@@ -647,15 +661,23 @@
     }
 
     .summary-item {
+        min-width: 0;
         padding: 7px 8px;
     }
 
     .summary-item span {
-        font-size: 9.5px;
+        font-size: 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .summary-item strong {
         font-size: 1.05rem;
+    }
+
+    .attendance-status-legend {
+        display: block;
     }
 
     .attendance-row {
@@ -685,14 +707,14 @@
 
     .status-options {
         grid-column: auto;
-        grid-template-columns: repeat(4, 38px);
+        grid-template-columns: repeat(4, 40px);
         gap: 4px;
     }
 
     .status-option span {
-        min-height: 38px;
+        min-height: 42px;
         border-radius: 8px;
-        font-size: 12px;
+        font-size: 12.5px;
     }
 
     .attendance-actions button {

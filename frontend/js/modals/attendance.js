@@ -67,6 +67,12 @@ function showAttendanceModal(courseId, courseName, date, students, attendanceDat
         actions.append(markPresentButton, resetButton, deleteButton);
         modalBody.append(toolbar, actions);
 
+        const statusLegend = createElement('p', {
+            className: 'attendance-status-legend',
+            textContent: 'P = Presente · A = Ausente · T = Tarde · R = Retiro anticipado'
+        });
+        modalBody.appendChild(statusLegend);
+
         const header = createElement('div', { className: 'attendance-row header-row' });
         ['Estudiante', 'Presente', 'Ausente', 'Tarde', 'Retiro'].forEach(function (label) {
             header.appendChild(createElement('div', { textContent: label }));

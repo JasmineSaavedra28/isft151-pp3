@@ -405,7 +405,8 @@ dialog.attendance-modal {
 }
 
 @media (max-width: 640px) {
-    dialog {
+    dialog,
+    dialog.attendance-modal {
         position: fixed;
         inset: auto 0 0 0;
         width: 100%;
