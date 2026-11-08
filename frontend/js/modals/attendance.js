@@ -9,6 +9,7 @@ function showAttendanceModal(courseId, courseName, date, students, attendanceDat
         document.getElementById('modalTitle').textContent = 'Tomar asistencia';
         modal.classList.add('attendance-modal');
         while (modalBody.firstChild) modalBody.removeChild(modalBody.firstChild);
+        modalBody.scrollTop = 0;
 
         let currentDate = date;
         let currentStudents = students;

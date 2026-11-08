@@ -429,6 +429,28 @@ dialog.attendance-modal {
         background: #d0d5dd;
     }
 
+    dialog.attendance-modal[open] {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    dialog.attendance-modal #modalTitle {
+        flex: 0 0 auto;
+        margin-bottom: 12px;
+    }
+
+    dialog.attendance-modal #modalBody {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    dialog.attendance-modal .dialog-actions {
+        flex: 0 0 auto;
+    }
+
     @keyframes sheet-in {
         from { opacity: .6; transform: translateY(40px); }
         to { opacity: 1; transform: translateY(0); }
