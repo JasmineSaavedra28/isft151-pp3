@@ -2,7 +2,7 @@
 
 ## Resumen
 
-El Sistema de Control de Asistencias Escolares es una plataforma web orientada a sistematizar y centralizar la gestión de asistencias en instituciones educativas.
+El Sistema de Control de Asistencias Escolares —MiRegistro— es una plataforma web orientada a sistematizar y centralizar la gestión de asistencias en instituciones educativas.
 
 Repositorio: [github.com/JasmineSaavedra28/isft151-pp3](https://github.com/JasmineSaavedra28/isft151-pp3)
 
@@ -10,13 +10,59 @@ El sistema busca reemplazar el uso de registros en papel y planillas de cálculo
 
 El alcance previsto contempla la gestión de entidades educativas, cursos, asignaturas, comisiones, docentes y estudiantes. También define el calendario académico, el registro de clases y la asociación de las asistencias con las clases dictadas.
 
-La carga digital de justificantes, las alertas ante acumulación de faltas o situaciones de riesgo pedagógico y los reportes forman parte de los objetivos del sistema; el avance implementado se detalla en la sección de estado actual.
+La carga digital de justificantes, las alertas ante acumulación de faltas o situaciones de riesgo pedagógico y los reportes forman parte de los objetivos del sistema. La sección [Alcance implementado y pendiente](#alcance-implementado-y-pendiente) detalla qué se alcanzó a construir en esta entrega y qué quedó fuera.
 
 ## Estado actual
 
-El repositorio contiene una aplicación web en desarrollo con una interfaz HTML y un backend HTTP en Node.js. Actualmente la interfaz permite iniciar sesión, administrar usuarios, estudiantes y cursos, inscribir estudiantes, configurar calendarios académicos, registrar asistencias y consultar reportes.
+El repositorio contiene una aplicación web funcional con una interfaz HTML, CSS y JavaScript, y un backend HTTP en Node.js. La versión actual incluye:
 
-Los requerimientos funcionales incluidos más abajo describen el alcance previsto; no todas esas funcionalidades están implementadas todavía en la interfaz.
+- Inicio y cierre de sesión con permisos por rol.
+- Administración de usuarios, estudiantes y cursos.
+- Inscripción de estudiantes en cursos.
+- Configuración de calendarios académicos.
+- Toma de asistencia por curso y fecha.
+- Consulta de reportes de asistencia.
+- Panel de resumen con datos reales para Administrador y Docente.
+- Portada de bienvenida previa al inicio de sesión.
+- Diseño responsive para escritorio y celular.
+
+El frontend fue reorganizado en módulos de CSS y JavaScript para separar estilos, componentes de interfaz, formularios y lógica funcional. El detalle de esa estructura está en [frontend/README.md](frontend/README.md).
+
+## Alcance implementado y pendiente
+
+### Implementado en esta entrega
+
+- **Autenticación y roles:** ingreso y cierre de sesión; acceso diferenciado para Administrador y Docente.
+- **Usuarios:** alta, modificación, baja, eliminación y cambio de rol.
+- **Estudiantes:** alta, modificación, baja y listado.
+- **Cursos e inscripciones:** creación y modificación de cursos; inscripción y baja de estudiantes.
+- **Calendarios académicos:** configuración y consulta.
+- **Asistencias:** registro por curso y fecha, con estados de presente, ausente y tardanza, y retiros anticipados.
+- **Reportes:** consulta por curso con totales, porcentajes y detalle por estudiante.
+- **Panel de resumen:** estado de la asistencia del día, indicadores generales y accesos rápidos según el rol.
+- **Experiencia de usuario:** nueva portada, navegación móvil, reportes adaptados a celular, páginas legales responsive y footer institucional.
+- **Documentación:** README general, documentación de API, SRS, pruebas, release y frontend.
+
+### Pendiente o fuera de esta entrega
+
+- **Asignaturas, comisiones y horarios:** las rutas propuestas no están implementadas.
+- **Justificaciones digitales y certificados:** la carga y gestión de justificantes sigue siendo parte del alcance planificado.
+- **Alertas pedagógicas:** la configuración de umbrales y la generación de alertas quedaron fuera de esta entrega.
+- **Gestión completa de clases:** falta definir operaciones, actores y su relación con calendarios, horarios y asistencias.
+- **Rol Preceptor:** puede registrarse como usuario, pero no tiene una vista propia en la interfaz actual.
+- **Pruebas automatizadas:** no hay una suite ejecutable; `npm test` todavía requiere corrección.
+- **Despliegue en producción:** no se definió sistema operativo, hosting, dominio, secretos ni estrategia de copias de seguridad.
+
+### Desvíos respecto de la planificación inicial
+
+- Se priorizó el rediseño visual y la experiencia de uso del frontend.
+- El panel de resumen se construyó con los endpoints existentes (`/listCourses`, `/listStudents` y `/getAttendanceReport`), sin modificar el contrato del backend.
+- No se implementaron asignaturas, comisiones, horarios, justificaciones ni alertas.
+- No se agregó una suite de pruebas automatizadas.
+- El despliegue de producción quedó sin definir.
+- El rol Preceptor puede registrarse, pero no tiene una vista propia.
+
+Los requerimientos funcionales incluidos más abajo describen el alcance previsto; la implementación efectiva es la resumida en esta sección.
 
 ## Inicio rápido en Windows
 
@@ -66,6 +112,7 @@ node .\seed-test.mjs
 El script crea `backend/db-test.sqlite3` y no modifica `backend/db.sqlite3`. Todos los usuarios de prueba usan la contraseña `1234`: `pablo` y `jazmin` son administradores, `carlos` es preceptor, `jose` tiene el curso `Algoritmos 1`, `matias` tiene `Seminario` y `Practicas 3`, y `gabriel` no tiene cursos.
 
 También se crea el usuario `admin` con rol Administrador y contraseña `1234`.
+
 Para iniciar el backend usando la base de prueba, ejecutá:
 
 ```powershell
@@ -133,21 +180,27 @@ Si el comando `py` no está disponible, reemplazalo por `python`.
 ## Funcionalidades disponibles
 
 - Inicio y cierre de sesión con permisos según el rol.
+- Panel de resumen con saludo, fecha, rol, asistencia del día, indicadores y accesos rápidos.
 - Administración de usuarios: alta, modificación, baja, eliminación y cambio de rol.
 - Gestión de estudiantes: alta, modificación, baja y listado.
 - Gestión de cursos e inscripciones de estudiantes.
 - Calendarios académicos.
 - Registro de asistencia por curso y fecha, con estados y retiros anticipados.
 - Reportes de asistencia por curso, con totales y porcentaje por estudiante.
-- Acceso docente a sus cursos, toma de asistencia y reportes.
+- Acceso docente a sus cursos, toma de asistencia, “Mis alumnos” y reportes.
+- Portada de bienvenida con acceso al inicio de sesión y descripción de funciones.
+- Navegación lateral en escritorio y navegación inferior en celular, filtradas por rol.
+- Reporte de asistencias móvil como lista de clases accionable.
+- Páginas de términos y condiciones y política de privacidad responsive.
+- Footer institucional con el logo del ISFT N.º 151.
 
-Las justificaciones digitales y las alertas pedagógicas forman parte del alcance planteado, pero no están disponibles todavía en la interfaz actual.
+Las justificaciones digitales, las alertas pedagógicas, las asignaturas, las comisiones y los horarios forman parte del alcance planteado, pero no están disponibles todavía en la interfaz actual.
 
 ---
 
 # Objetivos y alcance
 
-Los objetivos funcionales y los requerimientos no funcionales se encuentran en [srs/README.md](srs/README.md). La especificacion conserva el alcance planeado y diferencia lo implementado de lo no alcanzado. Las alertas forman parte de los requerimientos, pero quedaron fuera de esta entrega.
+Los objetivos funcionales y los requerimientos no funcionales se encuentran en [srs/README.md](srs/README.md). La especificación conserva el alcance planeado y diferencia lo implementado de lo no alcanzado. Las alertas forman parte de los requerimientos, pero quedaron fuera de esta entrega.
 
 ---
 
@@ -203,6 +256,7 @@ El proyecto seguirá las siguientes reglas de desarrollo establecidas por la cá
 ---
 
 # Convención de nombres
+
 Las clases usan `UpperCamelCase` (por ejemplo, `Menu`). Las funciones, variables y rutas de API usan `lowerCamelCase` (por ejemplo, `getAttendanceReport`, `attendancePercentage`). Se mantienen los nombres del contrato API para evitar incompatibilidades.
 
 ---
@@ -216,8 +270,12 @@ Las clases usan `UpperCamelCase` (por ejemplo, `Menu`). Las funciones, variables
     ├── .gitignore
     ├── levantar_servidores.ps1
     ├── levantar_servidores.sh
+    ├── levantar_servidores_test.ps1
+    ├── levantar_servidores_test.sh
     ├── levantar_apache.sh
     ├── levantar_node.sh
+    ├── usarbdtest.ps1
+    ├── usarbdtest.sh
     ├── api/
     │   └── README.md
     ├── srs/
@@ -236,21 +294,59 @@ Las clases usan `UpperCamelCase` (por ejemplo, `Menu`). Las funciones, variables
     │   ├── database.js
     │   ├── config.json
     │   ├── seed.mjs
+    │   ├── seed-test.mjs
     │   ├── package.json
     │   └── package-lock.json
     └── frontend/
         ├── README.md
         ├── index.html
-        └── WebComponentes(LoginyForms)/
+        ├── terminos.html
+        ├── privacidad.html
+        ├── logo-isft151.png
+        ├── css/
+        │   ├── styles.css
+        │   ├── base.css
+        │   ├── layout.css
+        │   ├── navigation.css
+        │   ├── components.css
+        │   ├── welcome.css
+        │   ├── dashboard.css
+        │   ├── attendance.css
+        │   ├── auth.css
+        │   └── legal.css
+        └── js/
+            ├── core/
+            │   ├── api.js
+            │   └── helpers.js
+            ├── ui/
+            │   ├── navigation.js
+            │   ├── welcome.js
+            │   ├── dashboard.js
+            │   └── footer.js
+            ├── modals/
+            │   ├── auth.js
+            │   ├── forms.js
+            │   └── attendance.js
+            ├── features/
+            │   ├── session.js
+            │   ├── users.js
+            │   ├── students.js
+            │   ├── courses.js
+            │   ├── calendar.js
+            │   ├── attendance.js
+            │   └── attendance-report.js
+            ├── menu.js
+            └── app.js
 
-La carpeta `backend/node_modules` y `backend/db.sqlite3` se generan localmente y no se versionan.
+La carpeta `backend/node_modules`, `backend/db.sqlite3` y `backend/db-test.sqlite3` se generan localmente y no se versionan.
 
 # Tecnologías
 
 - Backend: Node.js con módulos ES y servidor HTTP nativo.
 - Persistencia: SQLite mediante `node:sqlite`.
-- Frontend: HTML, CSS y JavaScript; servidor estático de desarrollo de Python.
+- Frontend: HTML, CSS y JavaScript clásico; servidor estático de desarrollo de Python.
 - Dependencia del backend: `sqlite3`.
+- Interfaz: CSS modular, iconografía Material Symbols y diseño responsive.
 
 ---
 
@@ -298,7 +394,18 @@ El estado y las instrucciones de pruebas están en [testing/README.md](testing/R
 
 # Change Log
 
-## Versión en desarrollo
+## Versión presentada (entrega de la cursada)
+
+- Se rediseñó la pantalla de bienvenida con hero, tarjetas de funciones y llamada a la acción.
+- Se incorporó el panel de resumen con datos reales: asistencia del día, indicadores y accesos rápidos.
+- Se movieron los accesos rápidos del panel debajo del contenido en escritorio.
+- Se mejoró la navegación móvil con barra inferior y accesos filtrados por rol.
+- Se convirtió el reporte de asistencias móvil en una lista de clases accionable.
+- Se incorporaron páginas legales responsive y el footer institucional con el logo del ISFT N.º 151.
+- Se reorganizaron los estilos y scripts del frontend en módulos por responsabilidad.
+- Se documentó la estructura del frontend y los criterios de diseño.
+
+## Versión base
 
 - Se incorporó inicio y cierre de sesión con control de acceso por rol.
 - Se incorporó administración básica de usuarios: registro, modificación, deshabilitación, eliminación y cambio de rol.
@@ -327,4 +434,4 @@ El rol de Gestor de proyecto será definido por el grupo.
 
 # Estado del proyecto
 
-**En desarrollo**
+**Versión presentada para la entrega de la cursada.** El sistema queda funcional para desarrollo local; el despliegue en producción y los requerimientos pendientes se detallan en las secciones anteriores.
