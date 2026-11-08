@@ -75,15 +75,4 @@ Las siguientes rutas corresponden a requerimientos planeados que quedaron fuera 
 - `/associateAlertToStudent` (Sistema, Preceptor): request `{ "studentId": "string", "alertId": "string" }`; response `{ "studentId": "string", "alertId": "string", "assigned": "boolean" }`.
 - `/generateOutAlert` (Sistema, Preceptor): request `{ "studentId": "string" }`; response `{ "alertId": "string", "studentId": "string", "alertType": "string", "totalAbsences": "number", "status": "string", "triggered": "boolean" }`.
 
-### Diferencias pendientes de documentar
-
-- Unificar `/assignUserRole` y `/updateUserRole` o definir sus responsabilidades.
-- Unificar los campos de usuario: `name`/`email` frente a `username`.
-- Unificar `listCourse` y `listCourses`.
-- Confirmar si `/registerProfessorAttendance` registra asistencia docente o asistencia de una clase.
-- Unificar los roles propuestos y los disponibles en la interfaz.
-- Definir rutas para entidades educativas, consulta de usuarios y gestion completa de clases.
-- Mapear `/getAttendanceRoster`, `/saveAttendance` y `/getAttendanceReport` a los contratos propuestos.
-- Fijar formatos de fechas, horarios, estados, roles y carga de certificados.
-
-El alcance funcional relacionado se describe en [srs/README.md](../srs/README.md).
+El alcance funcional relacionado se describe en [srs/README.md](../srs/README.md). El estado de cada requerimiento está en la [trazabilidad del SRS](../srs/README.md#trazabilidad-de-requerimientos).
