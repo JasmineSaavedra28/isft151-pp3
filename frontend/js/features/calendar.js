@@ -1,6 +1,4 @@
-/* ============================================================
-   Calendario académico
-   ============================================================ */
+
 
 function initCalendarHandlers(menu) {
     document.getElementById('btnNewCalendar').onclick = async function () {
