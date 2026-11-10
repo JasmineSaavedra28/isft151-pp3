@@ -1,6 +1,4 @@
-/* ============================================================
-   Modal de ingreso y creación de cuenta
-   ============================================================ */
+
 
 function showAuthModal() {
     return new Promise(function (resolve) {
