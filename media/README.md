@@ -13,7 +13,7 @@ Esta carpeta reúne el material audiovisual de difusión de MiRegistro aprobado 
 ## Video de demostración y explicación individual
 
 - Estado: disponible.
-- Duración prevista: 
+- Duración prevista:25:20
 - Contenido: recorrido del caso de uso a modo de tutorial y análisis del flujo frontend → backend, sin lectura línea por línea del código.
 
 
