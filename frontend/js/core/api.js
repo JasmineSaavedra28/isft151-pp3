@@ -1,7 +1,4 @@
-/* ============================================================
-   API y utilidades de sesión
-   No modifica el backend: solo centraliza las llamadas existentes.
-   ============================================================ */
+
 
 const host = 'http://localhost:3000';
 
