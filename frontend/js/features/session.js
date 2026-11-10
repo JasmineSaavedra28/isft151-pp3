@@ -1,6 +1,4 @@
-/* ============================================================
-   Sesión · ingreso, cierre y restauración de la vista
-   ============================================================ */
+
 
 function initSessionHandlers(menu) {
     document.getElementById('btnLogin').onclick = async function (event) {
