@@ -1,7 +1,4 @@
-/* ============================================================
-   Pantalla de bienvenida
-   Portada previa al inicio de sesión.
-   ============================================================ */
+
 
 function createWelcomeIcon(name, className = 'material-symbol') {
     const icon = createElement('span', { className, textContent: name });
