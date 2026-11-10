@@ -1,7 +1,4 @@
-/* ============================================================
-   Footer institucional
-   El logo del instituto se mantiene abajo, como parte del TP académico.
-   ============================================================ */
+
 
 function createInstitutionFooter() {
     const footer = createElement('footer', { className: 'site-footer' });
