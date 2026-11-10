@@ -1,6 +1,4 @@
-/* ============================================================
-   Usuarios y roles
-   ============================================================ */
+
 
 function initUserHandlers(menu) {
     document.getElementById('btnNewUser').onclick = async function () {
