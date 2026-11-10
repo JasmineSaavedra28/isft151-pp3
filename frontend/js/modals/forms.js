@@ -1,6 +1,4 @@
-/* ============================================================
-   Modal genérico de formularios
-   ============================================================ */
+
 
 function showFormModal(title, fields, submitText = 'Aceptar') {
     return new Promise(function (resolve) {
