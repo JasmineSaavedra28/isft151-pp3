@@ -1,6 +1,4 @@
-/* ============================================================
-   Asistencias · docentes y reportes
-   ============================================================ */
+
 
 function initAttendanceHandlers(menu) {
     document.getElementById('btnTeacherListCourses').onclick = async function () {
