@@ -1,6 +1,4 @@
-/* ============================================================
-   Estudiantes
-   ============================================================ */
+
 
 function initStudentHandlers(menu) {
     document.getElementById('btnNewStudent').onclick = async function () {
