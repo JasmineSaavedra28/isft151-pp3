@@ -1,6 +1,4 @@
-/* ============================================================
-   Navegación y componentes compartidos
-   ============================================================ */
+
 
 const navigationSections = [
     'dashboardOverview',
