@@ -1,7 +1,4 @@
-/* ============================================================
-   Reporte de asistencia
-   Se agrega al prototipo de Menu para mantener menu.js liviano.
-   ============================================================ */
+
 
 Object.assign(Menu.prototype, {
     clearAttendanceReport() {
