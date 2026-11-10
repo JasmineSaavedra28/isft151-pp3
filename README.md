@@ -252,7 +252,7 @@ La carpeta [release/](release/README.md) documenta los lanzadores actuales y los
 
 # Media
 
-La carpeta [media/](media/README.md) está preparada para incorporar material de difusión institucional aprobado.
+La carpeta [media/](media/README.md) reúne el material audiovisual de difusión. El video institucional está disponible en `media/Video institucional.mp4` (2:28) y el video de demostración y explicación individual se encuentra en preparación.
 
 ---
 
@@ -299,7 +299,8 @@ Las clases usan `UpperCamelCase` (por ejemplo, `Menu`). Las funciones, variables
     ├── srs/
     │   └── README.md
     ├── media/
-    │   └── README.md
+    │   ├── README.md
+    │   └── Video institucional.mp4
     ├── testing/
     │   └── README.md
     ├── release/
