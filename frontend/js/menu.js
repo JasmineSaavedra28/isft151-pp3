@@ -1,7 +1,4 @@
-/* ============================================================
-   Menú principal · estructura de la aplicación
-   Los manejadores de cada sección viven en js/features/.
-   ============================================================ */
+
 
 class Menu extends HTMLElement {
     constructor() {
