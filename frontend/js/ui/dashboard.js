@@ -1,8 +1,4 @@
-/* ============================================================
-   Panel de resumen
-   Reutiliza el lenguaje visual de "Asistencia de hoy" de la
-   portada, pero con datos reales de los endpoints existentes.
-   ============================================================ */
+
 
 const dashboardState = {
     requestId: 0
