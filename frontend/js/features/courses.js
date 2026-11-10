@@ -1,6 +1,4 @@
-/* ============================================================
-   Cursos e inscripciones
-   ============================================================ */
+
 
 function initCourseHandlers(menu) {
     async function getCourseAndStudentOptions() {
