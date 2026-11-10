@@ -1,6 +1,4 @@
-/* ============================================================
-   Modal para tomar asistencia
-   ============================================================ */
+
 
 function showAttendanceModal(courseId, courseName, date, students, attendanceDates) {
     return new Promise(function (resolve) {
